@@ -3,7 +3,7 @@
 ```mermaid
 erDiagram
     SELLER ||--o{ ORDER : hasMany
-    SELLER ||--o{ SUBSCRIPTION : hasMany 
+    SELLER ||--o{ SUBSCRIPTION : hasMany
     ORDER ||--o{ ORDER_TRACKING_EVENT : subCollection
     ORDER ||--|| DELIVERY_ADDRESS : object
 
