@@ -13,13 +13,13 @@ const nextConfig: NextConfig = {
   output: "export",
   trailingSlash: true,
   env: {
-    NEXT_PUBLIC_BASE_PATH: basePath
+    NEXT_PUBLIC_BASE_PATH: basePath,
   },
   images: {
-    unoptimized: true
+    unoptimized: true,
   },
   basePath,
-  assetPrefix: basePath ? `${basePath}/` : undefined
+  assetPrefix: basePath ? `${basePath}/` : undefined,
 };
 
 export default nextConfig;

@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname
+  baseDirectory: __dirname,
 });
 
 const eslintConfig = defineConfig([
@@ -18,14 +18,14 @@ const eslintConfig = defineConfig([
   ...compat.extends(
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
-    "prettier"
+    "prettier",
   ),
   globalIgnores([
     ".next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
-    "public/**"
+    "public/**",
   ]),
   {
     rules: {
@@ -40,14 +40,14 @@ const eslintConfig = defineConfig([
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { argsIgnorePattern: "^_" }
+        { argsIgnorePattern: "^_" },
       ],
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/ban-ts-comment": "warn",
       eqeqeq: ["error", "always"],
-      "no-console": ["warn", { allow: ["warn", "error"] }]
-    }
-  }
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+    },
+  },
 ]);
 
 export default eslintConfig;

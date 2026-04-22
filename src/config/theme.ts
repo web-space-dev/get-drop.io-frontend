@@ -26,13 +26,13 @@ export const designSystemColors = {
   plum700: "#553055",
   purple: "#813c7a",
   brown: "#873600",
-  violet: "#8c038e"
+  violet: "#8c038e",
 } as const;
 
 export const inter = Inter({
   weight: ["400", "600", "700"],
   subsets: ["latin"],
-  display: "swap"
+  display: "swap",
 });
 
 const headingDesktop = {
@@ -40,33 +40,38 @@ const headingDesktop = {
     fontSize: "58px",
     fontWeight: 600,
     lineHeight: 1.5,
-    letterSpacing: "0"
+    letterSpacing: "0",
   },
   h2: {
     fontSize: "42px",
     fontWeight: 600,
     lineHeight: 1.5,
-    letterSpacing: "0"
+    letterSpacing: "0",
   },
   h3: {
     fontSize: "28px",
     fontWeight: 600,
     lineHeight: 1.5,
-    letterSpacing: "0"
+    letterSpacing: "0",
   },
   h4: {
     fontSize: "24px",
     fontWeight: 600,
     lineHeight: 1.5,
-    letterSpacing: "0"
+    letterSpacing: "0",
   },
   h5: {
     fontSize: "20px",
     fontWeight: 600,
     lineHeight: 1.5,
-    letterSpacing: "0"
+    letterSpacing: "0",
   },
-  h6: { fontSize: "18px", fontWeight: 600, lineHeight: 1.5, letterSpacing: "0" }
+  h6: {
+    fontSize: "18px",
+    fontWeight: 600,
+    lineHeight: 1.5,
+    letterSpacing: "0",
+  },
 } as const;
 
 const headingMobile = {
@@ -75,7 +80,7 @@ const headingMobile = {
   h3: { fontSize: "24px" },
   h4: { fontSize: "20px" },
   h5: { fontSize: "18px" },
-  h6: { fontSize: "16px" }
+  h6: { fontSize: "16px" },
 } as const;
 
 export const layoutGrid = {
@@ -84,15 +89,15 @@ export const layoutGrid = {
     containerWidth: 1440,
     marginX: 72,
     gutter: 24,
-    columnHeight: 120
+    columnHeight: 120,
   },
   mobile: {
     columns: 6,
     containerWidth: 392,
     marginX: 24,
     gutter: 16,
-    columnHeight: 120
-  }
+    columnHeight: 120,
+  },
 } as const;
 
 // Create a theme instance.
@@ -103,115 +108,115 @@ const theme = createTheme({
       main: designSystemColors.blue,
       light: designSystemColors.brightBlue,
       dark: designSystemColors.darkNavy,
-      contrastText: designSystemColors.offWhite
+      contrastText: designSystemColors.offWhite,
     },
     secondary: {
       main: designSystemColors.navy,
       light: designSystemColors.lightBlue,
       dark: designSystemColors.darkNavy,
-      contrastText: designSystemColors.offWhite
+      contrastText: designSystemColors.offWhite,
     },
     error: {
       main: designSystemColors.red,
-      contrastText: designSystemColors.offWhite
+      contrastText: designSystemColors.offWhite,
     },
     warning: {
       main: designSystemColors.yellow,
-      contrastText: designSystemColors.offBlack
+      contrastText: designSystemColors.offBlack,
     },
     success: {
       main: designSystemColors.green,
-      contrastText: designSystemColors.offWhite
+      contrastText: designSystemColors.offWhite,
     },
     info: {
       main: designSystemColors.brightBlue,
-      contrastText: designSystemColors.offWhite
+      contrastText: designSystemColors.offWhite,
     },
     background: {
       default: designSystemColors.offWhite,
-      paper: "#ffffff"
+      paper: "#ffffff",
     },
     text: {
       primary: designSystemColors.offBlack,
-      secondary: designSystemColors.mediumGrey
+      secondary: designSystemColors.mediumGrey,
     },
     divider: designSystemColors.lightGrey,
     common: {
       black: designSystemColors.offBlack,
-      white: designSystemColors.offWhite
-    }
+      white: designSystemColors.offWhite,
+    },
   },
   typography: {
     fontFamily: inter.style.fontFamily,
     h1: {
       ...headingDesktop.h1,
-      "@media (max-width:600px)": headingMobile.h1
+      "@media (max-width:600px)": headingMobile.h1,
     },
     h2: {
       ...headingDesktop.h2,
-      "@media (max-width:600px)": headingMobile.h2
+      "@media (max-width:600px)": headingMobile.h2,
     },
     h3: {
       ...headingDesktop.h3,
-      "@media (max-width:600px)": headingMobile.h3
+      "@media (max-width:600px)": headingMobile.h3,
     },
     h4: {
       ...headingDesktop.h4,
-      "@media (max-width:600px)": headingMobile.h4
+      "@media (max-width:600px)": headingMobile.h4,
     },
     h5: {
       ...headingDesktop.h5,
-      "@media (max-width:600px)": headingMobile.h5
+      "@media (max-width:600px)": headingMobile.h5,
     },
     h6: {
       ...headingDesktop.h6,
-      "@media (max-width:600px)": headingMobile.h6
+      "@media (max-width:600px)": headingMobile.h6,
     },
     subtitle1: {
       fontSize: "18px",
       fontWeight: 400,
       lineHeight: 1.5,
-      letterSpacing: "0"
+      letterSpacing: "0",
     },
     subtitle2: {
       fontSize: "16px",
       fontWeight: 600,
       lineHeight: 1.5,
-      letterSpacing: "0"
+      letterSpacing: "0",
     },
     body1: {
       fontSize: "16px",
       fontWeight: 400,
       lineHeight: 1.5,
-      letterSpacing: "0"
+      letterSpacing: "0",
     },
     body2: {
       fontSize: "14px",
       fontWeight: 400,
       lineHeight: 1.5,
-      letterSpacing: "0"
+      letterSpacing: "0",
     },
     button: {
       fontSize: "14px",
       fontWeight: 600,
       lineHeight: 1.5,
       letterSpacing: "0.5px",
-      textTransform: "none"
+      textTransform: "none",
     },
     caption: {
       fontSize: "12px",
       fontWeight: 400,
       lineHeight: 1.5,
-      letterSpacing: "0.5px"
+      letterSpacing: "0.5px",
     },
     overline: {
       fontSize: "10px",
       fontWeight: 400,
       lineHeight: 1.5,
       letterSpacing: "0.5px",
-      textTransform: "none"
-    }
-  }
+      textTransform: "none",
+    },
+  },
 });
 
 export default theme;
