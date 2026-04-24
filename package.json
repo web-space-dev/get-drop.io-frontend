@@ -2,8 +2,13 @@
   "name": "drop.io-frontend",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "dev": "next dev",
+    "dev:emulators": "firebase emulators:start --project demo-get-drop-io --only firestore,auth,storage --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data",
+    "dev:emulators:all": "firebase emulators:start --project demo-get-drop-io --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -19,7 +24,9 @@
     "@mui/icons-material": "^9.0.0",
     "@mui/material": "^9.0.0",
     "@mui/material-nextjs": "^9.0.0",
+    "@tanstack/react-query-devtools": "^5.100.1",
     "firebase": "^12.12.1",
+    "firebase-admin": "^13.5.0",
     "motion": "^12.38.0",
     "next": "16.2.4",
     "react": "19.2.4",
