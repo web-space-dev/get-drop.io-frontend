@@ -1,8 +1,10 @@
+import AuthLayout from "@/features/auth/layout/AuthLayout";
+import RegisterForm from "@/features/auth/register/registerForm";
+
 export default function RegisterPage() {
   return (
-    <div>
-      <h1>Register Page</h1>
-      {/* Registration form components would go here */}
-    </div>
+    <AuthLayout>
+      <RegisterForm />
+    </AuthLayout>
   );
 }

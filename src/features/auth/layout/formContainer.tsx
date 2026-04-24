@@ -1,0 +1,48 @@
+import * as React from "react";
+import Image from "next/image";
+import { styled } from "@mui/material/styles";
+import DropLogoDigitalBlue from "@/logos/Drop_Logo-Digital-Blue.png";
+
+type FormShellProps = {
+  fieldGap?: number;
+};
+
+export type FormContainerProps = React.ComponentPropsWithoutRef<"form"> &
+  FormShellProps;
+
+const StyledFormContainer = styled("form", {
+  shouldForwardProp: (prop) => prop !== "fieldGap",
+})<FormShellProps>(({ theme, fieldGap = 2 }) => ({
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(fieldGap),
+}));
+
+const LogoContainer = styled("div")(({ theme }) => ({
+  width: "100%",
+  display: "flex",
+  justifyContent: "center",
+  marginBottom: theme.spacing(1),
+}));
+
+const LogoImage = styled(Image)(({ theme }) => ({
+  width: "100%",
+  height: "auto",
+  maxWidth: theme.spacing(22),
+}));
+
+export default function FormContainer({
+  children,
+  fieldGap = 2,
+  ...props
+}: FormContainerProps) {
+  return (
+    <StyledFormContainer noValidate fieldGap={fieldGap} {...props}>
+      <LogoContainer>
+        <LogoImage src={DropLogoDigitalBlue} alt="Drop logo" priority />
+      </LogoContainer>
+      {children}
+    </StyledFormContainer>
+  );
+}

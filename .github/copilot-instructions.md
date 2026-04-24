@@ -23,9 +23,25 @@
 ## Tech Constraints
 
 - Framework: Next.js 16 with React 19.
-- Styling: MUI components and `sx` prop patterns; preserve existing visual style.
+- Styling: MUI + Emotion with `styled` components as the default for reusable UI/layout.
 - Backend services: Firebase (Firestore/Auth/Storage) with emulator-first local workflow.
 - Lint/format: ESLint + Prettier.
+
+## Styling Rules
+
+1. Prefer `styled` from `@mui/material/styles` for reusable components and layout wrappers.
+2. Keep `sx` for one-off page composition tweaks, not for reusable component internals.
+3. When building reusable layout primitives, use typed style props and `shouldForwardProp` to avoid leaking custom props to the DOM.
+4. Preserve existing design language (spacing scale, typography, and color direction) when refactoring styles.
+5. Do not introduce Tailwind or alternate styling systems unless explicitly requested.
+
+## Theme Source of Truth
+
+1. Do not invent ad-hoc colors, font sizes, spacing scales, or typography values in component files.
+2. Use style values from `src/config/theme.ts` only (palette, typography, `designSystemColors`, `layoutGrid`, and theme spacing/breakpoints).
+3. Avoid raw hex values and hardcoded typography tokens unless adding them first to `src/config/theme.ts`.
+4. If a required token does not exist, add it to `src/config/theme.ts` and then consume it from there.
+5. Prefer references to theme tokens inside `styled` blocks and `sx` objects instead of literal values.
 
 ## Firebase Rules for Coding
 

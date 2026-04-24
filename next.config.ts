@@ -10,6 +10,9 @@ const basePath =
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  turbopack: {
+    root: process.cwd(),
+  },
   output: "standalone",
   trailingSlash: true,
   env: {
