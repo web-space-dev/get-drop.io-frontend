@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import EmailField from "@/features/auth/inputs/EmailField";
 import PasswordField from "@/features/auth/inputs/PasswordField";
 import LoginButton from "@/features/auth/login/LoginButton";
-import FormContainer from "@/features/auth/layout/formContainer";
+import FormContainer from "../layout/FormContainer";
 
 type LoginFormProps = React.ComponentPropsWithoutRef<"form">;
 
