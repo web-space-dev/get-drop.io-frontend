@@ -6,7 +6,7 @@ export function requiresAuthentication(pathname: string): boolean {
 
 export function getUnauthenticatedRedirectPath(pathname: string): string {
   if (requiresAuthentication(pathname)) {
-    return "/auth/register";
+    return "/auth/login";
   }
 
   return "/auth/login";
