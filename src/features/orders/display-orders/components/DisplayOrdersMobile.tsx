@@ -1,4 +1,6 @@
+import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
+import NextLink from "next/link";
 import {
   displayText,
   formatDateTime,
@@ -92,7 +94,13 @@ export default function DisplayOrdersMobile({
             </MobileMetaRow>
             <MobileMetaRow>
               <MutedCellText>Actions</MutedCellText>
-              <Typography variant="body2">View</Typography>
+              <Link
+                component={NextLink}
+                href={`/orders/${order.id}`}
+                underline="hover"
+              >
+                <Typography variant="body2">View</Typography>
+              </Link>
             </MobileMetaRow>
           </MobileMeta>
         </MobileCard>

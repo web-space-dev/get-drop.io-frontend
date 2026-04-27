@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateDocument } from "@/utils/CRUD/CRUD.client";
 import { getOrdersQueryKey } from "./getOrders";
+import { getOrderByIdQueryKey } from "./getOrderById";
 import { type OrderQueryModel, type UpdateOrderInput } from "./types";
 
 type UpdateOrderMutationInput = {
@@ -20,8 +21,11 @@ export function useUpdateOrder() {
 
   return useMutation({
     mutationFn: updateOrder,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       void queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
+      void queryClient.invalidateQueries({
+        queryKey: getOrderByIdQueryKey(variables.id),
+      });
     },
   });
 }

@@ -10,26 +10,32 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { useUser } from "@/context/UserContext";
+import { useUpdateOrder } from "@/queries/orders/updateOrder";
 import { db } from "@/utils/firebaseServer/firebaseClient";
 import AddOrderFooter from "./components/AddOrderFooter";
 import AddOrderHeader from "./components/AddOrderHeader";
 import AddOrderStepOne from "./components/AddOrderStepOne";
 import AddOrderStepTwo from "./components/AddOrderStepTwo";
-import { buildOrderPayload } from "./utils/mapping";
-import { buildDefaultTrackingEvent } from "./utils/constants";
+import { buildOrderPayload, buildOrderUpdatePayload } from "./utils/mapping";
+import { buildDefaultTrackingEvent, initialState } from "./utils/constants";
 import { Content, StyledDialog } from "./styles";
 import { type AddOrderModalProps } from "./types";
 import { useAddOrderModal } from "./hooks/useAddOrderModal";
 import { validateStepOne } from "./utils/validation";
 
 export default function AddOrderModal({
+  mode = "create",
+  orderId,
+  initialForm = initialState,
   open,
   onClose,
   onCreated,
+  onUpdated,
 }: AddOrderModalProps) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const { authUser } = useUser();
+  const updateOrderMutation = useUpdateOrder();
 
   const {
     step,
@@ -44,9 +50,13 @@ export default function AddOrderModal({
     handleBack,
     handleToggleChannel,
     handleAutomaticUpdateChange,
-  } = useAddOrderModal({ onClose });
+  } = useAddOrderModal({
+    open,
+    onClose,
+    initialForm,
+  });
 
-  const handleCreateOrder = () => {
+  const handleSubmitOrder = () => {
     void (async () => {
       const error = validateStepOne(form);
       if (error) {
@@ -54,7 +64,12 @@ export default function AddOrderModal({
         return;
       }
 
-      if (!authUser) {
+      if (mode === "edit" && !orderId) {
+        setSubmitError("Unable to update this order right now.");
+        return;
+      }
+
+      if (mode === "create" && !authUser) {
         setSubmitError("You must be signed in to create an order.");
         return;
       }
@@ -63,31 +78,43 @@ export default function AddOrderModal({
       setIsSubmitting(true);
 
       try {
-        const payload = buildOrderPayload(form, authUser.uid);
-        const batch = writeBatch(db);
-        const orderRef = doc(collection(db, "orders"));
-        const trackingEventRef = doc(
-          collection(orderRef, "order_tracking_event"),
-        );
+        if (mode === "edit") {
+          await updateOrderMutation.mutateAsync({
+            id: orderId as string,
+            updates: buildOrderUpdatePayload(form),
+          });
+          onUpdated?.();
+        } else {
+          const payload = buildOrderPayload(form, authUser!.uid);
+          const batch = writeBatch(db);
+          const orderRef = doc(collection(db, "orders"));
+          const trackingEventRef = doc(
+            collection(orderRef, "order_tracking_event"),
+          );
 
-        batch.set(orderRef, {
-          ...payload,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
+          batch.set(orderRef, {
+            ...payload,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
 
-        batch.set(trackingEventRef, {
-          ...buildDefaultTrackingEvent(),
-          eventTimestamp: serverTimestamp(),
-          createdAt: serverTimestamp(),
-        });
+          batch.set(trackingEventRef, {
+            ...buildDefaultTrackingEvent(),
+            eventTimestamp: serverTimestamp(),
+            createdAt: serverTimestamp(),
+          });
 
-        await batch.commit();
+          await batch.commit();
+          onCreated?.();
+        }
 
-        onCreated?.();
         handleClose();
       } catch {
-        setSubmitError("Unable to create order right now. Please try again.");
+        setSubmitError(
+          mode === "edit"
+            ? "Unable to update order right now. Please try again."
+            : "Unable to create order right now. Please try again.",
+        );
       } finally {
         setIsSubmitting(false);
       }
@@ -96,7 +123,7 @@ export default function AddOrderModal({
 
   return (
     <StyledDialog open={open} onClose={handleClose} fullScreen={fullScreen}>
-      <AddOrderHeader step={step} onClose={handleClose} />
+      <AddOrderHeader step={step} mode={mode} onClose={handleClose} />
 
       <Content>
         <Stack spacing={2}>
@@ -119,12 +146,13 @@ export default function AddOrderModal({
       </Content>
 
       <AddOrderFooter
+        mode={mode}
         step={step}
         isSubmitting={isSubmitting}
         onClose={handleClose}
         onBack={handleBack}
         onNext={handleNext}
-        onCreateOrder={handleCreateOrder}
+        onSubmitOrder={handleSubmitOrder}
       />
     </StyledDialog>
   );

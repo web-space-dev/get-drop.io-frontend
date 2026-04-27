@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type Step } from "../types";
+import { type AddOrderModalMode, type Step } from "../types";
 import {
   Footer,
   FooterCancelButton,
@@ -8,22 +8,33 @@ import {
 } from "../styles";
 
 type AddOrderFooterProps = {
+  mode: AddOrderModalMode;
   step: Step;
   isSubmitting: boolean;
   onClose: () => void;
   onBack: () => void;
   onNext: () => void;
-  onCreateOrder: () => void;
+  onSubmitOrder: () => void;
 };
 
 export default function AddOrderFooter({
+  mode,
   step,
   isSubmitting,
   onClose,
   onBack,
   onNext,
-  onCreateOrder,
+  onSubmitOrder,
 }: AddOrderFooterProps) {
+  const submitLabel =
+    mode === "edit"
+      ? isSubmitting
+        ? "Saving..."
+        : "Save Changes"
+      : isSubmitting
+        ? "Creating..."
+        : "Create Order";
+
   return (
     <Footer>
       <FooterCancelButton
@@ -47,8 +58,8 @@ export default function AddOrderFooter({
           >
             Back
           </FooterOutlinedButton>
-          <FooterPrimaryButton onClick={onCreateOrder} disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create Order"}
+          <FooterPrimaryButton onClick={onSubmitOrder} disabled={isSubmitting}>
+            {submitLabel}
           </FooterPrimaryButton>
         </>
       )}

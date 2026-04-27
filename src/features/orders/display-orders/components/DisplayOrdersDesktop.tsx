@@ -1,6 +1,8 @@
 import TableBody from "@mui/material/TableBody";
+import Link from "@mui/material/Link";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import NextLink from "next/link";
 import {
   displayText,
   formatDateTime,
@@ -74,7 +76,13 @@ export default function DisplayOrdersDesktop({
                     {getSmartEta(Boolean(order.lastTrackingUpdateAt))}
                   </OrdersCell>
                   <OrdersCell>
-                    <Typography variant="body2">View</Typography>
+                    <Link
+                      component={NextLink}
+                      href={`/orders/${order.id}`}
+                      underline="hover"
+                    >
+                      <Typography variant="body2">View</Typography>
+                    </Link>
                   </OrdersCell>
                 </TableRow>
               ))}

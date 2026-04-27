@@ -46,10 +46,6 @@ export default function AddOrderStepOne({
           select
           value={form.courier}
           onChange={(event) => onFieldChange("courier", event.target.value)}
-          SelectProps={{
-            displayEmpty: true,
-            renderValue: (value) => (value ? String(value) : "Select courier"),
-          }}
         >
           <MenuItem value="" disabled>
             Select courier

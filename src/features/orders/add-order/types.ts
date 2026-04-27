@@ -1,10 +1,16 @@
 import { type ElementType } from "react";
 import { type Order } from "@/types";
 
+export type AddOrderModalMode = "create" | "edit";
+
 export type AddOrderModalProps = {
   open: boolean;
   onClose: () => void;
+  mode?: AddOrderModalMode;
+  orderId?: string;
+  initialForm?: FormState;
   onCreated?: () => void;
+  onUpdated?: () => void;
 };
 
 export type Step = 1 | 2;
