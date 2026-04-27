@@ -12,13 +12,13 @@ import {
   DocumentHeadTagsProps,
   documentGetInitialProps,
 } from "@mui/material-nextjs/v16-pagesRouter";
-import theme, { inter } from "@/config/theme";
+import theme, { parkinsans } from "@/config/theme";
 
 export default function MyDocument(
   props: DocumentProps & DocumentHeadTagsProps,
 ) {
   return (
-    <Html lang="en" className={inter.className}>
+    <Html lang="en" className={parkinsans.className}>
       <Head>
         {/* PWA primary color */}
         <meta name="theme-color" content={theme.palette.primary.main} />

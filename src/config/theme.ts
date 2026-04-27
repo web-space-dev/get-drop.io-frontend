@@ -1,35 +1,18 @@
-import { Inter } from "next/font/google";
+import { Parkinsans } from "next/font/google";
 import { createTheme } from "@mui/material/styles";
 
 export const designSystemColors = {
+  dropBlue: "#001FDD",
+  deepNavy: "#00024F",
+  brightGreen: "#00F8A9",
   lightBlue: "#bbdefb",
-  offWhite: "#fafafa",
-  offBlack: "#1a1a1a",
-  blue: "#0907d0",
-  navy: "#001c79",
-  red: "#d50000",
-  yellow: "#f6b704",
-  green: "#006621",
-  grey: "#757575",
-  mediumGrey: "#464646",
-  darkGrey: "#202020",
-  lightGrey: "#e9e9e9",
-  lavendar: "#f1f0fd",
-  brightBlue: "#1976d2",
-  darkNavy: "#01005e",
-  greyLavendar: "#dcd2e8",
-  paleBlue: "#e3f2fd",
-  powderBlue: "#d8edff",
-  lightPink: "#ffeafc",
-  peach: "#ffead9",
-  plum900: "#371b3d",
-  plum700: "#553055",
-  purple: "#813c7a",
-  brown: "#873600",
-  violet: "#8c038e",
+  background: "#F8FAFC",
+  white: "#FFFFFF",
+  error: "#FD2D4C",
+  textSecondary: "#334155",
 } as const;
 
-export const inter = Inter({
+export const parkinsans = Parkinsans({
   weight: ["400", "600", "700"],
   subsets: ["latin"],
   display: "swap",
@@ -39,43 +22,43 @@ const headingDesktop = {
   h1: {
     fontSize: "58px",
     fontWeight: 600,
-    lineHeight: 1.5,
+    lineHeight: 1.2,
     letterSpacing: "0",
   },
   h2: {
     fontSize: "42px",
     fontWeight: 600,
-    lineHeight: 1.5,
+    lineHeight: 1.2,
     letterSpacing: "0",
   },
   h3: {
     fontSize: "28px",
     fontWeight: 600,
-    lineHeight: 1.5,
+    lineHeight: 1.3,
     letterSpacing: "0",
   },
   h4: {
     fontSize: "24px",
     fontWeight: 600,
-    lineHeight: 1.5,
+    lineHeight: 1.4,
     letterSpacing: "0",
   },
   h5: {
     fontSize: "20px",
     fontWeight: 600,
-    lineHeight: 1.5,
+    lineHeight: 1.4,
     letterSpacing: "0",
   },
   h6: {
     fontSize: "18px",
     fontWeight: 600,
-    lineHeight: 1.5,
+    lineHeight: 1.4,
     letterSpacing: "0",
   },
 } as const;
 
 const headingMobile = {
-  h1: { fontSize: "32px" },
+  h1: { fontSize: "36px" },
   h2: { fontSize: "28px" },
   h3: { fontSize: "24px" },
   h4: { fontSize: "20px" },
@@ -105,49 +88,38 @@ const theme = createTheme({
   cssVariables: true,
   palette: {
     primary: {
-      main: designSystemColors.blue,
-      light: designSystemColors.brightBlue,
-      dark: designSystemColors.darkNavy,
-      contrastText: designSystemColors.offWhite,
+      main: designSystemColors.dropBlue,
+      dark: designSystemColors.deepNavy,
+      contrastText: designSystemColors.white,
     },
     secondary: {
-      main: designSystemColors.navy,
-      light: designSystemColors.lightBlue,
-      dark: designSystemColors.darkNavy,
-      contrastText: designSystemColors.offWhite,
+      main: designSystemColors.deepNavy,
+      contrastText: designSystemColors.white,
     },
     error: {
-      main: designSystemColors.red,
-      contrastText: designSystemColors.offWhite,
-    },
-    warning: {
-      main: designSystemColors.yellow,
-      contrastText: designSystemColors.offBlack,
+      main: designSystemColors.error,
+      contrastText: designSystemColors.white,
     },
     success: {
-      main: designSystemColors.green,
-      contrastText: designSystemColors.offWhite,
+      main: designSystemColors.brightGreen,
+      contrastText: designSystemColors.deepNavy,
     },
     info: {
-      main: designSystemColors.brightBlue,
-      contrastText: designSystemColors.offWhite,
+      main: designSystemColors.lightBlue,
+      contrastText: designSystemColors.deepNavy,
     },
     background: {
-      default: designSystemColors.offWhite,
-      paper: "#ffffff",
+      default: designSystemColors.background,
+      paper: designSystemColors.white,
     },
     text: {
-      primary: designSystemColors.offBlack,
-      secondary: designSystemColors.mediumGrey,
+      primary: designSystemColors.deepNavy,
+      secondary: designSystemColors.textSecondary,
     },
-    divider: designSystemColors.lightGrey,
-    common: {
-      black: designSystemColors.offBlack,
-      white: designSystemColors.offWhite,
-    },
+    divider: designSystemColors.deepNavy,
   },
   typography: {
-    fontFamily: inter.style.fontFamily,
+    fontFamily: parkinsans.style.fontFamily,
     h1: {
       ...headingDesktop.h1,
       "@media (max-width:600px)": headingMobile.h1,
