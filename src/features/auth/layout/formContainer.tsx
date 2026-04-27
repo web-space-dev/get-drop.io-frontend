@@ -1,7 +1,6 @@
 import * as React from "react";
 import Image from "next/image";
 import { styled } from "@mui/material/styles";
-import DropLogoDigitalBlue from "@/logos/Drop_Logo-Digital-Blue.png";
 
 type FormShellProps = {
   fieldGap?: number;
@@ -40,7 +39,13 @@ export default function FormContainer({
   return (
     <StyledFormContainer noValidate fieldGap={fieldGap} {...props}>
       <LogoContainer>
-        <LogoImage src={DropLogoDigitalBlue} alt="Drop logo" priority />
+        <LogoImage
+          src="/logos/Drop-Logo-Full-Blue.png"
+          alt="Drop logo"
+          width={400}
+          height={120}
+          priority
+        />
       </LogoContainer>
       {children}
     </StyledFormContainer>
