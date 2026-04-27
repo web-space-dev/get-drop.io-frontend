@@ -6,25 +6,8 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import theme from "@/config/theme";
-import { UserProvider, useUser } from "@/context/UserContext";
+import { UserProvider } from "@/context/UserContext";
 import UnauthenticatedGuard from "@/guards/UnauthenticatedGuard";
-import AuthenticatedNavbar from "@/components/navigation/AuthenticatedNavbar";
-
-type AppContentProps = {
-  Component: AppProps["Component"];
-  pageProps: AppProps["pageProps"];
-};
-
-function AppContent({ Component, pageProps }: AppContentProps) {
-  const { authUser, isLoading } = useUser();
-
-  return (
-    <>
-      {!isLoading && authUser ? <AuthenticatedNavbar /> : null}
-      <Component {...pageProps} />
-    </>
-  );
-}
 
 export default function MyApp(props: AppProps) {
   const { Component, pageProps } = props;
@@ -41,7 +24,7 @@ export default function MyApp(props: AppProps) {
         <QueryClientProvider client={queryClient}>
           <UserProvider>
             <UnauthenticatedGuard>
-              <AppContent Component={Component} pageProps={pageProps} />
+              <Component {...pageProps} />
             </UnauthenticatedGuard>
           </UserProvider>
         </QueryClientProvider>

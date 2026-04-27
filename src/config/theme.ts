@@ -2,6 +2,7 @@ import { Parkinsans } from "next/font/google";
 import { createTheme } from "@mui/material/styles";
 
 export const designSystemColors = {
+  neutralBlack: "#0A0A0A",
   dropBlue: "#001FDD",
   deepNavy: "#00024F",
   brightGreen: "#00F8A9",

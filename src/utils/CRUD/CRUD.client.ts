@@ -6,6 +6,7 @@ import {
   query,
   Timestamp,
   updateDoc,
+  collection,
 } from "firebase/firestore";
 import { type BaseFirestoreDocument, type QueryOptions } from "@/types";
 import {
@@ -14,6 +15,7 @@ import {
   getCollection,
   getDocument,
 } from "./CRUD.helpers";
+import { db } from "../firebaseServer/firebaseClient";
 
 export const createDocument = async <T extends BaseFirestoreDocument<Date>>(
   collectionName: string,
@@ -51,7 +53,28 @@ export const getDocuments = async <T extends BaseFirestoreDocument<Date>>(
 
   return querySnapshot.docs.map((doc) => {
     const data = convertTimestamps<T>(doc.data());
-    return { id: doc.id, ...data } as T;
+    return { ...data, id: doc.id } as T;
+  });
+};
+
+export const getDocumentsWhere = async <T extends BaseFirestoreDocument<Date>>(
+  collectionName: string,
+  field: string,
+  operator:
+    | "=="
+    | "!="
+    | "<"
+    | "<="
+    | ">"
+    | ">="
+    | "array-contains"
+    | "in"
+    | "array-contains-any"
+    | "not-in",
+  value: unknown,
+): Promise<T[]> => {
+  return getDocuments<T>(collectionName, {
+    where: [{ field, operator, value }],
   });
 };
 
@@ -67,7 +90,7 @@ export const getDocumentById = async <T extends BaseFirestoreDocument<Date>>(
   }
 
   const data = convertTimestamps<T>(docSnap.data());
-  return { id: docSnap.id, ...data } as T;
+  return { ...data, id: docSnap.id } as T;
 };
 
 export const updateDocument = async <T extends BaseFirestoreDocument<Date>>(
@@ -99,3 +122,39 @@ export const deleteDocument = async (
   const docRef = getDocument(collectionName, id);
   await firestoreDeleteDoc(docRef);
 };
+
+export const createSubcollectionDocument = async <
+  T extends BaseFirestoreDocument<Date>,
+>(
+  parentCollection: string,
+  parentId: string,
+  subcollectionName: string,
+  data: Omit<T, "id" | "createdAt" | "updatedAt">,
+): Promise<T> => {
+  const now = new Date();
+  const docData = {
+    ...data,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const subcollectionRef = getSubcollection(
+    parentCollection,
+    parentId,
+    subcollectionName,
+  );
+  const docRef = await addDoc(subcollectionRef, docData);
+
+  return {
+    id: docRef.id,
+    ...data,
+    createdAt: now,
+    updatedAt: now,
+  } as T;
+};
+
+const getSubcollection = (
+  parentCollection: string,
+  parentId: string,
+  subcollection: string,
+) => collection(db, parentCollection, parentId, subcollection);
