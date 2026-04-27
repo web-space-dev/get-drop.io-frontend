@@ -2,27 +2,7 @@ import * as React from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { doc, onSnapshot, type Timestamp } from "firebase/firestore";
 import { auth, db } from "@/utils/firebaseServer/firebaseClient";
-
-type SellerStatus = string;
-
-export type SellerProfile = {
-  id: string;
-  businessName: string;
-  email: string;
-  status: SellerStatus;
-  logoUrl: string;
-  primaryColour: string;
-  messagesUsedThisMonth: number;
-  topupBalance: number;
-  createdAt: Timestamp | null;
-  updatedAt: Timestamp | null;
-};
-
-type UserContextValue = {
-  authUser: User | null;
-  seller: SellerProfile | null;
-  isLoading: boolean;
-};
+import { type SellerUserContext, type UserContextValue } from "@/types/User";
 
 const UserContext = React.createContext<UserContextValue | undefined>(
   undefined,
@@ -34,7 +14,7 @@ type UserProviderProps = {
 
 export function UserProvider({ children }: UserProviderProps) {
   const [authUser, setAuthUser] = React.useState<User | null>(null);
-  const [seller, setSeller] = React.useState<SellerProfile | null>(null);
+  const [seller, setSeller] = React.useState<SellerUserContext | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
