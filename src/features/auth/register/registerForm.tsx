@@ -7,7 +7,7 @@ import PasswordsMatch from "../components/PasswordsMatch";
 import FormContainer from "../layout/FormContainer";
 import FormErrorText from "../components/FormErrorText";
 import FormHeading from "../components/FormHeading";
-import { useRegisterForm } from "./useRegisterForm";
+import { useRegisterForm } from "./hooks/useRegisterForm";
 
 type RegisterFormProps = React.ComponentPropsWithoutRef<"form">;
 

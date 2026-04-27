@@ -8,8 +8,8 @@ import ForgotPasswordDialog from "./ForgotPasswordDialog";
 import FormContainer from "../layout/FormContainer";
 import FormErrorText from "../components/FormErrorText";
 import FormHeading from "../components/FormHeading";
-import { useLoginForm } from "./useLoginForm";
-import { useResetPasswordDialog } from "./useResetPasswordDialog";
+import { useLoginForm } from "./hooks/useLoginForm";
+import { useResetPasswordDialog } from "./hooks/useResetPasswordDialog";
 
 type LoginFormProps = React.ComponentPropsWithoutRef<"form">;
 
