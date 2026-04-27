@@ -5,7 +5,7 @@ import PasswordField from "@/features/auth/inputs/PasswordField";
 import AuthSwitchLink from "@/features/auth/components/AuthSwitchLink";
 import LoginButton from "@/features/auth/components/LoginButton";
 import ForgotPasswordDialog from "./ForgotPasswordDialog";
-import FormContainer from "../layout/FormContainer";
+import FormContainer from "../layout/formContainer";
 import FormErrorText from "../components/FormErrorText";
 import FormHeading from "../components/FormHeading";
 import { useLoginForm } from "./hooks/useLoginForm";

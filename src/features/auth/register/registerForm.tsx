@@ -4,7 +4,7 @@ import PasswordField from "@/features/auth/inputs/PasswordField";
 import AuthSwitchLink from "@/features/auth/components/AuthSwitchLink";
 import RegisterButton from "@/features/auth/components/RegisterButton";
 import PasswordsMatch from "../components/PasswordsMatch";
-import FormContainer from "../layout/FormContainer";
+import FormContainer from "../layout/formContainer";
 import FormErrorText from "../components/FormErrorText";
 import FormHeading from "../components/FormHeading";
 import { useRegisterForm } from "./hooks/useRegisterForm";
