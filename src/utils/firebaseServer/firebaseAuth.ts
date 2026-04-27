@@ -2,6 +2,7 @@ import {
   onAuthStateChanged as _onAuthStateChanged,
   onIdTokenChanged as _onIdTokenChanged,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
   signOut as firebaseSignOut,
   User,
@@ -70,19 +71,6 @@ export async function signUp(email: string, password: string): Promise<User> {
 
 export async function signOut(): Promise<void> {
   try {
-    // ✅ Step 1: Clear the authentication cookie via API
-    const response = await fetch("/api/auth/logout", {
-      method: "POST",
-      credentials: "include", // Include cookies
-    });
-
-    if (!response.ok) {
-      console.warn(
-        "⚠️ Failed to clear auth cookie, continuing with Firebase logout",
-      );
-    }
-
-    // ✅ Step 2: Sign out of Firebase
     await firebaseSignOut(auth);
   } catch (error) {
     console.error("❌ Logout error:", error);
@@ -112,47 +100,10 @@ export function getCurrentUser(): User | null {
 }
 
 export async function resetPassword(email: string): Promise<void> {
-  const response = await fetch("/api/auth/reset-password", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email,
-      actionCodeSettings: {
-        url: `${
-          process.env.NEXT_PUBLIC_APP_URL || window.location.origin
-        }/auth/action`,
-        handleCodeInApp: true,
-      },
-    }),
-  });
+  const actionCodeSettings = {
+    url: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/auth/action`,
+    handleCodeInApp: true,
+  };
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to send password reset email");
-  }
-}
-
-export async function resetPasswordForEmail(email: string): Promise<void> {
-  const response = await fetch("/api/auth/reset-password", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email,
-      actionCodeSettings: {
-        url: `${
-          process.env.NEXT_PUBLIC_APP_URL || window.location.origin
-        }/auth/action`,
-        handleCodeInApp: true,
-      },
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to send password reset email");
-  }
+  await sendPasswordResetEmail(auth, email, actionCodeSettings);
 }

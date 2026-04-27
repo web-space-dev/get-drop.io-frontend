@@ -6,6 +6,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "@/config/theme";
 import { UserProvider } from "@/context/UserContext";
+import UnauthenticatedGuard from "@/guards/UnauthenticatedGuard";
 
 export default function MyApp(props: AppProps) {
   const { Component, pageProps } = props;
@@ -18,7 +19,9 @@ export default function MyApp(props: AppProps) {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <UserProvider>
-          <Component {...pageProps} />
+          <UnauthenticatedGuard>
+            <Component {...pageProps} />
+          </UnauthenticatedGuard>
         </UserProvider>
       </ThemeProvider>
     </AppCacheProvider>

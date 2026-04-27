@@ -68,21 +68,14 @@ export function UserProvider({ children }: UserProviderProps) {
 
           const data = snapshot.data();
           setSeller({
-            id: typeof data.id === "string" ? data.id : user.uid,
-            businessName:
-              typeof data.businessName === "string" ? data.businessName : "",
-            email:
-              typeof data.email === "string" ? data.email : (user.email ?? ""),
-            status: typeof data.status === "string" ? data.status : "pending",
-            logoUrl: typeof data.logoUrl === "string" ? data.logoUrl : "",
-            primaryColour:
-              typeof data.primaryColour === "string" ? data.primaryColour : "",
-            messagesUsedThisMonth:
-              typeof data.messagesUsedThisMonth === "number"
-                ? data.messagesUsedThisMonth
-                : 0,
-            topupBalance:
-              typeof data.topupBalance === "number" ? data.topupBalance : 0,
+            id: data.id,
+            businessName: data.businessName,
+            email: data.email,
+            status: data.status,
+            logoUrl: data.logoUrl,
+            primaryColour: data.primaryColour,
+            messagesUsedThisMonth: data.messagesUsedThisMonth,
+            topupBalance: data.topupBalance,
             createdAt: (data.createdAt as Timestamp | undefined) ?? null,
             updatedAt: (data.updatedAt as Timestamp | undefined) ?? null,
           });
