@@ -1,6 +1,7 @@
 import * as React from "react";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import Typography from "@mui/material/Typography";
 import { useDisplayOrders } from "./hooks/useDisplayOrders";
@@ -14,11 +15,16 @@ import {
   LoadingWrap,
   MutedCellText,
   Toolbar,
+  ToolbarAddButton,
+  ToolbarFilters,
 } from "./styles";
 import DisplayOrdersDesktop from "./components/DisplayOrdersDesktop";
 import DisplayOrdersMobile from "./components/DisplayOrdersMobile";
 
-export default function DisplayOrders({ sellerId }: DisplayOrdersProps) {
+export default function DisplayOrders({
+  sellerId,
+  onAddOrder,
+}: DisplayOrdersProps) {
   const {
     filteredOrders,
     isError,
@@ -45,35 +51,47 @@ export default function DisplayOrders({ sellerId }: DisplayOrdersProps) {
   return (
     <Container>
       <Toolbar>
-        <FilterField
-          fullWidth
-          select
-          value={statusFilter}
-          onChange={(event) => setStatusFilter(event.target.value)}
-          aria-label="Filter orders by status"
-        >
-          {statusOptions.map((option) => (
-            <FilterOption key={option} value={option}>
-              {option === "all" ? "All statuses" : option}
-            </FilterOption>
-          ))}
-        </FilterField>
+        <ToolbarFilters>
+          <FilterField
+            fullWidth
+            select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            aria-label="Filter orders by status"
+          >
+            {statusOptions.map((option) => (
+              <FilterOption key={option} value={option}>
+                {option === "all" ? "Active" : option}
+              </FilterOption>
+            ))}
+          </FilterField>
 
-        <FilterField
-          fullWidth
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-          placeholder="Search by id, reference, buyer, status, tracking, address"
-          slotProps={{
-            input: {
-              startAdornment: (
-                <FilterAdornment position="start">
-                  <SearchRoundedIcon fontSize="small" />
-                </FilterAdornment>
-              ),
-            },
-          }}
-        />
+          <FilterField
+            fullWidth
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Search by order name or tracking..."
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <FilterAdornment position="start">
+                    <SearchRoundedIcon fontSize="small" />
+                  </FilterAdornment>
+                ),
+              },
+            }}
+          />
+        </ToolbarFilters>
+
+        {onAddOrder ? (
+          <ToolbarAddButton
+            variant="contained"
+            startIcon={<AddRoundedIcon fontSize="small" />}
+            onClick={onAddOrder}
+          >
+            Add Order
+          </ToolbarAddButton>
+        ) : null}
       </Toolbar>
 
       {filteredOrders.length === 0 ? (

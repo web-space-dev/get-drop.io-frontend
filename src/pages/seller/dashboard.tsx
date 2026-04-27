@@ -1,11 +1,12 @@
 import * as React from "react";
 import { useRouter } from "next/router";
 import { styled } from "@mui/material/styles";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import Button from "@/components/ui/Button";
 import { signOut } from "@/utils/firebaseServer/firebaseAuth";
 
-const PageContainer = styled("main")(({ theme }) => ({
-  minHeight: "100vh",
+const PageContainer = styled("section")(({ theme }) => ({
+  minHeight: "100%",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -55,14 +56,16 @@ export default function SellerDashboard() {
   };
 
   return (
-    <PageContainer>
-      <ContentCard>
-        <Heading>Seller Dashboard</Heading>
-        {signOutError ? <ErrorText>{signOutError}</ErrorText> : null}
-        <Button onClick={handleSignOut} disabled={isSigningOut}>
-          {isSigningOut ? "Signing out..." : "Sign out"}
-        </Button>
-      </ContentCard>
-    </PageContainer>
+    <DashboardLayout>
+      <PageContainer>
+        <ContentCard>
+          <Heading>Seller Dashboard</Heading>
+          {signOutError ? <ErrorText>{signOutError}</ErrorText> : null}
+          <Button onClick={handleSignOut} disabled={isSigningOut}>
+            {isSigningOut ? "Signing out..." : "Sign out"}
+          </Button>
+        </ContentCard>
+      </PageContainer>
+    </DashboardLayout>
   );
 }

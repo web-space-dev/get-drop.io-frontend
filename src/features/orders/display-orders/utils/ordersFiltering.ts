@@ -46,7 +46,20 @@ export const formatDateTime = (value?: Date | null): string => {
 };
 
 export const statusToneFromValue = (status: string): StatusTone => {
-  return status.toLowerCase() === "delayed" ? "error" : "default";
+  const normalizedStatus = status.toLowerCase();
+
+  if (normalizedStatus.includes("delay")) {
+    return "error";
+  }
+
+  if (
+    normalizedStatus.includes("process") ||
+    normalizedStatus.includes("pending")
+  ) {
+    return "neutral";
+  }
+
+  return "default";
 };
 
 export const searchMatchesOrder = (

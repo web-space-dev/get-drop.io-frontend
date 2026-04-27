@@ -1,5 +1,6 @@
 import Chip from "@mui/material/Chip";
 import InputAdornment from "@mui/material/InputAdornment";
+import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -21,14 +22,45 @@ export const Toolbar = styled("div")(({ theme }) => ({
   gap: theme.spacing(1.5),
   gridTemplateColumns: "1fr",
   [theme.breakpoints.up("md")]: {
-    gridTemplateColumns: "220px 1fr",
+    gridTemplateColumns: "minmax(0, 1fr) auto",
+    alignItems: "center",
+  },
+}));
+
+export const ToolbarFilters = styled("div")(({ theme }) => ({
+  display: "grid",
+  gap: theme.spacing(1),
+  gridTemplateColumns: "1fr",
+  [theme.breakpoints.up("md")]: {
+    gridTemplateColumns: "220px minmax(0, 1fr)",
+    maxWidth: 720,
   },
 }));
 
 export const FilterField = styled(InputField)(({ theme }) => ({
   "& .MuiInputBase-root": {
     borderRadius: theme.spacing(1.25),
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.action.hover,
+  },
+  "& .MuiInputBase-input": {
+    color: designSystemColors.neutralBlack,
+    "&::placeholder": {
+      color: designSystemColors.neutralMeta,
+      opacity: 1,
+    },
+  },
+  "& .MuiSelect-select": {
+    color: designSystemColors.neutralBlack,
+  },
+  "& .MuiOutlinedInput-notchedOutline": {
+    borderColor: "transparent",
+  },
+  "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+    borderColor: "transparent",
+  },
+  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    borderColor: "transparent",
+    borderWidth: 1,
   },
 }));
 
@@ -40,9 +72,26 @@ export const FilterOption = styled(MenuItem)(({ theme }) => ({
   ...theme.typography.body2,
 }));
 
+export const ToolbarAddButton = styled(Button)(({ theme }) => ({
+  ...theme.typography.button,
+  minHeight: theme.spacing(5),
+  borderRadius: theme.spacing(1.25),
+  backgroundColor: designSystemColors.neutralBlack,
+  color: theme.palette.common.white,
+  padding: theme.spacing(1, 2),
+  textTransform: "none",
+  justifySelf: "start",
+  "&:hover": {
+    backgroundColor: designSystemColors.neutralBlack,
+  },
+  [theme.breakpoints.up("md")]: {
+    justifySelf: "end",
+  },
+}));
+
 export const OrdersPaper = styled(Paper)(({ theme }) => ({
   borderRadius: theme.spacing(1.5),
-  border: `1px solid ${theme.palette.divider}`,
+  border: `1px solid ${designSystemColors.white}`,
   overflow: "hidden",
 }));
 
@@ -66,16 +115,18 @@ export const OrdersTableHead = styled(TableHead)(({ theme }) => ({
   "& .MuiTableCell-root": {
     ...theme.typography.subtitle2,
     color: designSystemColors.neutralBlack,
-    backgroundColor: theme.palette.action.hover,
-    borderBottom: `1px solid ${theme.palette.divider}`,
+    backgroundColor: designSystemColors.white,
+    borderBottom: `1px solid ${designSystemColors.white}`,
+    padding: theme.spacing(1.75, 1.75),
   },
 }));
 
 export const OrdersCell = styled(TableCell)(({ theme }) => ({
   ...theme.typography.body2,
-  color: theme.palette.text.primary,
-  borderBottom: `1px solid ${theme.palette.divider}`,
+  color: designSystemColors.neutralBlack,
+  borderBottom: `1px solid ${designSystemColors.white}`,
   whiteSpace: "nowrap",
+  padding: theme.spacing(1.5, 1.75),
   maxWidth: 260,
   overflow: "hidden",
   textOverflow: "ellipsis",
@@ -88,18 +139,46 @@ export const MutedCellText = styled(Typography)(({ theme }) => ({
 
 export const StatusChip = styled(Chip, {
   shouldForwardProp: (prop) => prop !== "statusTone",
-})<{ statusTone: "default" | "error" }>(({ theme, statusTone }) => ({
-  ...theme.typography.caption,
-  height: 26,
+})<{ statusTone: "default" | "error" | "neutral" }>(
+  ({ theme, statusTone }) => ({
+    ...theme.typography.body2,
+    height: 34,
+    borderRadius: theme.spacing(1),
+    border: `1px solid ${
+      statusTone === "error"
+        ? theme.palette.error.main
+        : statusTone === "neutral"
+          ? theme.palette.divider
+          : designSystemColors.neutralBlack
+    }`,
+    backgroundColor:
+      statusTone === "error"
+        ? theme.palette.error.main
+        : statusTone === "neutral"
+          ? "transparent"
+          : designSystemColors.neutralBlack,
+    color:
+      statusTone === "error" || statusTone === "default"
+        ? theme.palette.common.white
+        : designSystemColors.neutralBlack,
+    "& .MuiChip-label": {
+      paddingLeft: theme.spacing(1.25),
+      paddingRight: theme.spacing(1.25),
+    },
+  }),
+);
+
+export const TypeChip = styled(Chip)(({ theme }) => ({
+  ...theme.typography.body2,
+  height: 34,
   borderRadius: theme.spacing(1),
-  border: `1px solid ${
-    statusTone === "error" ? theme.palette.error.main : theme.palette.divider
-  }`,
-  backgroundColor:
-    statusTone === "error"
-      ? theme.palette.error.main
-      : designSystemColors.neutralBlack,
-  color: theme.palette.common.white,
+  border: `1px solid ${theme.palette.divider}`,
+  backgroundColor: "transparent",
+  color: designSystemColors.neutralBlack,
+  "& .MuiChip-label": {
+    paddingLeft: theme.spacing(1.25),
+    paddingRight: theme.spacing(1.25),
+  },
 }));
 
 export const EmptyState = styled("div")(({ theme }) => ({

@@ -1,16 +1,11 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import AddOrderModal from "@/features/orders/add-order/AddOrderModal";
 import DisplayOrders from "@/features/orders/display-orders/DisplayOrders";
 import { useUser } from "@/context/UserContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { getOrdersQueryKey } from "@/queries/orders/getOrders";
-
-const Page = styled("main")(({ theme }) => ({
-  minHeight: "100vh",
-  padding: theme.spacing(4, 3),
-}));
 
 const Header = styled("header")(({ theme }) => ({
   display: "flex",
@@ -25,16 +20,6 @@ const Heading = styled("h1")(({ theme }) => ({
   margin: 0,
 }));
 
-const AddOrderButton = styled(Button)(({ theme }) => ({
-  backgroundColor: theme.palette.text.primary,
-  color: theme.palette.common.white,
-  borderRadius: theme.spacing(1),
-  padding: theme.spacing(1, 2),
-  "&:hover": {
-    backgroundColor: theme.palette.secondary.main,
-  },
-}));
-
 export default function OrdersPage() {
   const queryClient = useQueryClient();
   const { authUser } = useUser();
@@ -47,24 +32,21 @@ export default function OrdersPage() {
   }, [authUser?.uid, queryClient]);
 
   return (
-    <Page>
+    <DashboardLayout>
       <Header>
         <Heading>Orders</Heading>
-        <AddOrderButton
-          variant="contained"
-          onClick={() => setIsModalOpen(true)}
-        >
-          Add Order
-        </AddOrderButton>
       </Header>
 
-      <DisplayOrders sellerId={authUser?.uid} />
+      <DisplayOrders
+        sellerId={authUser?.uid}
+        onAddOrder={() => setIsModalOpen(true)}
+      />
 
       <AddOrderModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onCreated={handleOrderCreated}
       />
-    </Page>
+    </DashboardLayout>
   );
 }
