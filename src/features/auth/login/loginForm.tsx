@@ -1,5 +1,6 @@
 import { useUser } from "@/context/UserContext";
 import ForgotPasswordDialog from "@/features/auth/login/ForgotPasswordDialog";
+import { INVALID_EMAIL_MESSAGE, isValidEmail } from "@/features/utils/helpers";
 import Button from "@/shared/components/Button";
 import InputField from "@/shared/components/InputField";
 import FormContainer from "@/shared/layouts/auth/AuthFormContainer";
@@ -25,12 +26,6 @@ import * as React from "react";
 type LoginFormProps = React.ComponentPropsWithoutRef<"form">;
 type LoginFormSubmitHandler = NonNullable<LoginFormProps["onSubmit"]>;
 
-const INVALID_EMAIL_MESSAGE = "Please enter a valid email address.";
-
-function isValidEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
 export default function LoginForm(props: LoginFormProps) {
   const router = useRouter();
   const { authUser, isLoading } = useUser();
@@ -51,6 +46,9 @@ export default function LoginForm(props: LoginFormProps) {
     string | null
   >(null);
   const [isResetSubmitting, setIsResetSubmitting] = React.useState(false);
+  const normalizedEmail = email.trim();
+  const isLoginFormValid =
+    normalizedEmail.length > 0 && isValidEmail(normalizedEmail) && !!password;
 
   React.useEffect(() => {
     if (!isLoading && authUser) {
@@ -295,7 +293,7 @@ export default function LoginForm(props: LoginFormProps) {
       <Button
         type="submit"
         fullWidth
-        disabled={isSubmitting || !email.trim() || !password}
+        disabled={isSubmitting || !isLoginFormValid}
       >
         Sign in
       </Button>

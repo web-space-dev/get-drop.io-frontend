@@ -1,4 +1,5 @@
 import { useUser } from "@/context/UserContext";
+import { INVALID_EMAIL_MESSAGE, isValidEmail } from "@/features/utils/helpers";
 import Button from "@/shared/components/Button";
 import InputField from "@/shared/components/InputField";
 import FormContainer from "@/shared/layouts/auth/AuthFormContainer";
@@ -12,17 +13,11 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { FirebaseError } from "firebase/app";
 import NextLink from "next/link";
-import { useRouter } from "next/compat/router";
+import { useRouter } from "next/router";
 import * as React from "react";
 
 type RegisterFormProps = React.ComponentPropsWithoutRef<"form">;
 type RegisterFormSubmitHandler = NonNullable<RegisterFormProps["onSubmit"]>;
-
-const INVALID_EMAIL_MESSAGE = "Please enter a valid email address.";
-
-function isValidEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
 
 export default function RegisterForm(props: RegisterFormProps) {
   const router = useRouter();
@@ -45,18 +40,18 @@ export default function RegisterForm(props: RegisterFormProps) {
 
   React.useEffect(() => {
     if (!isLoading && authUser) {
-      if (router) {
-        void router.replace("/seller/dashboard");
-        return;
-      }
-
-      if (typeof window !== "undefined") {
-        window.location.assign("/seller/dashboard");
-      }
+      void router.replace("/seller/dashboard");
     }
   }, [authUser, isLoading, router]);
 
+  const normalizedEmail = email.trim();
   const passwordsMatch = password === confirmPassword;
+  const isRegisterFormValid =
+    normalizedEmail.length > 0 &&
+    isValidEmail(normalizedEmail) &&
+    !!password &&
+    !!confirmPassword &&
+    passwordsMatch;
 
   const handleEmailChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -170,12 +165,7 @@ export default function RegisterForm(props: RegisterFormProps) {
       try {
         await signUp(normalizedEmail, password);
         onSubmit?.(event);
-
-        if (router) {
-          await router.push("/seller/dashboard");
-        } else if (typeof window !== "undefined") {
-          window.location.assign("/seller/dashboard");
-        }
+        await router.push("/seller/dashboard");
       } catch (error) {
         const friendlyMessage = getFriendlyRegisterErrorMessage(error);
 
@@ -300,13 +290,7 @@ export default function RegisterForm(props: RegisterFormProps) {
       <Button
         type="submit"
         fullWidth
-        disabled={
-          isSubmitting ||
-          !email.trim() ||
-          !password ||
-          !confirmPassword ||
-          !passwordsMatch
-        }
+        disabled={isSubmitting || !isRegisterFormValid}
       >
         Create account
       </Button>
