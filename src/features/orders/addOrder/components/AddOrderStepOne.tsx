@@ -6,11 +6,11 @@ import {
 } from "@/features/orders/addOrder/types";
 import InputField from "@/shared/components/InputField";
 import InputTitle from "@/shared/components/InputTitle";
+import { useFieldKeyboardNavigation } from "@/shared/hooks/useFieldKeyboardNavigation";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import { type KeyboardEvent } from "react";
 import OrderTypeToggle from "./OrderTypeToggle";
 
 type AddOrderStepOneProps = {
@@ -52,55 +52,20 @@ const FieldWrapper = styled(Box)(({ theme }) => ({
 
 const courierOptions = ["Royal Mail", "Evri", "DPD", "Yodel"] as const;
 
-function focusField(field: NavigableField): void {
-  const target = document.getElementById(FIELD_IDS[field]);
-  if (target instanceof HTMLElement) {
-    target.focus();
-  }
-}
-
-function handleFieldKeyDown(
-  field: NavigableField,
-): (event: KeyboardEvent<HTMLDivElement>) => void {
-  return (event) => {
-    const currentIndex = FIELD_ORDER.indexOf(field);
-    if (currentIndex < 0) {
-      return;
-    }
-
-    // Let courier select keep native arrow behavior; Enter advances to next field.
-    if (field === "courier" && event.key !== "Enter") {
-      return;
-    }
-
-    if (event.key === "Enter" || event.key === "ArrowDown") {
-      const nextField = FIELD_ORDER[currentIndex + 1];
-      if (!nextField) {
-        return;
-      }
-
-      event.preventDefault();
-      focusField(nextField);
-      return;
-    }
-
-    if (event.key === "ArrowUp") {
-      const previousField = FIELD_ORDER[currentIndex - 1];
-      if (!previousField) {
-        return;
-      }
-
-      event.preventDefault();
-      focusField(previousField);
-    }
-  };
-}
-
 export default function AddOrderStepOne({
   form,
   fieldErrors,
   onFieldChange,
 }: AddOrderStepOneProps) {
+  const { getFieldKeyDownHandler } = useFieldKeyboardNavigation<NavigableField>(
+    {
+      fieldOrder: FIELD_ORDER,
+      fieldIds: FIELD_IDS,
+      // Keep arrow keys native for the select, but still allow Enter to move forward.
+      fieldsWithNativeArrowKeys: ["courier"],
+    },
+  );
+
   return (
     <Box component="section" sx={{ display: "grid", gap: 2.25 }}>
       <FieldWrapper>
@@ -112,7 +77,7 @@ export default function AddOrderStepOne({
           error={Boolean(fieldErrors.orderName)}
           helperText={fieldErrors.orderName ?? " "}
           onChange={(event) => onFieldChange("orderName", event.target.value)}
-          onKeyDown={handleFieldKeyDown("orderName")}
+          onKeyDown={getFieldKeyDownHandler("orderName")}
         />
       </FieldWrapper>
 
@@ -133,7 +98,7 @@ export default function AddOrderStepOne({
           error={Boolean(fieldErrors.courier)}
           helperText={fieldErrors.courier ?? " "}
           onChange={(event) => onFieldChange("courier", event.target.value)}
-          onKeyDown={handleFieldKeyDown("courier")}
+          onKeyDown={getFieldKeyDownHandler("courier")}
         >
           <MenuItem value="" disabled>
             Select courier
@@ -156,7 +121,7 @@ export default function AddOrderStepOne({
           onChange={(event) =>
             onFieldChange("trackingNumber", event.target.value)
           }
-          onKeyDown={handleFieldKeyDown("trackingNumber")}
+          onKeyDown={getFieldKeyDownHandler("trackingNumber")}
         />
       </FieldWrapper>
 
@@ -188,7 +153,7 @@ export default function AddOrderStepOne({
             placeholder="Optional"
             value={form.buyerName}
             onChange={(event) => onFieldChange("buyerName", event.target.value)}
-            onKeyDown={handleFieldKeyDown("buyerName")}
+            onKeyDown={getFieldKeyDownHandler("buyerName")}
           />
         </FieldWrapper>
 
@@ -202,7 +167,7 @@ export default function AddOrderStepOne({
             onChange={(event) =>
               onFieldChange("buyerEmail", event.target.value)
             }
-            onKeyDown={handleFieldKeyDown("buyerEmail")}
+            onKeyDown={getFieldKeyDownHandler("buyerEmail")}
           />
         </FieldWrapper>
 
@@ -215,7 +180,7 @@ export default function AddOrderStepOne({
             onChange={(event) =>
               onFieldChange("buyerPhone", event.target.value)
             }
-            onKeyDown={handleFieldKeyDown("buyerPhone")}
+            onKeyDown={getFieldKeyDownHandler("buyerPhone")}
           />
         </FieldWrapper>
       </Box>

@@ -2,6 +2,7 @@ import { designSystemColors } from "@/config/theme";
 import { type BuyerForm } from "@/features/orders/displayOrder/types";
 import Button from "@/shared/components/Button";
 import InputField from "@/shared/components/InputField";
+import { useFieldKeyboardNavigation } from "@/shared/hooks/useFieldKeyboardNavigation";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
@@ -21,6 +22,16 @@ type EditBuyerDialogProps = {
   saveError: string | null;
 };
 
+type NavigableField = "buyerName" | "buyerEmail" | "buyerPhone";
+
+const FIELD_ORDER: NavigableField[] = ["buyerName", "buyerEmail", "buyerPhone"];
+
+const FIELD_IDS: Record<NavigableField, string> = {
+  buyerName: "edit-buyer-name",
+  buyerEmail: "edit-buyer-email",
+  buyerPhone: "edit-buyer-phone",
+};
+
 const handleFieldChange = (
   field: keyof BuyerForm,
   value: string,
@@ -38,6 +49,13 @@ export default function EditBuyerDialog({
   saveError,
   onClose,
 }: EditBuyerDialogProps) {
+  const { getFieldKeyDownHandler } = useFieldKeyboardNavigation<NavigableField>(
+    {
+      fieldOrder: FIELD_ORDER,
+      fieldIds: FIELD_IDS,
+    },
+  );
+
   return (
     <Dialog
       open={open}
@@ -83,6 +101,7 @@ export default function EditBuyerDialog({
         }}
       >
         <InputField
+          id={FIELD_IDS.buyerName}
           label="Buyer Name"
           value={buyerForm.buyerName}
           disabled={isSaving}
@@ -93,8 +112,10 @@ export default function EditBuyerDialog({
               onBuyerFieldChange,
             )
           }
+          onKeyDown={getFieldKeyDownHandler("buyerName")}
         />
         <InputField
+          id={FIELD_IDS.buyerEmail}
           label="Buyer Email"
           value={buyerForm.buyerEmail}
           disabled={isSaving}
@@ -105,8 +126,10 @@ export default function EditBuyerDialog({
               onBuyerFieldChange,
             )
           }
+          onKeyDown={getFieldKeyDownHandler("buyerEmail")}
         />
         <InputField
+          id={FIELD_IDS.buyerPhone}
           label="Buyer Phone Number"
           value={buyerForm.buyerPhone}
           disabled={isSaving}
@@ -117,6 +140,7 @@ export default function EditBuyerDialog({
               onBuyerFieldChange,
             )
           }
+          onKeyDown={getFieldKeyDownHandler("buyerPhone")}
         />
 
         <Typography variant="caption" color="text.secondary">
