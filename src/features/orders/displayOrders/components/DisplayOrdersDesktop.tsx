@@ -12,8 +12,11 @@ import Typography from "@mui/material/Typography";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import NextLink from "next/link";
 import { designSystemColors } from "@/config/theme";
-import { displayText, statusToneFromValue } from "../utils/ordersFiltering";
-import { type DisplayOrdersListProps } from "../types";
+import {
+  displayText,
+  statusToneFromValue,
+} from "@/features/orders/displayOrders/utils/ordersFiltering";
+import { type DisplayOrdersListProps } from "@/features/orders/displayOrders/types";
 
 const cellSx = {
   typography: "body2",

@@ -8,8 +8,12 @@ import {
   getSmartEta,
   getTimelineEvents,
   getTrackingLink,
-} from "../utils/displayOrderUtils";
-import { type BuyerForm, type ChannelOption, type UpdateRules } from "../types";
+} from "@/features/orders/displayOrder/utils/displayOrderUtils";
+import {
+  type BuyerForm,
+  type ChannelOption,
+  type UpdateRules,
+} from "@/features/orders/displayOrder/types";
 
 const validChannels: ChannelOption[] = ["whatsapp", "sms", "email"];
 

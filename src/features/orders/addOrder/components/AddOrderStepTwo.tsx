@@ -2,10 +2,13 @@ import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import IOSSwitch from "@/components/ui/IOSSwitch";
+import IOSSwitch from "@/shared/components/IOSSwitch";
 import { designSystemColors } from "@/config/theme";
-import { channelOptions } from "../utils/constants";
-import { type FormState, type NotificationChannel } from "../types";
+import { channelOptions } from "@/features/orders/addOrder/utils/constants";
+import {
+  type FormState,
+  type NotificationChannel,
+} from "@/features/orders/addOrder/types";
 
 type AddOrderStepTwoProps = {
   form: FormState;

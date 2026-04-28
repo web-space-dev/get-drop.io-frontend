@@ -3,7 +3,7 @@ import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { designSystemColors } from "@/config/theme";
-import { type Direction } from "../types";
+import { type Direction } from "@/features/orders/addOrder/types";
 
 type OrderTypeToggleProps = {
   value: Direction;

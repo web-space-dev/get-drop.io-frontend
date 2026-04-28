@@ -1,4 +1,4 @@
-import { type FormState } from "../types";
+import { type FormState } from "@/features/orders/addOrder/types";
 
 export function validateStepOne(form: FormState): string | null {
   if (!form.orderName.trim()) {

@@ -6,7 +6,7 @@ import {
   type FormState,
   type NotificationChannel,
   type OrderCreateInput,
-} from "../types";
+} from "@/features/orders/addOrder/types";
 import { dummyDeliveryAddress, initialState } from "./constants";
 
 const validChannels: NotificationChannel[] = ["email", "whatsapp", "sms"];

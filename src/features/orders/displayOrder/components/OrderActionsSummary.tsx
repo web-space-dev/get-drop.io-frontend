@@ -1,7 +1,7 @@
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { alpha } from "@mui/material/styles";
-import Button from "@/components/ui/Button";
+import Button from "@/shared/components/Button";
 import { SummaryCard } from "./SummaryCard";
 import { SummaryCardTitle } from "./SummaryCardTitle";
 

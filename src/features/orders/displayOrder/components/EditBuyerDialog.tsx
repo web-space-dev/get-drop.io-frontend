@@ -6,10 +6,13 @@ import DialogContent from "@mui/material/DialogContent";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import Button from "@/components/ui/Button";
-import InputField from "@/components/ui/InputField";
+import Button from "@/shared/components/Button";
+import InputField from "@/shared/components/InputField";
 import { designSystemColors } from "@/config/theme";
-import { type BuyerForm, type EditBuyerDialogProps } from "../types";
+import {
+  type BuyerForm,
+  type EditBuyerDialogProps,
+} from "@/features/orders/displayOrder/types";
 
 const handleFieldChange = (
   field: keyof BuyerForm,

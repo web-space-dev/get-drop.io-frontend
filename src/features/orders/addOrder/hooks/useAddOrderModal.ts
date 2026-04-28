@@ -1,6 +1,10 @@
 import * as React from "react";
-import { type FormState, type NotificationChannel, type Step } from "../types";
-import { validateStepOne } from "../utils/validation";
+import {
+  type FormState,
+  type NotificationChannel,
+  type Step,
+} from "@/features/orders/addOrder/types";
+import { validateStepOne } from "@/features/orders/addOrder/utils/validation";
 
 type UseAddOrderModalParams = {
   open: boolean;

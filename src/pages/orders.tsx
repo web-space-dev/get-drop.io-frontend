@@ -1,7 +1,7 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import DashboardLayout from "@/components/layouts/DashboardLayout";
+import DashboardLayout from "@/shared/layouts/DashboardLayout";
 import AddOrderModal from "@/features/orders/addOrder/AddOrderModal";
 import DisplayOrders from "@/features/orders/displayOrders/DisplayOrders";
 import { useUser } from "@/context/UserContext";

@@ -2,7 +2,7 @@ import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Button from "@/components/ui/Button";
+import Button from "@/shared/components/Button";
 import { alpha } from "@mui/material/styles";
 import { designSystemColors } from "@/config/theme";
 import { SummaryCard } from "./SummaryCard";

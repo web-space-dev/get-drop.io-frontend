@@ -4,7 +4,7 @@ import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Button from "@/components/ui/Button";
+import Button from "@/shared/components/Button";
 import { SummaryCard } from "./SummaryCard";
 import { SummaryCardTitle } from "./SummaryCardTitle";
 

@@ -1,5 +1,5 @@
 import { type OrderQueryModel } from "@/queries/orders/types";
-import { type TimelineEvent } from "../types";
+import { type TimelineEvent } from "@/features/orders/displayOrder/types";
 
 export const displayText = (value?: string | null): string => {
   const trimmed = value?.trim();

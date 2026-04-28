@@ -1,12 +1,15 @@
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import InputField from "@/components/ui/InputField";
-import { designSystemColors } from "@/config/theme";
-import { courierOptions } from "../utils/constants";
-import OrderTypeToggle from "./OrderTypeToggle";
-import { type FormState, type OnFieldChange } from "../types";
 
+import { designSystemColors } from "@/config/theme";
+import { courierOptions } from "@/features/orders/addOrder/utils/constants";
+import OrderTypeToggle from "./OrderTypeToggle";
+import {
+  type FormState,
+  type OnFieldChange,
+} from "@/features/orders/addOrder/types";
+import InputField from "@/shared/components/InputField";
 const fieldInputSx = {
   "& .MuiInputBase-root": {
     backgroundColor: "action.hover",

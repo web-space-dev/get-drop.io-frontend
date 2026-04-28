@@ -8,7 +8,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import InputField from "@/components/ui/InputField";
+import InputField from "@/shared/components/InputField";
 import { designSystemColors } from "@/config/theme";
 import { useDisplayOrders } from "./hooks/useDisplayOrders";
 import { type DisplayOrdersProps } from "./types";

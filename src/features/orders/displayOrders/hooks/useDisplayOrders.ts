@@ -1,7 +1,13 @@
 import * as React from "react";
 import { useGetOrders } from "@/queries/orders/getOrders";
-import { type DisplayOrdersProps, type StatusFilter } from "../types";
-import { filterOrders, getStatusOptions } from "../utils/ordersFiltering";
+import {
+  type DisplayOrdersProps,
+  type StatusFilter,
+} from "@/features/orders/displayOrders/types";
+import {
+  filterOrders,
+  getStatusOptions,
+} from "@/features/orders/displayOrders/utils/ordersFiltering";
 
 type UseDisplayOrdersResult = {
   isLoading: boolean;

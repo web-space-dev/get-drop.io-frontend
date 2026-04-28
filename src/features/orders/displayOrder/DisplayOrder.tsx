@@ -3,14 +3,19 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddOrderModal from "@/features/orders/addOrder/AddOrderModal";
 import { buildInitialFormFromOrder } from "@/features/orders/addOrder/utils/mapping";
-import DisplayOrderMainColumn from "./components/DisplayOrderMainColumn";
-import DisplayOrderSideColumn from "./components/DisplayOrderSideColumn";
+import ActivityLogSummary from "./components/ActivityLogSummary";
+import AutomatedUpdatesSummary from "./components/AutomatedUpdatesSummary";
+import BuyerSummary from "./components/BuyerSummary";
 import EditBuyerDialog from "./components/EditBuyerDialog";
 import DeleteOrderDialog from "./components/DeleteOrderDialog";
+import OrderActionsSummary from "./components/OrderActionsSummary";
+import OrderSummaryCard, {
+  type OrderSummaryItem,
+} from "./components/OrderSummaryCard";
 import { useDisplayOrder } from "./hooks/useDisplayOrder";
 import { type DisplayOrderProps } from "./types";
 import { displayText } from "./utils/displayOrderUtils";
-import DashboardLayout from "@/components/layouts/DashboardLayout";
+import DashboardLayout from "@/shared/layouts/DashboardLayout";
 
 export default function DisplayOrder({ id }: DisplayOrderProps) {
   const {
@@ -45,6 +50,26 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
     trackingLink,
     updateRules,
   } = useDisplayOrder(id);
+
+  const summaryItems: OrderSummaryItem[] = [
+    {
+      label: "Status",
+      value: displayText(order?.currentStatus),
+      useStatusPill: true,
+    },
+    {
+      label: "Courier",
+      value: displayText(order?.carrierName),
+    },
+    {
+      label: "Tracking Number",
+      value: displayText(order?.trackingNumber),
+    },
+    {
+      label: "Smart ETA",
+      value: smartEta,
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -83,25 +108,42 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
           },
         }}
       >
-        <DisplayOrderMainColumn
-          order={order}
-          city={city}
-          smartEta={smartEta}
-          trackingLink={trackingLink}
-          isCopied={isCopied}
-          timelineEvents={timelineEvents}
-          onCopyTrackingLink={handleCopyTrackingLink}
-          onOpenEditBuyer={handleOpenEditBuyer}
-        />
+        <Box component="section" sx={{ display: "grid", gap: 2 }}>
+          <OrderSummaryCard
+            orderName={displayText(order.referenceId)}
+            items={summaryItems}
+            trackingLink={trackingLink}
+            isCopied={isCopied}
+            onCopyTrackingLink={handleCopyTrackingLink}
+          />
 
-        <DisplayOrderSideColumn
-          channel={channel}
-          updateRules={updateRules}
-          onChannelChange={handleChannelChange}
-          onRuleChange={handleRuleChange}
-          onOpenEditOrder={handleOpenEditOrder}
-          onOpenDelete={handleOpenDelete}
-        />
+          <BuyerSummary
+            buyerName={order.buyerName}
+            buyerEmail={order.buyerEmail}
+            buyerPhone={order.buyerPhone}
+            city={city}
+            onOpenEditBuyer={handleOpenEditBuyer}
+          />
+
+          <ActivityLogSummary timelineEvents={timelineEvents} />
+        </Box>
+
+        <Box
+          component="aside"
+          sx={{ display: "grid", gap: 2, alignSelf: "start" }}
+        >
+          <AutomatedUpdatesSummary
+            channel={channel}
+            updateRules={updateRules}
+            onChannelChange={handleChannelChange}
+            onRuleChange={handleRuleChange}
+          />
+
+          <OrderActionsSummary
+            onOpenEditOrder={handleOpenEditOrder}
+            onOpenDelete={handleOpenDelete}
+          />
+        </Box>
       </Box>
 
       <AddOrderModal

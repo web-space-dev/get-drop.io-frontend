@@ -4,12 +4,15 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import Button from "@/components/ui/Button";
-import IOSSwitch from "@/components/ui/IOSSwitch";
-import InputField from "@/components/ui/InputField";
+import Button from "@/shared/components/Button";
+import IOSSwitch from "@/shared/components/IOSSwitch";
+import InputField from "@/shared/components/InputField";
 import { alpha } from "@mui/material/styles";
 import { designSystemColors } from "@/config/theme";
-import { type ChannelOption, type UpdateRules } from "../types";
+import {
+  type ChannelOption,
+  type UpdateRules,
+} from "@/features/orders/displayOrder/types";
 import { SummaryCard } from "./SummaryCard";
 import { SummaryCardTitle } from "./SummaryCardTitle";
 

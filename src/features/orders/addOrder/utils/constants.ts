@@ -1,7 +1,10 @@
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MessageOutlinedIcon from "@mui/icons-material/MessageOutlined";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import { type ChannelCardOption, type FormState } from "../types";
+import {
+  type ChannelCardOption,
+  type FormState,
+} from "@/features/orders/addOrder/types";
 
 export const courierOptions = ["Royal Mail", "Evri", "DPD", "Yodel"] as const;
 

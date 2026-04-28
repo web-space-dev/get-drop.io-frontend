@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { alpha } from "@mui/material/styles";
 import { designSystemColors } from "@/config/theme";
-import { type TimelineEvent } from "../types";
+import { type TimelineEvent } from "@/features/orders/displayOrder/types";
 import { SummaryCard } from "./SummaryCard";
 import { SummaryCardTitle } from "./SummaryCardTitle";
 

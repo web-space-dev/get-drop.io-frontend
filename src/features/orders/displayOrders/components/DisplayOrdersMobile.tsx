@@ -8,8 +8,8 @@ import {
   displayText,
   formatDateTime,
   statusToneFromValue,
-} from "../utils/ordersFiltering";
-import { type DisplayOrdersListProps } from "../types";
+} from "@/features/orders/displayOrders/utils/ordersFiltering";
+import { type DisplayOrdersListProps } from "@/features/orders/displayOrders/types";
 
 const getStatusChipSx = (statusTone: "default" | "error" | "neutral") =>
   ({

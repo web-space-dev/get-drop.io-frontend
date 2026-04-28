@@ -15,7 +15,7 @@ import {
   getCollection,
   getDocument,
 } from "./CRUD.helpers";
-import { db } from "../firebaseServer/firebaseClient";
+import { db } from "@/utils/firebaseServer/firebaseClient";
 
 export const createDocument = async <T extends BaseFirestoreDocument<Date>>(
   collectionName: string,

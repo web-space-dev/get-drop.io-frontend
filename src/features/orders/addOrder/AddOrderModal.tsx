@@ -1,10 +1,15 @@
 import * as React from "react";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { designSystemColors } from "@/config/theme";
 import {
   collection,
   doc,
@@ -14,8 +19,6 @@ import {
 import { useUser } from "@/context/UserContext";
 import { useUpdateOrder } from "@/queries/orders/updateOrder";
 import { db } from "@/utils/firebaseServer/firebaseClient";
-import AddOrderFooter from "./components/AddOrderFooter";
-import AddOrderHeader from "./components/AddOrderHeader";
 import AddOrderStepOne from "./components/AddOrderStepOne";
 import AddOrderStepTwo from "./components/AddOrderStepTwo";
 import { buildOrderPayload, buildOrderUpdatePayload } from "./utils/mapping";
@@ -23,6 +26,7 @@ import { buildDefaultTrackingEvent, initialState } from "./utils/constants";
 import { type AddOrderModalProps } from "./types";
 import { useAddOrderModal } from "./hooks/useAddOrderModal";
 import { validateStepOne } from "./utils/validation";
+import Button from "@/shared/components/Button";
 
 export default function AddOrderModal({
   mode = "create",
@@ -56,6 +60,16 @@ export default function AddOrderModal({
     onClose,
     initialForm,
   });
+
+  const titlePrefix = mode === "edit" ? "Edit Order" : "Add Order";
+  const submitLabel =
+    mode === "edit"
+      ? isSubmitting
+        ? "Saving..."
+        : "Save Changes"
+      : isSubmitting
+        ? "Creating..."
+        : "Create Order";
 
   const handleSubmitOrder = () => {
     void (async () => {
@@ -138,7 +152,33 @@ export default function AddOrderModal({
         },
       }}
     >
-      <AddOrderHeader step={step} mode={mode} onClose={handleClose} />
+      <Box
+        component="header"
+        sx={(theme) => ({
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          gap: 2,
+          px: 3,
+          pt: 2.5,
+          pb: 1.5,
+          borderBottom: `1px solid ${theme.palette.divider}`,
+        })}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            m: 0,
+            color: designSystemColors.neutralBlack,
+          }}
+        >
+          {titlePrefix} - Step {step} of 2
+          {step === 1 ? " (Order Details)" : " (Buyer Updates)"}
+        </Typography>
+        <IconButton aria-label="Close" onClick={handleClose} size="small">
+          <CloseRoundedIcon fontSize="small" />
+        </IconButton>
+      </Box>
 
       <DialogContent sx={{ px: 3, py: 2.5 }}>
         <Stack spacing={2}>
@@ -160,15 +200,82 @@ export default function AddOrderModal({
         </Stack>
       </DialogContent>
 
-      <AddOrderFooter
-        mode={mode}
-        step={step}
-        isSubmitting={isSubmitting}
-        onClose={handleClose}
-        onBack={handleBack}
-        onNext={handleNext}
-        onSubmitOrder={handleSubmitOrder}
-      />
+      <DialogActions
+        sx={(theme) => ({
+          px: 3,
+          py: 2.25,
+          borderTop: `1px solid ${theme.palette.divider}`,
+          justifyContent: "space-between",
+        })}
+      >
+        <Button
+          variant="text"
+          onClick={handleClose}
+          disabled={isSubmitting}
+          sx={(theme) => ({
+            color: designSystemColors.neutralBlack,
+            backgroundColor: "transparent",
+            minWidth: 96,
+            minHeight: theme.spacing(4.5),
+            "&:hover": {
+              backgroundColor: theme.palette.action.hover,
+            },
+          })}
+        >
+          Cancel
+        </Button>
+
+        {step === 1 ? (
+          <Button
+            onClick={handleNext}
+            sx={(theme) => ({
+              backgroundColor: designSystemColors.neutralBlack,
+              color: theme.palette.common.white,
+              minWidth: 220,
+              minHeight: theme.spacing(4.5),
+              "&:hover": {
+                backgroundColor: designSystemColors.neutralBlack,
+              },
+            })}
+          >
+            Next: Buyer Updates
+          </Button>
+        ) : (
+          <>
+            <Button
+              variant="outlined"
+              onClick={handleBack}
+              disabled={isSubmitting}
+              sx={(theme) => ({
+                color: designSystemColors.neutralBlack,
+                borderColor: designSystemColors.neutralBlack,
+                minHeight: theme.spacing(4.5),
+                "&:hover": {
+                  borderColor: designSystemColors.neutralBlack,
+                  backgroundColor: theme.palette.action.hover,
+                },
+              })}
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleSubmitOrder}
+              disabled={isSubmitting}
+              sx={(theme) => ({
+                backgroundColor: designSystemColors.neutralBlack,
+                color: theme.palette.common.white,
+                minWidth: 220,
+                minHeight: theme.spacing(4.5),
+                "&:hover": {
+                  backgroundColor: designSystemColors.neutralBlack,
+                },
+              })}
+            >
+              {submitLabel}
+            </Button>
+          </>
+        )}
+      </DialogActions>
     </Dialog>
   );
 }

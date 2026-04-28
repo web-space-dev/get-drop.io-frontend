@@ -8,8 +8,8 @@ import Typography from "@mui/material/Typography";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import { alpha } from "@mui/material/styles";
-import Button from "@/components/ui/Button";
-import { type DeleteOrderDialogProps } from "../types";
+import Button from "@/shared/components/Button";
+import { type DeleteOrderDialogProps } from "@/features/orders/displayOrder/types";
 
 export default function DeleteOrderDialog({
   deleteError,
