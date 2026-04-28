@@ -10,6 +10,24 @@ import {
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "./firebaseClient";
 
+function getResetRedirectUrl(): string {
+  const envAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+
+  if (envAppUrl) {
+    try {
+      return new URL("/auth/login", envAppUrl).toString();
+    } catch {
+      // Fall through to runtime/browser-based URL resolution.
+    }
+  }
+
+  if (typeof window !== "undefined") {
+    return new URL("/auth/login", window.location.origin).toString();
+  }
+
+  return "http://localhost:3000/auth/login";
+}
+
 export function onAuthStateChanged(
   cb: (user: User | null) => void,
 ): () => void {
@@ -109,7 +127,7 @@ export function getCurrentUser(): User | null {
 export async function resetPassword(email: string): Promise<void> {
   try {
     const actionCodeSettings = {
-      url: `${process.env.NEXT_PUBLIC_APP_URL}/auth/login`,
+      url: getResetRedirectUrl(),
       handleCodeInApp: true,
     };
 

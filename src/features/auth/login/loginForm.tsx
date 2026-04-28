@@ -197,6 +197,7 @@ export default function LoginForm(props: LoginFormProps) {
         setResetSuccessMessage(
           "If an account exists for this email, a password reset link has been sent.",
         );
+        setIsResetSubmitting(false);
       } catch (submissionError) {
         setResetError(getFriendlyResetPasswordErrorMessage(submissionError));
         setIsResetSubmitting(false);
