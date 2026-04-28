@@ -20,6 +20,49 @@
 - `src/utils/firebaseServer/firebaseconfig/useAdminEmulators.ts`: Admin emulator connector.
 - `docs`: Product and architecture docs.
 
+## Project Structure To Uphold (Feature-Based)
+
+Use a feature-based structure as the default mental model and implementation standard.
+
+```text
+src/
+├── features/
+│   ├── auth/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── services/
+│   │   ├── store/
+│   │   ├── types/
+│   │   └── index.ts
+│   ├── orders/
+│   ├── dashboard/
+│   └── ...
+├── shared/
+│   ├── components/
+│   ├── hooks/
+│   ├── store/
+│   ├── types/
+│   ├── utils/
+│   └── layouts/
+├── pages/
+└── utils/
+```
+
+### Structure Rules
+
+1. Group code by business feature/domain first (for example `auth`, `orders`, `dashboard`), not by technical layer at the top level.
+2. Each feature should own its components, hooks, services, types, and feature-local state.
+3. Use `shared/` only for cross-feature primitives that are truly reused and stable.
+4. Keep `pages/` focused on route composition and wiring; business logic should live in `features/`.
+5. Use a feature `index.ts` as a public entry point when it improves import clarity.
+6. Avoid moving code to `shared/` prematurely; prefer feature-local until reused across features.
+7. When introducing new features, follow this pattern unless there is a strong repo-specific reason not to.
+
+### Tradeoffs
+
+- Pros: easier feature ownership, better scalability, cleaner onboarding, improved modularity.
+- Cons: possible duplication across features; requires discipline to keep `shared/` minimal and meaningful.
+
 ## Tech Constraints
 
 - Framework: Next.js 16 with React 19.
@@ -34,6 +77,7 @@
 3. When building reusable layout primitives, use typed style props and `shouldForwardProp` to avoid leaking custom props to the DOM.
 4. Preserve existing design language (spacing scale, typography, and color direction) when refactoring styles.
 5. Do not introduce Tailwind or alternate styling systems unless explicitly requested.
+6. If `styled` is used, prefer styling MUI components (for example `styled(Box)`, `styled(Typography)`, `styled(Button)`) instead of raw HTML tags.
 
 ## Theme Source of Truth
 
@@ -67,6 +111,8 @@
 3. Avoid introducing new patterns (state libs, CSS frameworks, architecture) unless asked.
 4. No `any`; use explicit types for Firebase payloads and function contracts.
 5. If logic is reused, move it into utility/config modules rather than duplicating in pages.
+6. Wrap awaited async operations in `try/catch` and handle failure states explicitly in the calling flow.
+7. For input forms, add `onKeyDown` keyboard navigation behavior between fields (for example: next field on Enter or ArrowDown, previous field on ArrowUp) when it makes sense for UX, including iOS keyboard navigation.
 
 ## Commands to Use
 

@@ -1,37 +1,11 @@
-import * as React from "react";
-import { useRouter } from "next/router";
-import { styled } from "@mui/material/styles";
-import Button from "@/components/ui/Button";
+import Button from "@/shared/components/Button";
+import CenteredPageContainer from "@/shared/components/CenteredPageContainer";
+import ContentSectionCard from "@/shared/components/ContentSectionCard";
+import InlineErrorText from "@/shared/components/InlineErrorText";
+import PageHeading from "@/shared/components/PageHeading";
 import { signOut } from "@/utils/firebaseServer/firebaseAuth";
-
-const PageContainer = styled("main")(({ theme }) => ({
-  minHeight: "100vh",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: theme.spacing(3),
-}));
-
-const ContentCard = styled("section")(({ theme }) => ({
-  display: "grid",
-  gap: theme.spacing(2),
-  textAlign: "center",
-  padding: theme.spacing(4),
-  borderRadius: theme.spacing(2),
-  border: `1px solid ${theme.palette.divider}`,
-  backgroundColor: theme.palette.background.paper,
-}));
-
-const Heading = styled("h1")(({ theme }) => ({
-  ...theme.typography.h4,
-  margin: 0,
-}));
-
-const ErrorText = styled("p")(({ theme }) => ({
-  ...theme.typography.body2,
-  color: theme.palette.error.main,
-  margin: 0,
-}));
+import { useRouter } from "next/router";
+import * as React from "react";
 
 export default function SellerDashboard() {
   const router = useRouter();
@@ -48,21 +22,22 @@ export default function SellerDashboard() {
         await router.push("/auth/login");
       } catch {
         setSignOutError("Unable to sign out right now. Please try again.");
-      } finally {
         setIsSigningOut(false);
       }
     })();
   };
 
   return (
-    <PageContainer>
-      <ContentCard>
-        <Heading>Seller Dashboard</Heading>
-        {signOutError ? <ErrorText>{signOutError}</ErrorText> : null}
+    <CenteredPageContainer>
+      <ContentSectionCard>
+        <PageHeading>Seller Dashboard</PageHeading>
+        {signOutError ? (
+          <InlineErrorText>{signOutError}</InlineErrorText>
+        ) : null}
         <Button onClick={handleSignOut} disabled={isSigningOut}>
           {isSigningOut ? "Signing out..." : "Sign out"}
         </Button>
-      </ContentCard>
-    </PageContainer>
+      </ContentSectionCard>
+    </CenteredPageContainer>
   );
 }

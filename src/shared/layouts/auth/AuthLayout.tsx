@@ -1,7 +1,7 @@
-import * as React from "react";
+import { layoutGrid } from "@/config/theme";
 import Box from "@mui/material/Box";
 import { styled, type SxProps, type Theme } from "@mui/material/styles";
-import { layoutGrid } from "@/config/theme";
+import * as React from "react";
 
 type AuthLayoutProps = {
   children: React.ReactNode;

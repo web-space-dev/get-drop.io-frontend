@@ -5,7 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
-import FormErrorText from "../components/FormErrorText";
+import Typography from "@mui/material/Typography";
 
 type ForgotPasswordDialogProps = {
   open: boolean;
@@ -44,9 +44,25 @@ export default function ForgotPasswordDialog({
           onChange={onEmailChange}
           disabled={isSubmitting}
         />
-        {error ? <FormErrorText>{error}</FormErrorText> : null}
+        {error ? (
+          <Typography
+            component="p"
+            variant="body2"
+            color="error.main"
+            sx={{ textAlign: "center", m: 0 }}
+          >
+            {error}
+          </Typography>
+        ) : null}
         {successMessage ? (
-          <FormErrorText>{successMessage}</FormErrorText>
+          <Typography
+            component="p"
+            variant="body2"
+            color="error.main"
+            sx={{ textAlign: "center", m: 0 }}
+          >
+            {successMessage}
+          </Typography>
         ) : null}
       </DialogContent>
       <DialogActions>
