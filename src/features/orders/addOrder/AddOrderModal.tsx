@@ -1,32 +1,31 @@
-import * as React from "react";
+import { designSystemColors } from "@/config/theme";
+import { useUser } from "@/context/UserContext";
+import { useUpdateOrder } from "@/queries/orders/updateOrder";
+import Button from "@/shared/components/Button";
+import { db } from "@/utils/firebaseServer/firebaseClient";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
+import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
-import { designSystemColors } from "@/config/theme";
 import {
   collection,
   doc,
   serverTimestamp,
   writeBatch,
 } from "firebase/firestore";
-import { useUser } from "@/context/UserContext";
-import { useUpdateOrder } from "@/queries/orders/updateOrder";
-import { db } from "@/utils/firebaseServer/firebaseClient";
 import AddOrderStepOne from "./components/AddOrderStepOne";
 import AddOrderStepTwo from "./components/AddOrderStepTwo";
-import { buildOrderPayload, buildOrderUpdatePayload } from "./utils/mapping";
-import { buildDefaultTrackingEvent, initialState } from "./utils/constants";
-import { type AddOrderModalProps } from "./types";
 import { useAddOrderModal } from "./hooks/useAddOrderModal";
-import { validateStepOne } from "./utils/validation";
-import Button from "@/shared/components/Button";
+import { type AddOrderModalProps } from "./types";
+import { buildDefaultTrackingEvent, initialState } from "./utils/constants";
+import { buildOrderPayload, buildOrderUpdatePayload } from "./utils/mapping";
+import { validateStepOne, validateTrackingEvent } from "./utils/validation";
 
 export default function AddOrderModal({
   mode = "create",
@@ -101,6 +100,14 @@ export default function AddOrderModal({
           onUpdated?.();
         } else {
           const payload = buildOrderPayload(form, authUser!.uid);
+          const trackingEvent = buildDefaultTrackingEvent();
+          const trackingEventError = validateTrackingEvent(trackingEvent);
+
+          if (trackingEventError) {
+            setSubmitError(trackingEventError);
+            return;
+          }
+
           const batch = writeBatch(db);
           const orderRef = doc(collection(db, "orders"));
           const trackingEventRef = doc(
@@ -114,7 +121,7 @@ export default function AddOrderModal({
           });
 
           batch.set(trackingEventRef, {
-            ...buildDefaultTrackingEvent(),
+            ...trackingEvent,
             eventTimestamp: serverTimestamp(),
             createdAt: serverTimestamp(),
           });

@@ -27,3 +27,16 @@ export type Order = BaseFirestoreDocument<Timestamp> & {
   lastTrackingUpdateAt: Timestamp | null;
   archivedAt: Timestamp | null;
 };
+
+export type OrderTrackingEvent = BaseFirestoreDocument<Timestamp> & {
+  type: string;
+  status: string;
+  description: string;
+  source: string;
+  eventTimestamp: Timestamp;
+};
+
+export type CreateOrderTrackingEventInput = Omit<
+  OrderTrackingEvent,
+  "id" | "createdAt" | "updatedAt" | "eventTimestamp"
+>;

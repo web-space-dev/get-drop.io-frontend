@@ -87,6 +87,106 @@ src/
 4. If a required token does not exist, add it to `src/config/theme.ts` and then consume it from there.
 5. Prefer references to theme tokens inside `styled` blocks and `sx` objects instead of literal values.
 
+## Data Model Source of Truth (ERD)
+
+1. The canonical entity relationship diagram lives in `docs/ERD.md`.
+2. Treat this ERD as the schema contract for Firestore collections, subcollections, and embedded objects.
+3. Current model relationships are:
+   - `SELLER ||--o{ ORDER : hasMany`
+   - `SELLER ||--o{ SUBSCRIPTION : hasMany`
+   - `ORDER ||--o{ ORDER_TRACKING_EVENT : subCollection`
+   - `ORDER ||--|| DELIVERY_ADDRESS : object`
+
+### Canonical ERD Snapshot
+
+```mermaid
+erDiagram
+   SELLER ||--o{ ORDER : hasMany
+   SELLER ||--o{ SUBSCRIPTION : hasMany
+   ORDER ||--o{ ORDER_TRACKING_EVENT : subCollection
+   ORDER ||--|| DELIVERY_ADDRESS : object
+
+   SELLER {
+      string id
+      string businessName
+      string email
+      string status
+      string logoUrl
+      string primaryColour
+      int messagesUsedThisMonth
+      int topupBalance
+      timestamp createdAt
+      timestamp updatedAt
+   }
+
+   ORDER {
+      string id
+      string referenceId
+      string buyerName
+      string buyerEmail
+      string buyerPhone
+      object deliveryAddress
+      string trackingNumber
+      string trackingUrl
+      string carrierName
+      string currentStatus
+      string publicTrackingToken
+      string sellerId
+      string notes
+      timestamp lastTrackingUpdateAt
+      timestamp archivedAt
+      timestamp createdAt
+      timestamp updatedAt
+   }
+
+   DELIVERY_ADDRESS {
+      string formattedAddress
+      string streetAddress
+      string addressLocality
+      string postalCode
+      string addressCountry
+   }
+
+   ORDER_TRACKING_EVENT {
+      string id
+      string type
+      string status
+      string description
+      string source
+      timestamp eventTimestamp
+      timestamp createdAt
+   }
+
+   SUBSCRIPTION {
+      string id
+      string sellerId
+      string planId
+      string stripeCustomerId
+      string stripeSubscriptionId
+      string status
+      int amount
+      string currency
+      string interval
+      boolean cancelAtPeriodEnd
+      timestamp currentPeriodStart
+      timestamp currentPeriodEnd
+      timestamp trialEnd
+      timestamp createdAt
+      timestamp updatedAt
+   }
+```
+
+### Schema Synchronization Rules
+
+1. When any schema field or relationship changes in code, update `docs/ERD.md` in the same change.
+2. Keep TypeScript domain types aligned with ERD entities:
+   - `src/types/User.ts` for `SELLER`
+   - `src/types/Order.ts` for `ORDER`, `DELIVERY_ADDRESS`, and `ORDER_TRACKING_EVENT`
+   - query-layer mirrors such as `src/queries/orders/types.ts`
+3. Keep Firestore write payloads and validators aligned with ERD-required fields.
+4. For `order_tracking_event`, require and validate `type`, `status`, `description`, and `source` before writes.
+5. If a field is added, removed, renamed, or type-changed, update all impacted docs, types, mapping utilities, and validation code in the same PR.
+
 ## Firebase Rules for Coding
 
 1. Never initialize Firebase directly inside page/component files.

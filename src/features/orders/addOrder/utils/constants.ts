@@ -1,10 +1,11 @@
-import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
-import MessageOutlinedIcon from "@mui/icons-material/MessageOutlined";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import {
   type ChannelCardOption,
   type FormState,
+  type TrackingEventCreateInput,
 } from "@/features/orders/addOrder/types";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import MessageOutlinedIcon from "@mui/icons-material/MessageOutlined";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 export const courierOptions = ["Royal Mail", "Evri", "DPD", "Yodel"] as const;
 
@@ -37,7 +38,7 @@ export const dummyDeliveryAddress = {
   addressCountry: "United Kingdom",
 } as const;
 
-export const buildDefaultTrackingEvent = () => ({
+export const buildDefaultTrackingEvent = (): TrackingEventCreateInput => ({
   type: "status_update",
   status: "created",
   description: "Order created and awaiting first courier event.",

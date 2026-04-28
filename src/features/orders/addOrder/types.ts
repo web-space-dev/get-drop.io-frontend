@@ -1,5 +1,5 @@
+import { type CreateOrderTrackingEventInput, type Order } from "@/types";
 import { type ElementType } from "react";
-import { type Order } from "@/types";
 
 export type AddOrderModalMode = "create" | "edit";
 
@@ -33,6 +33,8 @@ export type FormState = {
 };
 
 export type OrderCreateInput = Omit<Order, "id" | "createdAt" | "updatedAt">;
+
+export type TrackingEventCreateInput = CreateOrderTrackingEventInput;
 
 export type ChannelCardOption = {
   value: NotificationChannel;
