@@ -3,6 +3,11 @@ import Button from "@/shared/components/Button";
 import InputField from "@/shared/components/InputField";
 import FormContainer from "@/shared/layouts/auth/AuthFormContainer";
 import { signUp } from "@/utils/firebaseServer/firebaseAuth";
+import {
+  getEmailBlurError,
+  INVALID_EMAIL_MESSAGE,
+  isValidEmail,
+} from "@/features/auth/utils/validation";
 import { getFriendlyRegisterErrorMessage } from "@/utils/firebaseServer/firebaseErrors";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -10,6 +15,7 @@ import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
+import { FirebaseError } from "firebase/app";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import * as React from "react";
@@ -27,8 +33,11 @@ export default function RegisterForm(props: RegisterFormProps) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
-  const [confirmTouched, setConfirmTouched] = React.useState(false);
-  const [submitError, setSubmitError] = React.useState<string | null>(null);
+  const [emailError, setEmailError] = React.useState<string | null>(null);
+  const [passwordError, setPasswordError] = React.useState<string | null>(null);
+  const [confirmPasswordError, setConfirmPasswordError] = React.useState<
+    string | null
+  >(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
@@ -44,23 +53,26 @@ export default function RegisterForm(props: RegisterFormProps) {
   const handleEmailChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
+    setEmailError(null);
     setEmail(event.target.value);
+  };
+
+  const handleEmailBlur = () => {
+    setEmailError(getEmailBlurError(email));
   };
 
   const handlePasswordChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
+    setPasswordError(null);
     setPassword(event.target.value);
   };
 
   const handleConfirmPasswordChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
+    setConfirmPasswordError(null);
     setConfirmPassword(event.target.value);
-  };
-
-  const handleConfirmBlur = () => {
-    setConfirmTouched(true);
   };
 
   const handleEmailKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -104,32 +116,68 @@ export default function RegisterForm(props: RegisterFormProps) {
     event.preventDefault();
 
     void (async () => {
+      const normalizedEmail = email.trim();
+      setEmailError(null);
+      setPasswordError(null);
+      setConfirmPasswordError(null);
+
       if (!passwordsMatch) {
-        setConfirmTouched(true);
+        setConfirmPasswordError("Passwords do not match");
         return;
       }
 
-      if (!email) {
-        setSubmitError("Email is required");
+      if (!normalizedEmail) {
+        setEmailError("Email is required");
         return;
       }
 
-      setSubmitError(null);
+      if (!isValidEmail(normalizedEmail)) {
+        setEmailError(INVALID_EMAIL_MESSAGE);
+        return;
+      }
+
+      if (!password) {
+        setPasswordError("Password is required");
+        return;
+      }
+
+      if (!confirmPassword) {
+        setConfirmPasswordError("Please confirm your password");
+        return;
+      }
       setIsSubmitting(true);
 
       try {
-        await signUp(email, password);
+        await signUp(normalizedEmail, password);
         onSubmit?.(event);
         await router.push("/seller/dashboard");
       } catch (error) {
-        setSubmitError(getFriendlyRegisterErrorMessage(error));
+        const friendlyMessage = getFriendlyRegisterErrorMessage(error);
+
+        if (error instanceof FirebaseError) {
+          switch (error.code) {
+            case "auth/email-already-in-use":
+            case "auth/invalid-email":
+              setEmailError(friendlyMessage);
+              break;
+            case "auth/weak-password":
+              setPasswordError(friendlyMessage);
+              break;
+            default:
+              setEmailError(friendlyMessage);
+              break;
+          }
+        } else {
+          setEmailError(friendlyMessage);
+        }
+
         setIsSubmitting(false);
       }
     })();
   };
 
   const showPasswordMismatch =
-    confirmTouched && confirmPassword.length > 0 && !passwordsMatch;
+    password.length > 0 && confirmPassword.length > 0 && !passwordsMatch;
 
   if (!isLoading && authUser) {
     return null;
@@ -154,7 +202,10 @@ export default function RegisterForm(props: RegisterFormProps) {
         inputRef={emailInputRef}
         value={email}
         onChange={handleEmailChange}
+        onBlur={handleEmailBlur}
         onKeyDown={handleEmailKeyDown}
+        error={Boolean(emailError)}
+        helperText={emailError ?? undefined}
       />
       <InputField
         required
@@ -167,6 +218,8 @@ export default function RegisterForm(props: RegisterFormProps) {
         value={password}
         onChange={handlePasswordChange}
         onKeyDown={handlePasswordKeyDown}
+        error={Boolean(passwordError)}
+        helperText={passwordError ?? undefined}
         slotProps={{
           input: {
             endAdornment: (
@@ -195,9 +248,11 @@ export default function RegisterForm(props: RegisterFormProps) {
         value={confirmPassword}
         onChange={handleConfirmPasswordChange}
         onKeyDown={handleConfirmPasswordKeyDown}
-        onBlur={handleConfirmBlur}
-        error={showPasswordMismatch}
-        helperText={showPasswordMismatch ? "Passwords do not match" : undefined}
+        error={Boolean(confirmPasswordError) || showPasswordMismatch}
+        helperText={
+          confirmPasswordError ??
+          (showPasswordMismatch ? "Passwords do not match" : undefined)
+        }
         slotProps={{
           input: {
             endAdornment: (
@@ -217,21 +272,15 @@ export default function RegisterForm(props: RegisterFormProps) {
           },
         }}
       />
-      {submitError ? (
-        <Typography
-          component="p"
-          variant="body2"
-          color="error.main"
-          sx={{ textAlign: "center", m: 0 }}
-        >
-          {submitError}
-        </Typography>
-      ) : null}
       <Button
         type="submit"
         fullWidth
         disabled={
-          isSubmitting || (confirmPassword.length > 0 && !passwordsMatch)
+          isSubmitting ||
+          !email.trim() ||
+          !password ||
+          !confirmPassword ||
+          !passwordsMatch
         }
       >
         Create account

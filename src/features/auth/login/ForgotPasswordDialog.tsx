@@ -1,4 +1,3 @@
-import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -6,6 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import * as React from "react";
 
 type ForgotPasswordDialogProps = {
   open: boolean;
@@ -58,7 +58,7 @@ export default function ForgotPasswordDialog({
           <Typography
             component="p"
             variant="body2"
-            color="error.main"
+            color="success.main"
             sx={{ textAlign: "center", m: 0 }}
           >
             {successMessage}

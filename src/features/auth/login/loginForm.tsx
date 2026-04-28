@@ -8,6 +8,11 @@ import {
   signInWithEmailAndPassword,
 } from "@/utils/firebaseServer/firebaseAuth";
 import {
+  getEmailBlurError,
+  INVALID_EMAIL_MESSAGE,
+  isValidEmail,
+} from "@/features/auth/utils/validation";
+import {
   getFriendlyLoginErrorMessage,
   getFriendlyResetPasswordErrorMessage,
 } from "@/utils/firebaseServer/firebaseErrors";
@@ -17,6 +22,7 @@ import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
+import { FirebaseError } from "firebase/app";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import * as React from "react";
@@ -31,6 +37,7 @@ export default function LoginForm(props: LoginFormProps) {
   const passwordInputRef = React.useRef<HTMLInputElement | null>(null);
   const { onSubmit, ...formProps } = props;
   const [email, setEmail] = React.useState("");
+  const [emailError, setEmailError] = React.useState<string | null>(null);
   const [password, setPassword] = React.useState("");
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -53,7 +60,12 @@ export default function LoginForm(props: LoginFormProps) {
   const handleEmailChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
+    setEmailError(null);
     setEmail(event.target.value);
+  };
+
+  const handleEmailBlur = () => {
+    setEmailError(getEmailBlurError(email));
   };
 
   const handlePasswordChange = (
@@ -83,9 +95,15 @@ export default function LoginForm(props: LoginFormProps) {
 
     void (async () => {
       const normalizedEmail = email.trim();
+      setEmailError(null);
 
       if (!normalizedEmail) {
-        setSubmitError("Email is required");
+        setEmailError("Email is required");
+        return;
+      }
+
+      if (!isValidEmail(normalizedEmail)) {
+        setEmailError(INVALID_EMAIL_MESSAGE);
         return;
       }
 
@@ -102,7 +120,17 @@ export default function LoginForm(props: LoginFormProps) {
         onSubmit?.(event);
         await router.push("/seller/dashboard");
       } catch (error) {
-        setSubmitError(getFriendlyLoginErrorMessage(error));
+        const friendlyMessage = getFriendlyLoginErrorMessage(error);
+
+        if (
+          error instanceof FirebaseError &&
+          error.code === "auth/invalid-email"
+        ) {
+          setEmailError(friendlyMessage);
+        } else {
+          setSubmitError(friendlyMessage);
+        }
+
         setIsSubmitting(false);
       }
     })();
@@ -186,7 +214,10 @@ export default function LoginForm(props: LoginFormProps) {
         inputRef={emailInputRef}
         value={email}
         onChange={handleEmailChange}
+        onBlur={handleEmailBlur}
         onKeyDown={handleEmailKeyDown}
+        error={Boolean(emailError)}
+        helperText={emailError ?? undefined}
       />
       <InputField
         required

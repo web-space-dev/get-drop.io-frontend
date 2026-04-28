@@ -8,6 +8,5 @@ export function getUnauthenticatedRedirectPath(pathname: string): string {
   if (requiresAuthentication(pathname)) {
     return "/auth/login";
   }
-
-  return "/auth/login";
+  return "/";
 }
