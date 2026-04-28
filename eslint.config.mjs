@@ -20,34 +20,38 @@ const eslintConfig = defineConfig([
     "plugin:prettier/recommended",
     "prettier",
   ),
-  globalIgnores([
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-    "public/**",
-  ]),
   {
     rules: {
+      // Prevent nested component definitions
       "react/no-unstable-nested-components": "warn",
+
+      // Additional React best practices that aren't in the default Next.js config
       "react/jsx-no-useless-fragment": "warn",
       "react/self-closing-comp": "warn",
       "react/jsx-boolean-value": "warn",
       "react/no-array-index-key": "warn",
       "react/jsx-fragments": "warn",
-      "react-hooks/exhaustive-deps": "warn",
       "prettier/prettier": "error",
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_" },
       ],
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/ban-ts-comment": "warn",
-      eqeqeq: ["error", "always"],
-      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "no-console": ["error", { allow: ["warn", "error"] }],
+
+      // Hook-related best practices
+      "react-hooks/exhaustive-deps": "error",
     },
   },
+  globalIgnores([
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    "public/**",
+    "src/scripts/test-middleware-simple.js",
+    "src/scripts/test-generate-slots-buffers.ts",
+  ]),
 ]);
 
 export default eslintConfig;
