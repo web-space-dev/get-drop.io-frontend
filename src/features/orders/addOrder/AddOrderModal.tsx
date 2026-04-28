@@ -1,4 +1,6 @@
 import * as React from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -18,7 +20,6 @@ import AddOrderStepOne from "./components/AddOrderStepOne";
 import AddOrderStepTwo from "./components/AddOrderStepTwo";
 import { buildOrderPayload, buildOrderUpdatePayload } from "./utils/mapping";
 import { buildDefaultTrackingEvent, initialState } from "./utils/constants";
-import { Content, StyledDialog } from "./styles";
 import { type AddOrderModalProps } from "./types";
 import { useAddOrderModal } from "./hooks/useAddOrderModal";
 import { validateStepOne } from "./utils/validation";
@@ -122,10 +123,24 @@ export default function AddOrderModal({
   };
 
   return (
-    <StyledDialog open={open} onClose={handleClose} fullScreen={fullScreen}>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      fullScreen={fullScreen}
+      slotProps={{
+        paper: {
+          sx: {
+            width: "100%",
+            maxWidth: 760,
+            borderRadius: 2.5,
+            overflow: "hidden",
+          },
+        },
+      }}
+    >
       <AddOrderHeader step={step} mode={mode} onClose={handleClose} />
 
-      <Content>
+      <DialogContent sx={{ px: 3, py: 2.5 }}>
         <Stack spacing={2}>
           {step === 1 ? (
             <AddOrderStepOne form={form} onFieldChange={updateField} />
@@ -143,7 +158,7 @@ export default function AddOrderModal({
             </Typography>
           ) : null}
         </Stack>
-      </Content>
+      </DialogContent>
 
       <AddOrderFooter
         mode={mode}
@@ -154,6 +169,6 @@ export default function AddOrderModal({
         onNext={handleNext}
         onSubmitOrder={handleSubmitOrder}
       />
-    </StyledDialog>
+    </Dialog>
   );
 }

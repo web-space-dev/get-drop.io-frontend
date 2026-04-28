@@ -1,8 +1,8 @@
 import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import AddOrderModal from "@/features/orders/add-order/AddOrderModal";
-import { buildInitialFormFromOrder } from "@/features/orders/add-order/utils/mapping";
-import { Grid, Page } from "./styles";
+import AddOrderModal from "@/features/orders/addOrder/AddOrderModal";
+import { buildInitialFormFromOrder } from "@/features/orders/addOrder/utils/mapping";
 import DisplayOrderMainColumn from "./components/DisplayOrderMainColumn";
 import DisplayOrderSideColumn from "./components/DisplayOrderSideColumn";
 import EditBuyerDialog from "./components/EditBuyerDialog";
@@ -10,6 +10,7 @@ import DeleteOrderDialog from "./components/DeleteOrderDialog";
 import { useDisplayOrder } from "./hooks/useDisplayOrder";
 import { type DisplayOrderProps } from "./types";
 import { displayText } from "./utils/displayOrderUtils";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 
 export default function DisplayOrder({ id }: DisplayOrderProps) {
   const {
@@ -47,31 +48,41 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
 
   if (isLoading) {
     return (
-      <Page>
+      <DashboardLayout>
         <CircularProgress size={28} />
-      </Page>
+      </DashboardLayout>
     );
   }
 
   if (isError) {
     return (
-      <Page>
+      <DashboardLayout>
         <Alert severity="error">Unable to load this order right now.</Alert>
-      </Page>
+      </DashboardLayout>
     );
   }
 
   if (!order) {
     return (
-      <Page>
+      <DashboardLayout>
         <Alert severity="warning">Order not found.</Alert>
-      </Page>
+      </DashboardLayout>
     );
   }
 
   return (
-    <Page>
-      <Grid>
+    <DashboardLayout>
+      <Box
+        component="section"
+        sx={{
+          display: "grid",
+          gap: 2,
+          gridTemplateColumns: "1fr",
+          "@media (min-width: 900px)": {
+            gridTemplateColumns: "minmax(0, 2fr) minmax(280px, 1fr)",
+          },
+        }}
+      >
         <DisplayOrderMainColumn
           order={order}
           city={city}
@@ -91,7 +102,7 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
           onOpenEditOrder={handleOpenEditOrder}
           onOpenDelete={handleOpenDelete}
         />
-      </Grid>
+      </Box>
 
       <AddOrderModal
         mode="edit"
@@ -119,6 +130,6 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
         onClose={() => setIsDeleteOpen(false)}
         onConfirmDelete={handleDeleteCurrentOrder}
       />
-    </Page>
+    </DashboardLayout>
   );
 }

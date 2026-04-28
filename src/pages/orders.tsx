@@ -1,24 +1,12 @@
 import * as React from "react";
-import { styled } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
-import AddOrderModal from "@/features/orders/add-order/AddOrderModal";
-import DisplayOrders from "@/features/orders/display-orders/DisplayOrders";
+import AddOrderModal from "@/features/orders/addOrder/AddOrderModal";
+import DisplayOrders from "@/features/orders/displayOrders/DisplayOrders";
 import { useUser } from "@/context/UserContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { getOrdersQueryKey } from "@/queries/orders/getOrders";
-
-const Header = styled("header")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: theme.spacing(2),
-  marginBottom: theme.spacing(3),
-}));
-
-const Heading = styled("h1")(({ theme }) => ({
-  ...theme.typography.h4,
-  margin: 0,
-}));
 
 export default function OrdersPage() {
   const queryClient = useQueryClient();
@@ -33,9 +21,20 @@ export default function OrdersPage() {
 
   return (
     <DashboardLayout>
-      <Header>
-        <Heading>Orders</Heading>
-      </Header>
+      <Box
+        component="header"
+        sx={(theme) => ({
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: theme.spacing(2),
+          mb: theme.spacing(3),
+        })}
+      >
+        <Typography component="h1" variant="h4" sx={{ m: 0 }}>
+          Orders
+        </Typography>
+      </Box>
 
       <DisplayOrders
         sellerId={authUser?.uid}

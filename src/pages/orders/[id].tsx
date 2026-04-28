@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useRouter } from "next/router";
-import DisplayOrder from "@/features/orders/display-order/DisplayOrder";
+import DisplayOrder from "@/features/orders/displayOrder/DisplayOrder";
 
 export default function OrderDetailsPage() {
   const router = useRouter();

@@ -1,0 +1,249 @@
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import TableBody from "@mui/material/TableBody";
+import Link from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import NextLink from "next/link";
+import { designSystemColors } from "@/config/theme";
+import { displayText, statusToneFromValue } from "../utils/ordersFiltering";
+import { type DisplayOrdersListProps } from "../types";
+
+const cellSx = {
+  typography: "body2",
+  color: designSystemColors.neutralBlack,
+  borderBottom: `1px solid ${designSystemColors.white}`,
+  whiteSpace: "nowrap",
+  px: 1.75,
+  py: 1.5,
+  maxWidth: 260,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+} as const;
+
+const getStatusChipSx = (statusTone: "default" | "error" | "neutral") =>
+  ({
+    typography: "body2",
+    height: 34,
+    borderRadius: 1,
+    border: "1px solid",
+    borderColor:
+      statusTone === "error"
+        ? "error.main"
+        : statusTone === "neutral"
+          ? "divider"
+          : designSystemColors.neutralBlack,
+    backgroundColor:
+      statusTone === "error"
+        ? "error.main"
+        : statusTone === "neutral"
+          ? "transparent"
+          : designSystemColors.neutralBlack,
+    color:
+      statusTone === "error" || statusTone === "default"
+        ? "common.white"
+        : designSystemColors.neutralBlack,
+    "& .MuiChip-label": {
+      px: 1.25,
+    },
+  }) as const;
+
+const typeChipSx = {
+  typography: "body2",
+  height: 34,
+  borderRadius: 1,
+  border: "1px solid",
+  borderColor: "divider",
+  backgroundColor: "transparent",
+  color: designSystemColors.neutralBlack,
+  "& .MuiChip-label": {
+    px: 1.25,
+  },
+} as const;
+
+const getOrderType = (status: string): string => {
+  const normalizedStatus = status.toLowerCase();
+
+  if (normalizedStatus === "inbound" || normalizedStatus === "outbound") {
+    return normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
+  }
+
+  return "Outbound";
+};
+
+const getSmartEta = (hasTrackingUpdate: boolean): string => {
+  if (!hasTrackingUpdate) {
+    return "Pending ETA";
+  }
+
+  return "Tracking Updated";
+};
+
+const getDisplayStatus = (
+  orderStatus: string,
+  hasTrackingUpdate: boolean,
+): string => {
+  const normalizedStatus = orderStatus.trim().toLowerCase();
+
+  if (normalizedStatus === "inbound" || normalizedStatus === "outbound") {
+    return hasTrackingUpdate ? "In Transit" : "Processing";
+  }
+
+  return displayText(orderStatus)
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+};
+
+const getLastActivity = (
+  lastTrackingUpdateAt: Date | null,
+  updatedAt: Date,
+): string => {
+  const baseDate = lastTrackingUpdateAt ?? updatedAt;
+  const time = new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(baseDate);
+
+  return `Updated ${time}`;
+};
+
+export default function DisplayOrdersDesktop({
+  orders,
+}: DisplayOrdersListProps) {
+  return (
+    <Box
+      sx={{
+        display: "none",
+        "@media (min-width: 900px)": { display: "block" },
+      }}
+    >
+      <Paper
+        sx={(theme) => ({
+          borderRadius: theme.spacing(1.5),
+          border: `1px solid ${designSystemColors.white}`,
+          overflow: "hidden",
+        })}
+      >
+        <TableContainer
+          sx={(theme) => ({
+            maxWidth: "100%",
+            overflowX: "auto",
+            "&::-webkit-scrollbar": {
+              height: 8,
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: theme.palette.action.disabled,
+              borderRadius: 999,
+            },
+          })}
+        >
+          <Table sx={{ minWidth: 1100 }}>
+            <TableHead
+              sx={(theme) => ({
+                "& .MuiTableCell-root": {
+                  ...theme.typography.subtitle2,
+                  color: designSystemColors.neutralBlack,
+                  backgroundColor: designSystemColors.white,
+                  borderBottom: `1px solid ${designSystemColors.white}`,
+                  px: 1.75,
+                  py: 1.75,
+                },
+              })}
+            >
+              <TableRow>
+                <TableCell sx={cellSx}>Order Name</TableCell>
+                <TableCell sx={cellSx}>Buyer</TableCell>
+                <TableCell sx={cellSx}>Type</TableCell>
+                <TableCell sx={cellSx}>Courier</TableCell>
+                <TableCell sx={cellSx}>Status</TableCell>
+                <TableCell sx={cellSx}>Last Activity</TableCell>
+                <TableCell sx={cellSx}>Smart ETA</TableCell>
+                <TableCell sx={cellSx}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {orders.map((order) => {
+                const hasTrackingUpdate = Boolean(order.lastTrackingUpdateAt);
+                const statusLabel = getDisplayStatus(
+                  order.currentStatus,
+                  hasTrackingUpdate,
+                );
+
+                return (
+                  <TableRow key={order.id}>
+                    <TableCell sx={cellSx}>
+                      {displayText(order.referenceId)}
+                    </TableCell>
+                    <TableCell sx={cellSx}>
+                      <Typography variant="body2" color="text.secondary">
+                        {displayText(order.buyerName)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={cellSx}>
+                      <Chip
+                        size="small"
+                        label={getOrderType(order.currentStatus)}
+                        sx={typeChipSx}
+                      />
+                    </TableCell>
+                    <TableCell sx={cellSx}>
+                      <Typography variant="body2" color="text.secondary">
+                        {displayText(order.carrierName)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={cellSx}>
+                      <Chip
+                        size="small"
+                        label={statusLabel}
+                        sx={getStatusChipSx(statusToneFromValue(statusLabel))}
+                      />
+                    </TableCell>
+                    <TableCell sx={cellSx}>
+                      <Typography variant="body2" color="text.secondary">
+                        {getLastActivity(
+                          order.lastTrackingUpdateAt,
+                          order.updatedAt,
+                        )}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={cellSx}>
+                      {getSmartEta(hasTrackingUpdate)}
+                    </TableCell>
+                    <TableCell sx={cellSx}>
+                      <Link
+                        component={NextLink}
+                        href={`/orders/${order.id}`}
+                        underline="none"
+                        sx={(theme) => ({
+                          ...theme.typography.body2,
+                          color: "inherit",
+                          fontWeight: 600,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: theme.spacing(0.5),
+                          textDecoration: "none",
+                          "&:hover": {
+                            textDecoration: "none",
+                          },
+                        })}
+                      >
+                        View
+                        <ArrowForwardRoundedIcon fontSize="small" />
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </Box>
+  );
+}
