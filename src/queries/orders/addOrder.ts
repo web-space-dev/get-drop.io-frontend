@@ -1,6 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createDocument } from "@/utils/CRUD/CRUD.client";
-import { getOrdersQueryKey } from "./getOrders";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type CreateOrderInput, type OrderQueryModel } from "./types";
 
 export async function addOrder(
@@ -15,7 +14,7 @@ export function useAddOrder() {
   return useMutation({
     mutationFn: addOrder,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
+      void queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
   });
 }

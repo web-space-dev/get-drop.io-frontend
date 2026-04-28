@@ -1,9 +1,10 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteDocument } from "@/utils/CRUD/CRUD.client";
-import { getOrdersQueryKey } from "./getOrders";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export async function deleteOrder(id: string): Promise<void> {
-  await deleteDocument("orders", id);
+  await deleteDocument("orders", id, {
+    subcollections: ["orderTrackingEvent", "order_tracking_event"],
+  });
 }
 
 export function useDeleteOrder() {
@@ -12,7 +13,7 @@ export function useDeleteOrder() {
   return useMutation({
     mutationFn: deleteOrder,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
+      void queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
   });
 }

@@ -14,8 +14,11 @@ import OrderSummaryCard, {
   type OrderSummaryItem,
 } from "./components/OrderSummaryCard";
 import { useDisplayOrder } from "./hooks/useDisplayOrder";
-import { type DisplayOrderProps } from "./types";
 import { displayText } from "./utils/displayOrderUtils";
+
+type DisplayOrderProps = {
+  id: string;
+};
 
 export default function DisplayOrder({ id }: DisplayOrderProps) {
   const {

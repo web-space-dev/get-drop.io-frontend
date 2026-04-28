@@ -17,6 +17,8 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 
+type StatusTone = "default" | "error" | "neutral";
+
 const cellSx = {
   typography: "body2",
   color: designSystemColors.neutralBlack,
@@ -29,45 +31,58 @@ const cellSx = {
   textOverflow: "ellipsis",
 } as const;
 
-const getStatusChipSx = (statusTone: "default" | "error" | "neutral") =>
-  ({
-    typography: "body2",
-    height: 34,
-    borderRadius: 1,
-    border: "1px solid",
-    borderColor:
-      statusTone === "error"
-        ? "error.main"
-        : statusTone === "neutral"
-          ? "divider"
-          : designSystemColors.neutralBlack,
-    backgroundColor:
-      statusTone === "error"
-        ? "error.main"
-        : statusTone === "neutral"
-          ? "transparent"
-          : designSystemColors.neutralBlack,
-    color:
-      statusTone === "error" || statusTone === "default"
-        ? "common.white"
-        : designSystemColors.neutralBlack,
-    "& .MuiChip-label": {
-      px: 1.25,
-    },
-  }) as const;
-
-const typeChipSx = {
+const chipBaseSx = {
   typography: "body2",
   height: 34,
   borderRadius: 1,
   border: "1px solid",
-  borderColor: "divider",
-  backgroundColor: "transparent",
-  color: designSystemColors.neutralBlack,
   "& .MuiChip-label": {
     px: 1.25,
   },
 } as const;
+
+const statusToneChipSx: Record<
+  StatusTone,
+  {
+    borderColor: string;
+    backgroundColor: string;
+    color: string;
+  }
+> = {
+  default: {
+    borderColor: designSystemColors.neutralBlack,
+    backgroundColor: designSystemColors.neutralBlack,
+    color: "common.white",
+  },
+  error: {
+    borderColor: "error.main",
+    backgroundColor: "error.main",
+    color: "common.white",
+  },
+  neutral: {
+    borderColor: "divider",
+    backgroundColor: "transparent",
+    color: designSystemColors.neutralBlack,
+  },
+};
+
+const getStatusChipSx = (statusTone: StatusTone) =>
+  ({
+    ...chipBaseSx,
+    ...statusToneChipSx[statusTone],
+  }) as const;
+
+const typeChipSx = {
+  ...chipBaseSx,
+  borderColor: "divider",
+  backgroundColor: "transparent",
+  color: designSystemColors.neutralBlack,
+} as const;
+
+const timeFormatter = new Intl.DateTimeFormat("en-GB", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
 
 const getOrderType = (status: string): string => {
   const normalizedStatus = status.toLowerCase();
@@ -107,10 +122,7 @@ const getLastActivity = (
   updatedAt: Date,
 ): string => {
   const baseDate = lastTrackingUpdateAt ?? updatedAt;
-  const time = new Intl.DateTimeFormat("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(baseDate);
+  const time = timeFormatter.format(baseDate);
 
   return `Updated ${time}`;
 };

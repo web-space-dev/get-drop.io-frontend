@@ -1,7 +1,7 @@
 import {
   type StatusFilter,
   type StatusTone,
-} from "@/features/orders/displayOrders/DisplayOrders";
+} from "@/features/orders/displayOrders/types";
 import { type OrderQueryModel } from "@/queries/orders/types";
 
 const fallbackText = "-";

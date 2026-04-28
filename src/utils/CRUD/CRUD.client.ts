@@ -1,21 +1,25 @@
+import { type BaseFirestoreDocument, type QueryOptions } from "@/types";
+import { db } from "@/utils/firebaseServer/firebaseClient";
 import {
   addDoc,
+  collection,
   deleteDoc as firestoreDeleteDoc,
   getDoc,
   getDocs,
   query,
   Timestamp,
   updateDoc,
-  collection,
 } from "firebase/firestore";
-import { type BaseFirestoreDocument, type QueryOptions } from "@/types";
 import {
   buildQueryConstraints,
   convertTimestamps,
   getCollection,
   getDocument,
 } from "./CRUD.helpers";
-import { db } from "@/utils/firebaseServer/firebaseClient";
+
+type DeleteDocumentOptions = {
+  subcollections?: string[];
+};
 
 export const createDocument = async <T extends BaseFirestoreDocument<Date>>(
   collectionName: string,
@@ -115,10 +119,39 @@ export const updateDocument = async <T extends BaseFirestoreDocument<Date>>(
   return updated;
 };
 
+async function deleteSubcollectionDocuments(
+  parentCollection: string,
+  parentId: string,
+  subcollectionName: string,
+): Promise<void> {
+  const subcollectionRef = collection(
+    db,
+    parentCollection,
+    parentId,
+    subcollectionName,
+  );
+  const snapshot = await getDocs(subcollectionRef);
+
+  if (snapshot.empty) {
+    return;
+  }
+
+  await Promise.all(
+    snapshot.docs.map((snapshotDoc) => firestoreDeleteDoc(snapshotDoc.ref)),
+  );
+}
+
 export const deleteDocument = async (
   collectionName: string,
   id: string,
+  options: DeleteDocumentOptions = {},
 ): Promise<void> => {
+  if (options.subcollections?.length) {
+    for (const subcollectionName of options.subcollections) {
+      await deleteSubcollectionDocuments(collectionName, id, subcollectionName);
+    }
+  }
+
   const docRef = getDocument(collectionName, id);
   await firestoreDeleteDoc(docRef);
 };

@@ -1,5 +1,7 @@
 import { designSystemColors } from "@/config/theme";
 import { useUser } from "@/context/UserContext";
+import AddOrderStepOne from "@/features/orders/addOrder/components/AddOrderStepOne";
+import AddOrderStepTwo from "@/features/orders/addOrder/components/AddOrderStepTwo";
 import { useUpdateOrder } from "@/queries/orders/updateOrder";
 import Button from "@/shared/components/Button";
 import { db } from "@/utils/firebaseServer/firebaseClient";
@@ -19,11 +21,19 @@ import {
   serverTimestamp,
   writeBatch,
 } from "firebase/firestore";
-import AddOrderStepOne from "./components/AddOrderStepOne";
-import AddOrderStepTwo from "./components/AddOrderStepTwo";
 import { useAddOrderModal } from "./hooks/useAddOrderModal";
-import { type AddOrderModalProps, type FormState } from "./types";
+import { type AddOrderModalMode, type FormState } from "./types";
 import { buildOrderPayload, buildOrderUpdatePayload } from "./utils/helpers";
+
+type AddOrderModalProps = {
+  open: boolean;
+  onClose: () => void;
+  mode?: AddOrderModalMode;
+  orderId?: string;
+  initialForm?: FormState;
+  onCreated?: () => void;
+  onUpdated?: () => void;
+};
 
 const initialState: FormState = {
   orderName: "",

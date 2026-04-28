@@ -1,15 +1,23 @@
+import Button from "@/shared/components/Button";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import { alpha } from "@mui/material/styles";
-import Button from "@/shared/components/Button";
-import { type DeleteOrderDialogProps } from "@/features/orders/displayOrder/types";
+import Typography from "@mui/material/Typography";
+
+type DeleteOrderDialogProps = {
+  open: boolean;
+  orderName: string;
+  isDeleting: boolean;
+  deleteError: string | null;
+  onClose: () => void;
+  onConfirmDelete: () => void;
+};
 
 export default function DeleteOrderDialog({
   deleteError,

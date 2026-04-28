@@ -1,3 +1,8 @@
+import { designSystemColors } from "@/config/theme";
+import { type BuyerForm } from "@/features/orders/displayOrder/types";
+import Button from "@/shared/components/Button";
+import InputField from "@/shared/components/InputField";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
@@ -5,14 +10,16 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import Button from "@/shared/components/Button";
-import InputField from "@/shared/components/InputField";
-import { designSystemColors } from "@/config/theme";
-import {
-  type BuyerForm,
-  type EditBuyerDialogProps,
-} from "@/features/orders/displayOrder/types";
+
+type EditBuyerDialogProps = {
+  open: boolean;
+  buyerForm: BuyerForm;
+  onClose: () => void;
+  onBuyerFieldChange: (field: keyof BuyerForm, value: string) => void;
+  onSaveBuyerChanges: () => void;
+  isSaving: boolean;
+  saveError: string | null;
+};
 
 const handleFieldChange = (
   field: keyof BuyerForm,

@@ -15,6 +15,7 @@ import Typography from "@mui/material/Typography";
 import * as React from "react";
 import DisplayOrdersDesktop from "./components/DisplayOrdersDesktop";
 import DisplayOrdersMobile from "./components/DisplayOrdersMobile";
+import { type StatusFilter } from "./types";
 import { filterOrders, getStatusOptions } from "./utils/ordersFiltering";
 
 export type DisplayOrdersProps = {
@@ -28,10 +29,6 @@ export type DisplayOrdersListProps = {
   onUnarchiveOrder?: (orderId: string) => void;
   archivingOrderId?: string | null;
 };
-
-export type StatusTone = "default" | "error" | "neutral";
-
-export type StatusFilter = "all" | "archived" | string;
 
 const filterFieldSx = {
   "& .MuiInputBase-root": {
