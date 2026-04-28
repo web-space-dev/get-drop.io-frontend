@@ -3,11 +3,6 @@ import Button from "@/shared/components/Button";
 import InputField from "@/shared/components/InputField";
 import FormContainer from "@/shared/layouts/auth/AuthFormContainer";
 import { signUp } from "@/utils/firebaseServer/firebaseAuth";
-import {
-  getEmailBlurError,
-  INVALID_EMAIL_MESSAGE,
-  isValidEmail,
-} from "@/features/auth/utils/validation";
 import { getFriendlyRegisterErrorMessage } from "@/utils/firebaseServer/firebaseErrors";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -22,6 +17,12 @@ import * as React from "react";
 
 type RegisterFormProps = React.ComponentPropsWithoutRef<"form">;
 type RegisterFormSubmitHandler = NonNullable<RegisterFormProps["onSubmit"]>;
+
+const INVALID_EMAIL_MESSAGE = "Please enter a valid email address.";
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
 
 export default function RegisterForm(props: RegisterFormProps) {
   const router = useRouter();
@@ -58,7 +59,19 @@ export default function RegisterForm(props: RegisterFormProps) {
   };
 
   const handleEmailBlur = () => {
-    setEmailError(getEmailBlurError(email));
+    const normalizedEmail = email.trim();
+
+    if (normalizedEmail.length === 0) {
+      setEmailError(null);
+      return;
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+      setEmailError(INVALID_EMAIL_MESSAGE);
+      return;
+    }
+
+    setEmailError(null);
   };
 
   const handlePasswordChange = (
