@@ -124,7 +124,7 @@ export default function AddOrderModal({
           const batch = writeBatch(db);
           const orderRef = doc(collection(db, "orders"));
           const trackingEventRef = doc(
-            collection(orderRef, "order_tracking_event"),
+            collection(orderRef, "orderTrackingEvent"),
           );
 
           batch.set(orderRef, {

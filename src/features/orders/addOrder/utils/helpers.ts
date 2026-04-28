@@ -84,7 +84,8 @@ export function buildOrderPayload(
       : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
   return {
-    referenceId: form.orderName.trim(),
+    referenceId: "",
+    orderName: form.orderName.trim(),
     buyerName: form.buyerName.trim(),
     buyerEmail: form.buyerEmail.trim(),
     buyerPhone: form.buyerPhone.trim(),
@@ -103,7 +104,8 @@ export function buildOrderPayload(
 
 export function buildOrderUpdatePayload(form: FormState): UpdateOrderInput {
   return {
-    referenceId: form.orderName.trim(),
+    referenceId: "",
+    orderName: form.orderName.trim(),
     buyerName: form.buyerName.trim(),
     buyerEmail: form.buyerEmail.trim(),
     buyerPhone: form.buyerPhone.trim(),
@@ -116,7 +118,7 @@ export function buildOrderUpdatePayload(form: FormState): UpdateOrderInput {
 
 export function buildInitialFormFromOrder(order: OrderQueryModel): FormState {
   return {
-    orderName: order.referenceId ?? "",
+    orderName: order.orderName ?? order.referenceId ?? "",
     courier: order.carrierName ?? "",
     trackingNumber: order.trackingNumber ?? "",
     direction: order.currentStatus === "inbound" ? "inbound" : "outbound",

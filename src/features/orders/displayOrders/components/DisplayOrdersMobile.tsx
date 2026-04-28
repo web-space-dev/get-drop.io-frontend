@@ -1,15 +1,15 @@
-import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
-import Link from "@mui/material/Link";
-import Typography from "@mui/material/Typography";
-import NextLink from "next/link";
 import { designSystemColors } from "@/config/theme";
+import { type DisplayOrdersListProps } from "@/features/orders/displayOrders/types";
 import {
   displayText,
   formatDateTime,
   statusToneFromValue,
 } from "@/features/orders/displayOrders/utils/ordersFiltering";
-import { type DisplayOrdersListProps } from "@/features/orders/displayOrders/types";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
+import NextLink from "next/link";
 
 const getStatusChipSx = (statusTone: "default" | "error" | "neutral") =>
   ({
@@ -87,7 +87,7 @@ export default function DisplayOrdersMobile({
             }}
           >
             <Typography variant="subtitle2">
-              {displayText(order.referenceId)}
+              {displayText(order.orderName)}
             </Typography>
             <Chip
               size="small"
@@ -108,7 +108,7 @@ export default function DisplayOrdersMobile({
                 Order Name
               </Typography>
               <Typography variant="body2">
-                {displayText(order.referenceId)}
+                {displayText(order.orderName)}
               </Typography>
             </Box>
             <Box sx={{ display: "grid", gap: 0.25 }}>

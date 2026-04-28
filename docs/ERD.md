@@ -23,6 +23,7 @@ erDiagram
     ORDER {
         string id
         string referenceId
+        string orderName
         string buyerName
         string buyerEmail
         string buyerPhone

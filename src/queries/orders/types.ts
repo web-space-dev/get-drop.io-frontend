@@ -2,6 +2,7 @@ import { type BaseFirestoreDocument, type OrderDeliveryAddress } from "@/types";
 
 export type OrderQueryModel = BaseFirestoreDocument<Date> & {
   referenceId: string;
+  orderName: string;
   buyerName: string;
   buyerEmail: string;
   buyerPhone: string;

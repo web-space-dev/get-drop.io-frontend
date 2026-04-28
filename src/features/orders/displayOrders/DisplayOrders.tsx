@@ -1,19 +1,20 @@
-import * as React from "react";
+import { designSystemColors } from "@/config/theme";
+import { useGetOrders } from "@/queries/orders/getOrders";
+import InputField from "@/shared/components/InputField";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import InputAdornment from "@mui/material/InputAdornment";
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import InputField from "@/shared/components/InputField";
-import { designSystemColors } from "@/config/theme";
-import { useDisplayOrders } from "./hooks/useDisplayOrders";
-import { type DisplayOrdersProps } from "./types";
+import * as React from "react";
 import DisplayOrdersDesktop from "./components/DisplayOrdersDesktop";
 import DisplayOrdersMobile from "./components/DisplayOrdersMobile";
+import { type DisplayOrdersProps, type StatusFilter } from "./types";
+import { filterOrders, getStatusOptions } from "./utils/ordersFiltering";
 
 const filterFieldSx = {
   "& .MuiInputBase-root": {
@@ -46,16 +47,17 @@ export default function DisplayOrders({
   sellerId,
   onAddOrder,
 }: DisplayOrdersProps) {
-  const {
-    filteredOrders,
-    isError,
-    isLoading,
-    searchTerm,
-    setSearchTerm,
-    setStatusFilter,
-    statusFilter,
-    statusOptions,
-  } = useDisplayOrders({ sellerId });
+  const [statusFilter, setStatusFilter] = React.useState<StatusFilter>("all");
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  const { data: orders = [], isLoading, isError } = useGetOrders(sellerId);
+
+  const statusOptions = React.useMemo(() => getStatusOptions(orders), [orders]);
+
+  const filteredOrders = React.useMemo(
+    () => filterOrders(orders, statusFilter, searchTerm),
+    [orders, searchTerm, statusFilter],
+  );
 
   if (isLoading) {
     return (
@@ -104,7 +106,9 @@ export default function DisplayOrders({
             fullWidth
             select
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
+            onChange={(event) =>
+              setStatusFilter(event.target.value as StatusFilter)
+            }
             aria-label="Filter orders by status"
             sx={filterFieldSx}
           >

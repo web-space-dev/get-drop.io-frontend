@@ -1,12 +1,13 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import DashboardLayout from "@/shared/layouts/DashboardLayout";
+import { designSystemColors } from "@/config/theme";
+import { useUser } from "@/context/UserContext";
 import AddOrderModal from "@/features/orders/addOrder/AddOrderModal";
 import DisplayOrders from "@/features/orders/displayOrders/DisplayOrders";
-import { useUser } from "@/context/UserContext";
-import { useQueryClient } from "@tanstack/react-query";
 import { getOrdersQueryKey } from "@/queries/orders/getOrders";
+import DashboardLayout from "@/shared/layouts/DashboardLayout";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { useQueryClient } from "@tanstack/react-query";
+import * as React from "react";
 
 export default function OrdersPage() {
   const queryClient = useQueryClient();
@@ -31,7 +32,11 @@ export default function OrdersPage() {
           mb: theme.spacing(3),
         })}
       >
-        <Typography component="h1" variant="h4" sx={{ m: 0 }}>
+        <Typography
+          component="h1"
+          variant="h4"
+          sx={{ color: designSystemColors.neutralBlack }}
+        >
           Orders
         </Typography>
       </Box>

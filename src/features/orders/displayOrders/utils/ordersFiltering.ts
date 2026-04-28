@@ -1,8 +1,8 @@
-import { type OrderQueryModel } from "@/queries/orders/types";
 import {
   type StatusFilter,
   type StatusTone,
 } from "@/features/orders/displayOrders/types";
+import { type OrderQueryModel } from "@/queries/orders/types";
 
 const fallbackText = "-";
 
@@ -77,7 +77,7 @@ export const searchMatchesOrder = (
 
   return [
     order.id,
-    order.referenceId,
+    order.orderName,
     order.buyerName,
     order.buyerEmail,
     order.buyerPhone,

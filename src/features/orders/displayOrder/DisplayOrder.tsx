@@ -110,7 +110,7 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
       >
         <Box component="section" sx={{ display: "grid", gap: 2 }}>
           <OrderSummaryCard
-            orderName={displayText(order.referenceId)}
+            orderName={displayText(order.orderName)}
             items={summaryItems}
             trackingLink={trackingLink}
             isCopied={isCopied}
@@ -166,7 +166,7 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
 
       <DeleteOrderDialog
         open={isDeleteOpen}
-        orderName={displayText(order.referenceId)}
+        orderName={displayText(order.orderName)}
         isDeleting={isDeleting}
         deleteError={deleteError}
         onClose={() => setIsDeleteOpen(false)}

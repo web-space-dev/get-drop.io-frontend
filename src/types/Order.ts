@@ -13,6 +13,7 @@ export type OrderDeliveryAddress = {
 
 export type Order = BaseFirestoreDocument<Timestamp> & {
   referenceId: string;
+  orderName: string;
   buyerName: string;
   buyerEmail: string;
   buyerPhone: string;

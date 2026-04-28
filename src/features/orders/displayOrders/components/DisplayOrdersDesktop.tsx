@@ -1,22 +1,22 @@
+import { designSystemColors } from "@/config/theme";
+import { type DisplayOrdersListProps } from "@/features/orders/displayOrders/types";
+import {
+  displayText,
+  statusToneFromValue,
+} from "@/features/orders/displayOrders/utils/ordersFiltering";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
-import TableBody from "@mui/material/TableBody";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
-import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import NextLink from "next/link";
-import { designSystemColors } from "@/config/theme";
-import {
-  displayText,
-  statusToneFromValue,
-} from "@/features/orders/displayOrders/utils/ordersFiltering";
-import { type DisplayOrdersListProps } from "@/features/orders/displayOrders/types";
 
 const cellSx = {
   typography: "body2",
@@ -181,7 +181,7 @@ export default function DisplayOrdersDesktop({
                 return (
                   <TableRow key={order.id}>
                     <TableCell sx={cellSx}>
-                      {displayText(order.referenceId)}
+                      {displayText(order.orderName)}
                     </TableCell>
                     <TableCell sx={cellSx}>
                       <Typography variant="body2" color="text.secondary">
