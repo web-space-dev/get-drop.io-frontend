@@ -8,11 +8,6 @@ import {
   signInWithEmailAndPassword,
 } from "@/utils/firebaseServer/firebaseAuth";
 import {
-  getEmailBlurError,
-  INVALID_EMAIL_MESSAGE,
-  isValidEmail,
-} from "@/features/auth/utils/validation";
-import {
   getFriendlyLoginErrorMessage,
   getFriendlyResetPasswordErrorMessage,
 } from "@/utils/firebaseServer/firebaseErrors";
@@ -29,6 +24,12 @@ import * as React from "react";
 
 type LoginFormProps = React.ComponentPropsWithoutRef<"form">;
 type LoginFormSubmitHandler = NonNullable<LoginFormProps["onSubmit"]>;
+
+const INVALID_EMAIL_MESSAGE = "Please enter a valid email address.";
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
 
 export default function LoginForm(props: LoginFormProps) {
   const router = useRouter();
@@ -65,7 +66,19 @@ export default function LoginForm(props: LoginFormProps) {
   };
 
   const handleEmailBlur = () => {
-    setEmailError(getEmailBlurError(email));
+    const normalizedEmail = email.trim();
+
+    if (normalizedEmail.length === 0) {
+      setEmailError(null);
+      return;
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+      setEmailError(INVALID_EMAIL_MESSAGE);
+      return;
+    }
+
+    setEmailError(null);
   };
 
   const handlePasswordChange = (
