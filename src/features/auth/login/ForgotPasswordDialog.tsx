@@ -48,7 +48,7 @@ export default function ForgotPasswordDialog({
           <Typography
             component="p"
             variant="body2"
-            color="error.main"
+            color="error"
             sx={{ textAlign: "center", m: 0 }}
           >
             {error}
@@ -58,7 +58,7 @@ export default function ForgotPasswordDialog({
           <Typography
             component="p"
             variant="body2"
-            color="success.main"
+            color="success"
             sx={{ textAlign: "center", m: 0 }}
           >
             {successMessage}

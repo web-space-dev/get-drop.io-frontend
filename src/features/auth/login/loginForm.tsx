@@ -284,7 +284,7 @@ export default function LoginForm(props: LoginFormProps) {
         <Typography
           component="p"
           variant="body2"
-          color="error.main"
+          color="error"
           sx={{ textAlign: "center", m: 0 }}
         >
           {submitError}

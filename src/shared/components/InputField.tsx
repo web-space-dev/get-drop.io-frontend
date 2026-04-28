@@ -25,6 +25,24 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-input": {
     padding: theme.spacing(1.75, 1.5),
   },
+  "& .MuiInputBase-input:-webkit-autofill": {
+    WebkitTextFillColor: theme.palette.text.primary,
+    caretColor: theme.palette.text.primary,
+    WebkitBoxShadow: "0 0 0 1000px transparent inset",
+    transition: "background-color 9999s ease-out 0s",
+  },
+  "& .MuiInputBase-input:-webkit-autofill:hover": {
+    WebkitTextFillColor: theme.palette.text.primary,
+    caretColor: theme.palette.text.primary,
+    WebkitBoxShadow: "0 0 0 1000px transparent inset",
+    transition: "background-color 9999s ease-out 0s",
+  },
+  "& .MuiInputBase-input:-webkit-autofill:focus": {
+    WebkitTextFillColor: theme.palette.text.primary,
+    caretColor: theme.palette.text.primary,
+    WebkitBoxShadow: "0 0 0 1000px transparent inset",
+    transition: "background-color 9999s ease-out 0s",
+  },
   "& .MuiFormHelperText-root": {
     ...theme.typography.caption,
     marginLeft: 0,
