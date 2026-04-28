@@ -1,15 +1,26 @@
 import {
-  type OrderQueryModel,
-  type UpdateOrderInput,
-} from "@/queries/orders/types";
-import {
   type FormState,
   type NotificationChannel,
   type OrderCreateInput,
 } from "@/features/orders/addOrder/types";
-import { dummyDeliveryAddress, initialState } from "./constants";
+import {
+  type OrderQueryModel,
+  type UpdateOrderInput,
+} from "@/queries/orders/types";
 
 const validChannels: NotificationChannel[] = ["email", "whatsapp", "sms"];
+const defaultChannels: NotificationChannel[] = ["email"];
+const defaultAutomaticUpdates: FormState["automaticUpdates"] = {
+  orderSent: true,
+  eta: true,
+};
+const dummyDeliveryAddress = {
+  formattedAddress: "221B Baker Street, London NW1 6XE, United Kingdom",
+  streetAddress: "221B Baker Street",
+  addressLocality: "London",
+  postalCode: "NW1 6XE",
+  addressCountry: "United Kingdom",
+} as const;
 
 function buildNotesFromForm(form: FormState): string {
   const channelsSummary = form.channels.join(", ") || "none";
@@ -21,7 +32,7 @@ function buildNotesFromForm(form: FormState): string {
 function parseChannelsFromNotes(notes: string): NotificationChannel[] {
   const channelsMatch = notes.match(/channels:\s*([^;]+)/i);
   if (!channelsMatch) {
-    return initialState.channels;
+    return defaultChannels;
   }
 
   const channels = channelsMatch[1]
@@ -31,7 +42,7 @@ function parseChannelsFromNotes(notes: string): NotificationChannel[] {
       validChannels.includes(item as NotificationChannel),
     );
 
-  return channels.length > 0 ? channels : initialState.channels;
+  return channels.length > 0 ? channels : defaultChannels;
 }
 
 function parseAutomaticUpdatesFromNotes(
@@ -39,7 +50,7 @@ function parseAutomaticUpdatesFromNotes(
 ): FormState["automaticUpdates"] {
   const updatesMatch = notes.match(/updates:\s*([^;]+)/i);
   if (!updatesMatch) {
-    return initialState.automaticUpdates;
+    return defaultAutomaticUpdates;
   }
 
   const parsed = updatesMatch[1]
@@ -56,10 +67,10 @@ function parseAutomaticUpdatesFromNotes(
   return {
     orderSent: parsed.orderSent
       ? parsed.orderSent.toLowerCase() === "yes"
-      : initialState.automaticUpdates.orderSent,
+      : defaultAutomaticUpdates.orderSent,
     eta: parsed.eta
       ? parsed.eta.toLowerCase() === "yes"
-      : initialState.automaticUpdates.eta,
+      : defaultAutomaticUpdates.eta,
   };
 }
 

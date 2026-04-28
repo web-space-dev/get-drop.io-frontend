@@ -1,13 +1,14 @@
+import { buildInitialFormFromOrder } from "@/features/orders/addOrder/utils/helpers";
+import DashboardLayout from "@/shared/layouts/DashboardLayout";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import AddOrderModal from "@/features/orders/addOrder/AddOrderModal";
-import { buildInitialFormFromOrder } from "@/features/orders/addOrder/utils/mapping";
+import AddOrderModal from "../addOrder/AddOrderModal";
 import ActivityLogSummary from "./components/ActivityLogSummary";
 import AutomatedUpdatesSummary from "./components/AutomatedUpdatesSummary";
 import BuyerSummary from "./components/BuyerSummary";
-import EditBuyerDialog from "./components/EditBuyerDialog";
 import DeleteOrderDialog from "./components/DeleteOrderDialog";
+import EditBuyerDialog from "./components/EditBuyerDialog";
 import OrderActionsSummary from "./components/OrderActionsSummary";
 import OrderSummaryCard, {
   type OrderSummaryItem,
@@ -15,7 +16,6 @@ import OrderSummaryCard, {
 import { useDisplayOrder } from "./hooks/useDisplayOrder";
 import { type DisplayOrderProps } from "./types";
 import { displayText } from "./utils/displayOrderUtils";
-import DashboardLayout from "@/shared/layouts/DashboardLayout";
 
 export default function DisplayOrder({ id }: DisplayOrderProps) {
   const {

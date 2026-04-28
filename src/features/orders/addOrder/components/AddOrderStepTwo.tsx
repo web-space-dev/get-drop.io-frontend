@@ -1,17 +1,24 @@
-import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import IOSSwitch from "@/shared/components/IOSSwitch";
 import { designSystemColors } from "@/config/theme";
-import { channelOptions } from "@/features/orders/addOrder/utils/constants";
 import {
   type FormState,
   type NotificationChannel,
+  type StepTwoSectionErrors,
 } from "@/features/orders/addOrder/types";
+import InputTitle from "@/shared/components/InputTitle";
+import IOSSwitch from "@/shared/components/IOSSwitch";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import MessageOutlinedIcon from "@mui/icons-material/MessageOutlined";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import Divider from "@mui/material/Divider";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import { type ElementType } from "react";
 
 type AddOrderStepTwoProps = {
   form: FormState;
+  sectionErrors: StepTwoSectionErrors;
   onToggleChannel: (channel: NotificationChannel) => void;
   onAutomaticUpdateChange: (
     key: keyof FormState["automaticUpdates"],
@@ -19,8 +26,35 @@ type AddOrderStepTwoProps = {
   ) => void;
 };
 
+const channelOptions: Array<{
+  value: NotificationChannel;
+  label: string;
+  icon: ElementType;
+  usesCredits: boolean;
+}> = [
+  {
+    value: "email",
+    label: "Email",
+    icon: EmailOutlinedIcon,
+    usesCredits: false,
+  },
+  {
+    value: "whatsapp",
+    label: "WhatsApp",
+    icon: WhatsAppIcon,
+    usesCredits: true,
+  },
+  {
+    value: "sms",
+    label: "SMS",
+    icon: MessageOutlinedIcon,
+    usesCredits: true,
+  },
+];
+
 export default function AddOrderStepTwo({
   form,
+  sectionErrors,
   onToggleChannel,
   onAutomaticUpdateChange,
 }: AddOrderStepTwoProps) {
@@ -38,14 +72,15 @@ export default function AddOrderStepTwo({
 
   return (
     <Box component="section" sx={{ display: "grid", gap: 2.25 }}>
-      <Typography variant="h6" color="text.secondary">
+      <Typography
+        variant="body1"
+        sx={{ color: designSystemColors.neutralMeta }}
+      >
         Select how you want Drop to notify your buyer. All fields are optional.
         You can skip updates entirely.
       </Typography>
 
-      <Typography variant="h5" sx={{ color: designSystemColors.neutralBlack }}>
-        Notification Channel
-      </Typography>
+      <InputTitle>Notification Channel</InputTitle>
 
       <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 2 }}>
         {channelOptions.map((channel) => {
@@ -62,9 +97,9 @@ export default function AddOrderStepTwo({
               type="button"
               onClick={() => onToggleChannel(channel.value)}
               sx={(theme) => ({
-                border: `2px solid ${isSelected ? designSystemColors.neutralBlack : theme.palette.divider}`,
+                border: `2px solid ${isSelected ? designSystemColors.neutralBlack : designSystemColors.neutralBlackAlpha10}`,
                 backgroundColor: theme.palette.background.paper,
-                borderRadius: 1.5,
+                borderRadius: 2,
                 cursor: "pointer",
                 color: theme.palette.text.primary,
                 display: "flex",
@@ -159,19 +194,19 @@ export default function AddOrderStepTwo({
           );
         })}
       </Box>
-
-      <Typography
-        variant="h5"
-        sx={{ color: designSystemColors.neutralBlack, mt: 1.5 }}
-      >
-        Automatic Updates
-      </Typography>
+      {sectionErrors.channels ? (
+        <Typography variant="body2" color="error">
+          {sectionErrors.channels}
+        </Typography>
+      ) : null}
+      <Divider sx={{ borderColor: designSystemColors.neutralBlackAlpha10 }} />
+      <InputTitle>Automatic Updates</InputTitle>
 
       <Stack spacing={1.5}>
         <Box
-          sx={(theme) => ({
-            border: `1px solid ${theme.palette.divider}`,
-            borderRadius: 1.5,
+          sx={() => ({
+            border: `1px solid ${designSystemColors.neutralBlackAlpha10}`,
+            borderRadius: 2,
             p: 2,
             display: "flex",
             alignItems: "center",
@@ -180,8 +215,11 @@ export default function AddOrderStepTwo({
           })}
         >
           <Box sx={{ display: "grid", gap: 0.25 }}>
-            <Typography variant="h5">Order Sent</Typography>
-            <Typography variant="body1" color="text.secondary">
+            <InputTitle>Order Sent</InputTitle>
+            <Typography
+              variant="body1"
+              sx={{ color: designSystemColors.neutralMeta }}
+            >
               Will send via selected channel
             </Typography>
           </Box>
@@ -195,8 +233,8 @@ export default function AddOrderStepTwo({
         </Box>
 
         <Box
-          sx={(theme) => ({
-            border: `1px solid ${theme.palette.divider}`,
+          sx={() => ({
+            border: `1px solid ${designSystemColors.neutralBlackAlpha10}`,
             borderRadius: 1.5,
             p: 2,
             display: "flex",
@@ -206,8 +244,11 @@ export default function AddOrderStepTwo({
           })}
         >
           <Box sx={{ display: "grid", gap: 0.25 }}>
-            <Typography variant="h5">ETA: 3 Days Remaining</Typography>
-            <Typography variant="body1" color="text.secondary">
+            <InputTitle>ETA: 3 Days Remaining</InputTitle>
+            <Typography
+              variant="body1"
+              sx={{ color: designSystemColors.neutralMeta }}
+            >
               Will send via selected channel
             </Typography>
           </Box>
@@ -220,6 +261,11 @@ export default function AddOrderStepTwo({
           />
         </Box>
       </Stack>
+      {sectionErrors.automaticUpdates ? (
+        <Typography variant="body2" color="error">
+          {sectionErrors.automaticUpdates}
+        </Typography>
+      ) : null}
     </Box>
   );
 }

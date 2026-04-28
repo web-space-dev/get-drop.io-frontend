@@ -1,5 +1,4 @@
-import { type CreateOrderTrackingEventInput, type Order } from "@/types";
-import { type ElementType } from "react";
+import { type Order } from "@/types";
 
 export type AddOrderModalMode = "create" | "edit";
 
@@ -32,16 +31,22 @@ export type FormState = {
   };
 };
 
+export type StepOneRequiredFieldKey =
+  | "orderName"
+  | "courier"
+  | "trackingNumber";
+
+export type StepOneFieldErrors = Partial<
+  Record<StepOneRequiredFieldKey, string>
+>;
+
+export type StepTwoSectionErrorKey = "channels" | "automaticUpdates";
+
+export type StepTwoSectionErrors = Partial<
+  Record<StepTwoSectionErrorKey, string>
+>;
+
 export type OrderCreateInput = Omit<Order, "id" | "createdAt" | "updatedAt">;
-
-export type TrackingEventCreateInput = CreateOrderTrackingEventInput;
-
-export type ChannelCardOption = {
-  value: NotificationChannel;
-  label: string;
-  icon: ElementType;
-  usesCredits: boolean;
-};
 
 export type OnFieldChange = <K extends keyof FormState>(
   key: K,

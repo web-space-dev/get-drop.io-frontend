@@ -22,10 +22,23 @@ import {
 import AddOrderStepOne from "./components/AddOrderStepOne";
 import AddOrderStepTwo from "./components/AddOrderStepTwo";
 import { useAddOrderModal } from "./hooks/useAddOrderModal";
-import { type AddOrderModalProps } from "./types";
-import { buildDefaultTrackingEvent, initialState } from "./utils/constants";
-import { buildOrderPayload, buildOrderUpdatePayload } from "./utils/mapping";
-import { validateStepOne, validateTrackingEvent } from "./utils/validation";
+import { type AddOrderModalProps, type FormState } from "./types";
+import { buildOrderPayload, buildOrderUpdatePayload } from "./utils/helpers";
+
+const initialState: FormState = {
+  orderName: "",
+  courier: "",
+  trackingNumber: "",
+  direction: "outbound",
+  buyerName: "",
+  buyerEmail: "",
+  buyerPhone: "",
+  channels: ["email"],
+  automaticUpdates: {
+    orderSent: true,
+    eta: true,
+  },
+};
 
 export default function AddOrderModal({
   mode = "create",
@@ -44,10 +57,13 @@ export default function AddOrderModal({
   const {
     step,
     form,
+    stepOneFieldErrors,
+    stepTwoSectionErrors,
     submitError,
     isSubmitting,
     setSubmitError,
     setIsSubmitting,
+    validateBeforeSubmit,
     updateField,
     handleClose,
     handleNext,
@@ -72,9 +88,7 @@ export default function AddOrderModal({
 
   const handleSubmitOrder = () => {
     void (async () => {
-      const error = validateStepOne(form);
-      if (error) {
-        setSubmitError(error);
+      if (!validateBeforeSubmit()) {
         return;
       }
 
@@ -100,13 +114,12 @@ export default function AddOrderModal({
           onUpdated?.();
         } else {
           const payload = buildOrderPayload(form, authUser!.uid);
-          const trackingEvent = buildDefaultTrackingEvent();
-          const trackingEventError = validateTrackingEvent(trackingEvent);
-
-          if (trackingEventError) {
-            setSubmitError(trackingEventError);
-            return;
-          }
+          const trackingEvent = {
+            type: "status_update",
+            status: "created",
+            description: "Order created and awaiting first courier event.",
+            source: "system",
+          };
 
           const batch = writeBatch(db);
           const orderRef = doc(collection(db, "orders"));
@@ -161,7 +174,7 @@ export default function AddOrderModal({
     >
       <Box
         component="header"
-        sx={(theme) => ({
+        sx={() => ({
           display: "flex",
           alignItems: "flex-start",
           justifyContent: "space-between",
@@ -169,7 +182,6 @@ export default function AddOrderModal({
           px: 3,
           pt: 2.5,
           pb: 1.5,
-          borderBottom: `1px solid ${theme.palette.divider}`,
         })}
       >
         <Typography
@@ -190,10 +202,15 @@ export default function AddOrderModal({
       <DialogContent sx={{ px: 3, py: 2.5 }}>
         <Stack spacing={2}>
           {step === 1 ? (
-            <AddOrderStepOne form={form} onFieldChange={updateField} />
+            <AddOrderStepOne
+              form={form}
+              fieldErrors={stepOneFieldErrors}
+              onFieldChange={updateField}
+            />
           ) : (
             <AddOrderStepTwo
               form={form}
+              sectionErrors={stepTwoSectionErrors}
               onToggleChannel={handleToggleChannel}
               onAutomaticUpdateChange={handleAutomaticUpdateChange}
             />
@@ -208,10 +225,9 @@ export default function AddOrderModal({
       </DialogContent>
 
       <DialogActions
-        sx={(theme) => ({
+        sx={() => ({
           px: 3,
           py: 2.25,
-          borderTop: `1px solid ${theme.palette.divider}`,
           justifyContent: "space-between",
         })}
       >

@@ -2,6 +2,7 @@ import { createTheme } from "@mui/material/styles";
 
 export const designSystemColors = {
   neutralBlack: "#0A0A0A",
+  neutralBlackAlpha10: "#0000001A",
   neutralMeta: "#717182",
   dropBlue: "#001FDD",
   deepNavy: "#00024F",
