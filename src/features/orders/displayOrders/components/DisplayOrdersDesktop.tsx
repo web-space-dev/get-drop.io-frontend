@@ -1,13 +1,13 @@
 import { designSystemColors } from "@/config/theme";
-import { type DisplayOrdersListProps } from "@/features/orders/displayOrders/types";
+import { type DisplayOrdersListProps } from "@/features/orders/displayOrders/DisplayOrders";
+import OrderArchiveToggleButton from "@/features/orders/displayOrders/components/OrderArchiveToggleButton";
+import OrderViewButton from "@/features/orders/displayOrders/components/OrderViewButton";
 import {
   displayText,
   statusToneFromValue,
 } from "@/features/orders/displayOrders/utils/ordersFiltering";
-import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
-import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -16,7 +16,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
-import NextLink from "next/link";
 
 const cellSx = {
   typography: "body2",
@@ -118,6 +117,9 @@ const getLastActivity = (
 
 export default function DisplayOrdersDesktop({
   orders,
+  onArchiveOrder,
+  onUnarchiveOrder,
+  archivingOrderId,
 }: DisplayOrdersListProps) {
   return (
     <Box
@@ -177,6 +179,7 @@ export default function DisplayOrdersDesktop({
                   order.currentStatus,
                   hasTrackingUpdate,
                 );
+                const orderHref = order.id ? `/orders/${order.id}` : null;
 
                 return (
                   <TableRow key={order.id}>
@@ -219,26 +222,23 @@ export default function DisplayOrdersDesktop({
                       {getSmartEta(hasTrackingUpdate)}
                     </TableCell>
                     <TableCell sx={cellSx}>
-                      <Link
-                        component={NextLink}
-                        href={`/orders/${order.id}`}
-                        underline="none"
-                        sx={(theme) => ({
-                          ...theme.typography.body2,
-                          color: "inherit",
-                          fontWeight: 600,
+                      <Box
+                        sx={{
                           display: "inline-flex",
                           alignItems: "center",
-                          gap: theme.spacing(0.5),
-                          textDecoration: "none",
-                          "&:hover": {
-                            textDecoration: "none",
-                          },
-                        })}
+                          gap: 0.75,
+                        }}
                       >
-                        View
-                        <ArrowForwardRoundedIcon fontSize="small" />
-                      </Link>
+                        <OrderViewButton href={orderHref} />
+
+                        <OrderArchiveToggleButton
+                          orderId={order.id}
+                          isArchived={Boolean(order.archivedAt)}
+                          isBusy={archivingOrderId === order.id}
+                          onArchiveOrder={onArchiveOrder}
+                          onUnarchiveOrder={onUnarchiveOrder}
+                        />
+                      </Box>
                     </TableCell>
                   </TableRow>
                 );

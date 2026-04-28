@@ -1,7 +1,7 @@
 import {
   type StatusFilter,
   type StatusTone,
-} from "@/features/orders/displayOrders/types";
+} from "@/features/orders/displayOrders/DisplayOrders";
 import { type OrderQueryModel } from "@/queries/orders/types";
 
 const fallbackText = "-";
@@ -97,14 +97,25 @@ export const searchMatchesOrder = (
 
 export const getStatusOptions = (orders: OrderQueryModel[]): string[] => {
   const statuses = new Set<string>();
+  let hasArchivedOrders = false;
 
   orders.forEach((order) => {
+    if (order.archivedAt) {
+      hasArchivedOrders = true;
+      return;
+    }
+
     if (order.currentStatus) {
       statuses.add(order.currentStatus);
     }
   });
 
-  return ["all", ...Array.from(statuses).sort((a, b) => a.localeCompare(b))];
+  const activeOptions = [
+    "all",
+    ...Array.from(statuses).sort((a, b) => a.localeCompare(b)),
+  ];
+
+  return hasArchivedOrders ? [...activeOptions, "archived"] : activeOptions;
 };
 
 export const filterOrders = (
@@ -113,6 +124,20 @@ export const filterOrders = (
   searchTerm: string,
 ): OrderQueryModel[] => {
   return orders.filter((order) => {
+    const isArchived = Boolean(order.archivedAt);
+
+    if (statusFilter === "archived") {
+      if (!isArchived) {
+        return false;
+      }
+
+      return searchMatchesOrder(order, searchTerm);
+    }
+
+    if (isArchived) {
+      return false;
+    }
+
     const statusMatches =
       statusFilter === "all" || order.currentStatus === statusFilter;
 

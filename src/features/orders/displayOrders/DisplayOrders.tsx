@@ -1,5 +1,7 @@
 import { designSystemColors } from "@/config/theme";
 import { useGetOrders } from "@/queries/orders/getOrders";
+import { type OrderQueryModel } from "@/queries/orders/types";
+import { useUpdateOrder } from "@/queries/orders/updateOrder";
 import InputField from "@/shared/components/InputField";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -13,8 +15,23 @@ import Typography from "@mui/material/Typography";
 import * as React from "react";
 import DisplayOrdersDesktop from "./components/DisplayOrdersDesktop";
 import DisplayOrdersMobile from "./components/DisplayOrdersMobile";
-import { type DisplayOrdersProps, type StatusFilter } from "./types";
 import { filterOrders, getStatusOptions } from "./utils/ordersFiltering";
+
+export type DisplayOrdersProps = {
+  sellerId?: string;
+  onAddOrder?: () => void;
+};
+
+export type DisplayOrdersListProps = {
+  orders: OrderQueryModel[];
+  onArchiveOrder?: (orderId: string) => void;
+  onUnarchiveOrder?: (orderId: string) => void;
+  archivingOrderId?: string | null;
+};
+
+export type StatusTone = "default" | "error" | "neutral";
+
+export type StatusFilter = "all" | "archived" | string;
 
 const filterFieldSx = {
   "& .MuiInputBase-root": {
@@ -49,14 +66,61 @@ export default function DisplayOrders({
 }: DisplayOrdersProps) {
   const [statusFilter, setStatusFilter] = React.useState<StatusFilter>("all");
   const [searchTerm, setSearchTerm] = React.useState("");
+  const [archiveError, setArchiveError] = React.useState<string | null>(null);
+  const [archivingOrderId, setArchivingOrderId] = React.useState<string | null>(
+    null,
+  );
 
   const { data: orders = [], isLoading, isError } = useGetOrders(sellerId);
+  const updateOrderMutation = useUpdateOrder();
 
   const statusOptions = React.useMemo(() => getStatusOptions(orders), [orders]);
 
   const filteredOrders = React.useMemo(
     () => filterOrders(orders, statusFilter, searchTerm),
     [orders, searchTerm, statusFilter],
+  );
+
+  const handleArchiveOrder = React.useCallback(
+    (orderId: string) => {
+      void (async () => {
+        setArchiveError(null);
+        setArchivingOrderId(orderId);
+
+        try {
+          await updateOrderMutation.mutateAsync({
+            id: orderId,
+            updates: { archivedAt: new Date() },
+          });
+        } catch {
+          setArchiveError("Unable to update archive status right now.");
+        } finally {
+          setArchivingOrderId(null);
+        }
+      })();
+    },
+    [updateOrderMutation],
+  );
+
+  const handleUnarchiveOrder = React.useCallback(
+    (orderId: string) => {
+      void (async () => {
+        setArchiveError(null);
+        setArchivingOrderId(orderId);
+
+        try {
+          await updateOrderMutation.mutateAsync({
+            id: orderId,
+            updates: { archivedAt: null },
+          });
+        } catch {
+          setArchiveError("Unable to update archive status right now.");
+        } finally {
+          setArchivingOrderId(null);
+        }
+      })();
+    },
+    [updateOrderMutation],
   );
 
   if (isLoading) {
@@ -80,6 +144,8 @@ export default function DisplayOrders({
 
   return (
     <Box component="section" sx={{ display: "grid", gap: 2 }}>
+      {archiveError ? <Alert severity="error">{archiveError}</Alert> : null}
+
       <Box
         sx={(theme) => ({
           display: "grid",
@@ -118,7 +184,11 @@ export default function DisplayOrders({
                 value={option}
                 sx={{ typography: "body2" }}
               >
-                {option === "all" ? "Active" : option}
+                {option === "all"
+                  ? "Active"
+                  : option === "archived"
+                    ? "Archived"
+                    : option}
               </MenuItem>
             ))}
           </InputField>
@@ -190,8 +260,18 @@ export default function DisplayOrders({
         </Box>
       ) : (
         <>
-          <DisplayOrdersDesktop orders={filteredOrders} />
-          <DisplayOrdersMobile orders={filteredOrders} />
+          <DisplayOrdersDesktop
+            orders={filteredOrders}
+            onArchiveOrder={handleArchiveOrder}
+            onUnarchiveOrder={handleUnarchiveOrder}
+            archivingOrderId={archivingOrderId}
+          />
+          <DisplayOrdersMobile
+            orders={filteredOrders}
+            onArchiveOrder={handleArchiveOrder}
+            onUnarchiveOrder={handleUnarchiveOrder}
+            archivingOrderId={archivingOrderId}
+          />
         </>
       )}
     </Box>
