@@ -1,6 +1,6 @@
-import * as React from "react";
-import { useRouter } from "next/router";
 import { useUser } from "@/context/UserContext";
+import { useRouter } from "next/router";
+import * as React from "react";
 import {
   getUnauthenticatedRedirectPath,
   requiresAuthentication,
@@ -17,17 +17,17 @@ export default function UnauthenticatedGuard({
   const { authUser, isLoading } = useUser();
 
   const isSellerDashboardRoute = requiresAuthentication(router.pathname);
-  const shouldRedirectToRegister =
+  const shouldRedirectToLogin =
     isSellerDashboardRoute && !isLoading && authUser === null;
   const redirectPath = getUnauthenticatedRedirectPath(router.pathname);
 
   React.useEffect(() => {
-    if (shouldRedirectToRegister) {
+    if (shouldRedirectToLogin) {
       void router.replace(redirectPath);
     }
-  }, [redirectPath, router, shouldRedirectToRegister]);
+  }, [redirectPath, router, shouldRedirectToLogin]);
 
-  if (isSellerDashboardRoute && (isLoading || shouldRedirectToRegister)) {
+  if (isSellerDashboardRoute && (isLoading || shouldRedirectToLogin)) {
     return null;
   }
 

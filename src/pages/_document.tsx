@@ -1,27 +1,37 @@
-import * as React from "react";
-import {
-  Html,
-  Head,
-  Main,
-  NextScript,
-  DocumentProps,
-  DocumentContext,
-} from "next/document";
+import theme from "@/config/theme";
 import {
   DocumentHeadTags,
   DocumentHeadTagsProps,
+  createEmotionCache,
   documentGetInitialProps,
 } from "@mui/material-nextjs/v16-pagesRouter";
-import theme, { parkinsans } from "@/config/theme";
+import {
+  DocumentContext,
+  DocumentProps,
+  Head,
+  Html,
+  Main,
+  NextScript,
+} from "next/document";
 
 export default function MyDocument(
   props: DocumentProps & DocumentHeadTagsProps,
 ) {
   return (
-    <Html lang="en" className={parkinsans.className}>
+    <Html lang="en">
       <Head>
         {/* PWA primary color */}
         <meta name="theme-color" content={theme.palette.primary.main} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@400;600;700&display=swap"
+        />
         <link rel="icon" href="/favicon.ico" />
         <DocumentHeadTags {...props} />
       </Head>
@@ -34,6 +44,8 @@ export default function MyDocument(
 }
 
 MyDocument.getInitialProps = async (ctx: DocumentContext) => {
-  const finalProps = await documentGetInitialProps(ctx);
+  const finalProps = await documentGetInitialProps(ctx, {
+    emotionCache: createEmotionCache({ key: "css" }),
+  });
   return finalProps;
 };

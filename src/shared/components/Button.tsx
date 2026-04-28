@@ -1,4 +1,3 @@
-import * as React from "react";
 import MuiButton, {
   type ButtonProps as MuiButtonProps,
 } from "@mui/material/Button";

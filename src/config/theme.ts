@@ -1,4 +1,3 @@
-import { Parkinsans } from "next/font/google";
 import { createTheme } from "@mui/material/styles";
 
 export const designSystemColors = {
@@ -13,12 +12,6 @@ export const designSystemColors = {
   error: "#FD2D4C",
   textSecondary: "#334155",
 } as const;
-
-export const parkinsans = Parkinsans({
-  weight: ["400", "600", "700"],
-  subsets: ["latin"],
-  display: "swap",
-});
 
 const headingDesktop = {
   h1: {
@@ -121,7 +114,8 @@ const theme = createTheme({
     divider: designSystemColors.deepNavy,
   },
   typography: {
-    fontFamily: parkinsans.style.fontFamily,
+    fontFamily:
+      '"Parkinsans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     h1: {
       ...headingDesktop.h1,
       "@media (max-width:600px)": headingMobile.h1,

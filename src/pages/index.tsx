@@ -1,4 +1,3 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
@@ -10,7 +9,7 @@ const HomeContainer = styled(Box)(({ theme }) => ({
   paddingRight: `max(${theme.spacing(3)}, ${layoutGrid.mobile.marginX}px)`,
   paddingTop: theme.spacing(8),
   paddingBottom: theme.spacing(10),
-  background: `linear-gradient(120deg, ${designSystemColors.offWhite}F2 0%, ${designSystemColors.lavendar}BF 45%, ${designSystemColors.powderBlue}A6 100%)`,
+  background: designSystemColors.background,
   [theme.breakpoints.up("md")]: {
     paddingLeft: `${layoutGrid.desktop.marginX}px`,
     paddingRight: `${layoutGrid.desktop.marginX}px`,

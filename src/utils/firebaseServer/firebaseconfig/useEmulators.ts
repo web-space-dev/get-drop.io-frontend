@@ -17,6 +17,18 @@ function parseHostPort(value: string, name: string): [string, number] {
   return [host, port];
 }
 
+function resolveClientReachableHost(host: string): string {
+  if (typeof window === "undefined") {
+    return host;
+  }
+
+  if (host === "127.0.0.1" || host === "localhost") {
+    return window.location.hostname || host;
+  }
+
+  return host;
+}
+
 export function connectClientToEmulators(services: {
   auth: Auth;
   db: Firestore;
@@ -46,11 +58,15 @@ export function connectClientToEmulators(services: {
     "NEXT_PUBLIC_STORAGE_EMULATOR_HOST",
   );
 
-  connectFirestoreEmulator(services.db, firestoreHostname, firestorePort);
-  connectAuthEmulator(services.auth, `http://${authHostname}:${authPort}`, {
+  const firestoreConnectHost = resolveClientReachableHost(firestoreHostname);
+  const authConnectHost = resolveClientReachableHost(authHostname);
+  const storageConnectHost = resolveClientReachableHost(storageHostname);
+
+  connectFirestoreEmulator(services.db, firestoreConnectHost, firestorePort);
+  connectAuthEmulator(services.auth, `http://${authConnectHost}:${authPort}`, {
     disableWarnings: true,
   });
-  connectStorageEmulator(services.storage, storageHostname, storagePort);
+  connectStorageEmulator(services.storage, storageConnectHost, storagePort);
 
   globalThis.__firebaseEmulatorsConnected = true;
 }

@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd(),
   },
+  allowedDevOrigins: ["192.168.0.27"],
   output: "standalone",
   trailingSlash: true,
   env: {
