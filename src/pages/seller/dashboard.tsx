@@ -4,8 +4,13 @@ import ContentSectionCard from "@/shared/components/ContentSectionCard";
 import InlineErrorText from "@/shared/components/InlineErrorText";
 import PageHeading from "@/shared/components/PageHeading";
 import { signOut } from "@/utils/firebaseServer/firebaseAuth";
-import { useRouter } from "next/router";
+import { type GetServerSideProps } from "next";
+import { useRouter } from "next/compat/router";
 import * as React from "react";
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  return { props: {} };
+};
 
 export default function SellerDashboard() {
   const router = useRouter();
@@ -19,7 +24,12 @@ export default function SellerDashboard() {
 
       try {
         await signOut();
-        await router.push("/auth/login");
+
+        if (router) {
+          await router.push("/auth/login");
+        } else if (typeof window !== "undefined") {
+          window.location.assign("/auth/login");
+        }
       } catch {
         setSignOutError("Unable to sign out right now. Please try again.");
         setIsSigningOut(false);

@@ -12,7 +12,7 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { FirebaseError } from "firebase/app";
 import NextLink from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/compat/router";
 import * as React from "react";
 
 type RegisterFormProps = React.ComponentPropsWithoutRef<"form">;
@@ -45,7 +45,14 @@ export default function RegisterForm(props: RegisterFormProps) {
 
   React.useEffect(() => {
     if (!isLoading && authUser) {
-      void router.replace("/seller/dashboard");
+      if (router) {
+        void router.replace("/seller/dashboard");
+        return;
+      }
+
+      if (typeof window !== "undefined") {
+        window.location.assign("/seller/dashboard");
+      }
     }
   }, [authUser, isLoading, router]);
 
@@ -163,7 +170,12 @@ export default function RegisterForm(props: RegisterFormProps) {
       try {
         await signUp(normalizedEmail, password);
         onSubmit?.(event);
-        await router.push("/seller/dashboard");
+
+        if (router) {
+          await router.push("/seller/dashboard");
+        } else if (typeof window !== "undefined") {
+          window.location.assign("/seller/dashboard");
+        }
       } catch (error) {
         const friendlyMessage = getFriendlyRegisterErrorMessage(error);
 
