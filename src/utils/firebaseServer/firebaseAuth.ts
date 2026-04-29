@@ -11,32 +11,29 @@ import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "./firebaseClient";
 
 function getResetRedirectUrl(): string {
+  const appendResetSuccessParam = (baseUrl: string): string => {
+    const redirectUrl = new URL("/auth/login", baseUrl);
+    redirectUrl.searchParams.set("passwordReset", "success");
+    return redirectUrl.toString();
+  };
+
   const envAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
 
   if (envAppUrl) {
-    try {
-      return new URL("/auth/login", envAppUrl).toString();
-    } catch {
-      // Fall through to runtime/browser-based URL resolution.
-    }
+    return appendResetSuccessParam(envAppUrl);
   }
 
   if (typeof window !== "undefined") {
-    return new URL("/auth/login", window.location.origin).toString();
+    return appendResetSuccessParam(window.location.origin);
   }
 
-  return "http://localhost:3000/auth/login";
+  return appendResetSuccessParam("http://localhost:3000");
 }
 
 export function onAuthStateChanged(
   cb: (user: User | null) => void,
 ): () => void {
-  try {
-    return _onAuthStateChanged(auth, cb);
-  } catch (error) {
-    console.error("Error subscribing to auth state changes:", error);
-    throw error;
-  }
+  return _onAuthStateChanged(auth, cb);
 }
 
 export function onIdTokenChanged(
@@ -116,12 +113,7 @@ export async function signOut(): Promise<void> {
 }
 
 export function getCurrentUser(): User | null {
-  try {
-    return auth.currentUser;
-  } catch (error) {
-    console.error("Error getting current user:", error);
-    return null;
-  }
+  return auth.currentUser;
 }
 
 export async function resetPassword(email: string): Promise<void> {

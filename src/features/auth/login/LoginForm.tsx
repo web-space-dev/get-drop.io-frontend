@@ -66,6 +66,10 @@ export default function LoginForm(props: LoginFormProps) {
   );
 
   const normalizedEmail = email.trim();
+  const passwordResetSuccessMessage =
+    router.query.passwordReset === "success"
+      ? "Your password has been successfully reset."
+      : null;
   const isLoginFormValid =
     normalizedEmail.length > 0 && isValidEmail(normalizedEmail) && !!password;
 
@@ -219,6 +223,16 @@ export default function LoginForm(props: LoginFormProps) {
       >
         Welcome back
       </Typography>
+      {passwordResetSuccessMessage ? (
+        <Typography
+          component="p"
+          variant="body2"
+          color="text.secondary"
+          sx={{ textAlign: "center", m: 0 }}
+        >
+          {passwordResetSuccessMessage}
+        </Typography>
+      ) : null}
       <InputField
         required
         id="email"

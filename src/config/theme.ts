@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material/styles";
+import { Parkinsans } from "next/font/google";
 
 export const designSystemColors = {
   neutralBlack: "#0A0A0A",
@@ -14,6 +15,11 @@ export const designSystemColors = {
   textSecondary: "#334155",
 } as const;
 
+export const parkinsans = Parkinsans({
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+  adjustFontFallback: false, // This silences the warning
+});
 const headingDesktop = {
   h1: {
     fontSize: "58px",

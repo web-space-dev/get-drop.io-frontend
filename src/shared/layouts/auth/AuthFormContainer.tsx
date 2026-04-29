@@ -40,7 +40,7 @@ export default function AuthFormContainer({
     <StyledFormContainer noValidate fieldGap={fieldGap} {...props}>
       <LogoContainer>
         <LogoImage
-          src="/logos/Drop-Logo-Full-Blue.png"
+          src={"/logos/Drop-Logo-Full-Blue.png"}
           alt="Drop logo"
           width={400}
           height={120}
