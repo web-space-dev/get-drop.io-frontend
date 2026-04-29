@@ -1,4 +1,4 @@
-import LoginForm from "@/features/auth/login/loginForm";
+import LoginForm from "@/features/auth/login/Login2Form";
 import AuthLayout from "@/shared/layouts/auth/AuthLayout";
 
 export default function LoginPage() {
