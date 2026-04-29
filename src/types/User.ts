@@ -1,8 +1,8 @@
 import { type User } from "firebase/auth";
 import { type Timestamp } from "firebase/firestore";
+import { type BaseFirestoreDocument } from "./baseFirestoreDocument";
 
-export type SellerUserContext = {
-  id: string;
+export type SellerUserContext = BaseFirestoreDocument<Timestamp> & {
   businessName: string;
   email: string;
   status: string;
@@ -10,11 +10,9 @@ export type SellerUserContext = {
   primaryColour: string;
   messagesUsedThisMonth: number;
   topupBalance: number;
-  createdAt: Timestamp | null;
-  updatedAt: Timestamp | null;
 };
 
-export type UserContextValue = {
+export type SellerContextValue = {
   authUser: User | null;
   seller: SellerUserContext | null;
   isLoading: boolean;

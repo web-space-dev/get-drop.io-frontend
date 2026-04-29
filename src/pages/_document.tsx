@@ -2,8 +2,10 @@ import theme, { parkinsans } from "@/config/theme";
 import {
   DocumentHeadTags,
   DocumentHeadTagsProps,
+  createEmotionCache,
   documentGetInitialProps,
 } from "@mui/material-nextjs/v16-pagesRouter";
+
 import {
   DocumentContext,
   DocumentProps,
@@ -34,6 +36,12 @@ export default function MyDocument(
 }
 
 MyDocument.getInitialProps = async (ctx: DocumentContext) => {
-  const finalProps = await documentGetInitialProps(ctx);
-  return finalProps;
+  try {
+    const finalProps = await documentGetInitialProps(ctx, {
+      emotionCache: createEmotionCache({ key: "css" }),
+    });
+    return finalProps;
+  } catch (error) {
+    console.error("Error creating Emotion cache:", error);
+  }
 };

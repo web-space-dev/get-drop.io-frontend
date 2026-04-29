@@ -1,0 +1,302 @@
+import {
+  INVALID_EMAIL_MESSAGE,
+  isValidEmail,
+} from "@/features/auth/utils/helpers";
+import {
+  type BuyerForm,
+  type ChannelOption,
+  type UpdateRules,
+} from "@/features/orders/displayOrder/types";
+import {
+  getSmartEta,
+  getTimelineEvents,
+  getTrackingLink,
+} from "@/features/orders/displayOrder/utils/displayOrderUtils";
+import { useDeleteOrder } from "@/queries/orders/deleteOrder";
+import { useGetOrderById } from "@/queries/orders/getOrderById";
+import { useUpdateOrder } from "@/queries/orders/updateOrder";
+import { useArchiveOrder } from "@/shared/hooks/useArchiveOrder";
+import { useRouter } from "next/router";
+import * as React from "react";
+
+const validChannels: ChannelOption[] = ["whatsapp", "sms", "email"];
+
+const initialUpdateRules: UpdateRules = {
+  etaThreeDays: true,
+  etaOneDay: false,
+  outForDelivery: false,
+  delivered: false,
+};
+
+const initialBuyerForm: BuyerForm = {
+  buyerName: "",
+  buyerEmail: "",
+  buyerPhone: "",
+  streetAddress: "",
+  addressLocality: "",
+  postalCode: "",
+  addressCountry: "",
+};
+
+function buildDeliveryAddressFromBuyerForm(buyerForm: BuyerForm) {
+  const streetAddress = buyerForm.streetAddress.trim();
+  const addressLocality = buyerForm.addressLocality.trim();
+  const postalCode = buyerForm.postalCode.trim();
+  const addressCountry = buyerForm.addressCountry.trim();
+
+  const formattedAddress = [
+    streetAddress,
+    addressLocality,
+    postalCode,
+    addressCountry,
+  ]
+    .filter((part) => part.length > 0)
+    .join(", ");
+
+  return {
+    ...(formattedAddress ? { formattedAddress } : {}),
+    ...(streetAddress ? { streetAddress } : {}),
+    ...(addressLocality ? { addressLocality } : {}),
+    ...(postalCode ? { postalCode } : {}),
+    ...(addressCountry ? { addressCountry } : {}),
+  };
+}
+
+export function useDisplayOrder(id: string) {
+  const router = useRouter();
+  const deleteOrderMutation = useDeleteOrder();
+  const updateOrderMutation = useUpdateOrder();
+  const { toggleArchiveOrder, archivingOrderId } = useArchiveOrder();
+  const { data: order, isLoading, isError } = useGetOrderById(id);
+
+  const [isEditOpen, setIsEditOpen] = React.useState(false);
+  const [isEditOrderOpen, setIsEditOrderOpen] = React.useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
+  const [deleteError, setDeleteError] = React.useState<string | null>(null);
+  const [saveBuyerError, setSaveBuyerError] = React.useState<string | null>(
+    null,
+  );
+  const [channel, setChannel] = React.useState<ChannelOption>("whatsapp");
+  const [isCopied, setIsCopied] = React.useState(false);
+  const [updateRules, setUpdateRules] =
+    React.useState<UpdateRules>(initialUpdateRules);
+  const [buyerForm, setBuyerForm] = React.useState<BuyerForm>(initialBuyerForm);
+
+  const trackingLink = React.useMemo(
+    () => (order ? getTrackingLink(order) : "-"),
+    [order],
+  );
+
+  const smartEta = React.useMemo(
+    () => (order ? getSmartEta(order) : "Pending ETA"),
+    [order],
+  );
+
+  const timelineEvents = React.useMemo(
+    () => (order ? getTimelineEvents(order) : []),
+    [order],
+  );
+
+  const isOrderCompleted = React.useMemo(
+    () => (order?.currentStatus ?? "").toLowerCase() === "complete",
+    [order?.currentStatus],
+  );
+
+  const isOrderArchived = React.useMemo(
+    () => Boolean(order?.archivedAt),
+    [order?.archivedAt],
+  );
+
+  const handleCopyTrackingLink = () => {
+    if (trackingLink === "-") {
+      return;
+    }
+
+    void (async () => {
+      try {
+        await navigator.clipboard.writeText(trackingLink);
+        setIsCopied(true);
+        window.setTimeout(() => setIsCopied(false), 1600);
+      } catch {
+        setIsCopied(false);
+      }
+    })();
+  };
+
+  const handleOpenEditBuyer = () => {
+    if (!order) {
+      return;
+    }
+
+    setSaveBuyerError(null);
+    setBuyerForm({
+      buyerName: order.buyerName ?? "",
+      buyerEmail: order.buyerEmail ?? "",
+      buyerPhone: order.buyerPhone ?? "",
+      streetAddress: order.deliveryAddress?.streetAddress ?? "",
+      addressLocality: order.deliveryAddress?.addressLocality ?? "",
+      postalCode: order.deliveryAddress?.postalCode ?? "",
+      addressCountry: order.deliveryAddress?.addressCountry ?? "",
+    });
+    setIsEditOpen(true);
+  };
+
+  const handleSaveBuyerChanges = async (): Promise<"success" | "error"> => {
+    if (!order) {
+      return "error";
+    }
+
+    setSaveBuyerError(null);
+
+    const normalizedBuyerEmail = buyerForm.buyerEmail.trim();
+
+    if (
+      normalizedBuyerEmail.length > 0 &&
+      !isValidEmail(normalizedBuyerEmail)
+    ) {
+      setSaveBuyerError(INVALID_EMAIL_MESSAGE);
+      return "error";
+    }
+
+    try {
+      await updateOrderMutation.mutateAsync({
+        id: order.id,
+        updates: {
+          buyerName: buyerForm.buyerName.trim(),
+          buyerEmail: buyerForm.buyerEmail.trim(),
+          buyerPhone: buyerForm.buyerPhone.trim(),
+          deliveryAddress: buildDeliveryAddressFromBuyerForm(buyerForm),
+        },
+      });
+      setIsEditOpen(false);
+      return "success";
+    } catch {
+      setSaveBuyerError("Unable to save buyer information right now.");
+      return "error";
+    }
+  };
+
+  const handleOpenDelete = () => {
+    setDeleteError(null);
+    setIsDeleteOpen(true);
+  };
+
+  const handleOpenEditOrder = () => {
+    setIsEditOrderOpen(true);
+  };
+
+  const handleCloseEditOrder = () => {
+    setIsEditOrderOpen(false);
+  };
+
+  const handleDeleteCurrentOrder = () => {
+    if (!order) {
+      return;
+    }
+
+    void (async () => {
+      setDeleteError(null);
+
+      try {
+        await deleteOrderMutation.mutateAsync(order.id);
+        setIsDeleteOpen(false);
+        await router.push({
+          pathname: "/orders",
+          query: { toast: "deleted" },
+        });
+      } catch {
+        const message = "Unable to delete this order right now.";
+        setDeleteError(message);
+      }
+    })();
+  };
+
+  const handleMarkAsCompleted = async (): Promise<"success" | "error"> => {
+    if (!order) {
+      return "error";
+    }
+
+    if (isOrderCompleted) {
+      return "success";
+    }
+
+    try {
+      await updateOrderMutation.mutateAsync({
+        id: order.id,
+        updates: { currentStatus: "complete" },
+      });
+      return "success";
+    } catch {
+      return "error";
+    }
+  };
+
+  const handleToggleArchive = async (): Promise<
+    "archived" | "unarchived" | "error"
+  > => {
+    if (!order) {
+      return "error";
+    }
+
+    return toggleArchiveOrder(order.id, isOrderArchived);
+  };
+
+  const handleBuyerFieldChange = (field: keyof BuyerForm, value: string) => {
+    setBuyerForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const handleRuleChange = (key: keyof UpdateRules, checked: boolean) => {
+    setUpdateRules((current) => ({
+      ...current,
+      [key]: checked,
+    }));
+  };
+
+  const handleChannelChange = (value: string) => {
+    if (validChannels.includes(value as ChannelOption)) {
+      setChannel(value as ChannelOption);
+    }
+  };
+
+  return {
+    order,
+    isLoading,
+    isError,
+    channel,
+    updateRules,
+    buyerForm,
+    isCopied,
+    isEditOpen,
+    isEditOrderOpen,
+    isDeleteOpen,
+    deleteError,
+    isOrderCompleted,
+    isOrderArchived,
+    saveBuyerError,
+    isDeleting: deleteOrderMutation.isPending,
+    isUpdatingOrder: updateOrderMutation.isPending,
+    isArchiving: archivingOrderId === order?.id,
+    isSavingBuyer: updateOrderMutation.isPending,
+    smartEta,
+    trackingLink,
+    timelineEvents,
+    setIsEditOpen,
+    setIsEditOrderOpen,
+    setIsDeleteOpen,
+    handleCopyTrackingLink,
+    handleOpenEditBuyer,
+    handleOpenEditOrder,
+    handleCloseEditOrder,
+    handleSaveBuyerChanges,
+    handleOpenDelete,
+    handleDeleteCurrentOrder,
+    handleMarkAsCompleted,
+    handleToggleArchive,
+    handleBuyerFieldChange,
+    handleRuleChange,
+    handleChannelChange,
+  };
+}

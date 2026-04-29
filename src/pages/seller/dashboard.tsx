@@ -1,5 +1,5 @@
 import Button from "@/shared/components/Button";
-import CenteredPageContainer from "@/shared/components/CenteredPageContainer";
+import DashboardLayout from "@/shared/layouts/DashboardLayout";
 import ContentSectionCard from "@/shared/components/ContentSectionCard";
 import InlineErrorText from "@/shared/components/InlineErrorText";
 import PageHeading from "@/shared/components/PageHeading";
@@ -28,7 +28,7 @@ export default function SellerDashboard() {
   };
 
   return (
-    <CenteredPageContainer>
+    <DashboardLayout>
       <ContentSectionCard>
         <PageHeading>Seller Dashboard</PageHeading>
         {signOutError ? (
@@ -38,6 +38,6 @@ export default function SellerDashboard() {
           {isSigningOut ? "Signing out..." : "Sign out"}
         </Button>
       </ContentSectionCard>
-    </CenteredPageContainer>
+    </DashboardLayout>
   );
 }

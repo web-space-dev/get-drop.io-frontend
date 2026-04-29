@@ -1,10 +1,9 @@
+import { useGetAuthState } from "@/queries/user/getAuthState";
+import { useGetSellerById } from "@/queries/user/getSellerById";
+import { type SellerContextValue, type SellerUserContext } from "@/types/User";
 import * as React from "react";
-import { onAuthStateChanged, type User } from "firebase/auth";
-import { doc, onSnapshot, type Timestamp } from "firebase/firestore";
-import { auth, db } from "@/utils/firebaseServer/firebaseClient";
-import { type SellerUserContext, type UserContextValue } from "@/types/User";
 
-const UserContext = React.createContext<UserContextValue | undefined>(
+const UserContext = React.createContext<SellerContextValue | undefined>(
   undefined,
 );
 
@@ -13,68 +12,14 @@ type UserProviderProps = {
 };
 
 export function UserProvider({ children }: UserProviderProps) {
-  const [authUser, setAuthUser] = React.useState<User | null>(null);
-  const [seller, setSeller] = React.useState<SellerUserContext | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const authStateQuery = useGetAuthState();
+  const authUser = authStateQuery.authUser;
 
-  React.useEffect(() => {
-    let unsubscribeSeller: (() => void) | null = null;
+  const sellerQuery = useGetSellerById(authUser?.uid);
+  const seller: SellerUserContext | null = sellerQuery.data ?? null;
 
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      setAuthUser(user);
-
-      if (unsubscribeSeller) {
-        unsubscribeSeller();
-        unsubscribeSeller = null;
-      }
-
-      if (!user) {
-        setSeller(null);
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(true);
-
-      const sellerRef = doc(db, "sellers", user.uid);
-      unsubscribeSeller = onSnapshot(
-        sellerRef,
-        (snapshot) => {
-          if (!snapshot.exists()) {
-            setSeller(null);
-            setIsLoading(false);
-            return;
-          }
-
-          const data = snapshot.data();
-          setSeller({
-            id: data.id,
-            businessName: data.businessName,
-            email: data.email,
-            status: data.status,
-            logoUrl: data.logoUrl,
-            primaryColour: data.primaryColour,
-            messagesUsedThisMonth: data.messagesUsedThisMonth,
-            topupBalance: data.topupBalance,
-            createdAt: (data.createdAt as Timestamp | undefined) ?? null,
-            updatedAt: (data.updatedAt as Timestamp | undefined) ?? null,
-          });
-          setIsLoading(false);
-        },
-        () => {
-          setSeller(null);
-          setIsLoading(false);
-        },
-      );
-    });
-
-    return () => {
-      unsubscribeAuth();
-      if (unsubscribeSeller) {
-        unsubscribeSeller();
-      }
-    };
-  }, []);
+  const isLoading =
+    !authStateQuery.isResolved || (Boolean(authUser) && sellerQuery.isLoading);
 
   const value = React.useMemo(
     () => ({ authUser, seller, isLoading }),
@@ -84,7 +29,7 @@ export function UserProvider({ children }: UserProviderProps) {
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
 
-export function useUser(): UserContextValue {
+export function useUser(): SellerContextValue {
   const context = React.useContext(UserContext);
 
   if (!context) {

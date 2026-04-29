@@ -1,8 +1,13 @@
 import { useUser } from "@/context/UserContext";
 import ForgotPasswordDialog from "@/features/auth/login/ForgotPasswordDialog";
-import { INVALID_EMAIL_MESSAGE, isValidEmail } from "@/features/utils/helpers";
+import {
+  INVALID_EMAIL_MESSAGE,
+  isValidEmail,
+} from "@/features/auth/utils/helpers";
 import Button from "@/shared/components/Button";
 import InputField from "@/shared/components/InputField";
+import { useFieldKeyboardNavigation } from "@/shared/hooks/useFieldKeyboardNavigation";
+import { useSnackbar } from "@/shared/hooks/useSnackbar";
 import FormContainer from "@/shared/layouts/auth/AuthFormContainer";
 import {
   resetPassword,
@@ -26,11 +31,18 @@ import * as React from "react";
 type LoginFormProps = React.ComponentPropsWithoutRef<"form">;
 type LoginFormSubmitHandler = NonNullable<LoginFormProps["onSubmit"]>;
 
+type NavigableField = "email" | "password";
+
+const FIELD_ORDER: NavigableField[] = ["email", "password"];
+
+const FIELD_IDS: Record<NavigableField, string> = {
+  email: "email",
+  password: "password",
+};
+
 export default function LoginForm(props: LoginFormProps) {
   const router = useRouter();
   const { authUser, isLoading } = useUser();
-  const emailInputRef = React.useRef<HTMLInputElement | null>(null);
-  const passwordInputRef = React.useRef<HTMLInputElement | null>(null);
   const { onSubmit, ...formProps } = props;
   const [email, setEmail] = React.useState("");
   const [emailError, setEmailError] = React.useState<string | null>(null);
@@ -41,16 +53,17 @@ export default function LoginForm(props: LoginFormProps) {
 
   const [isResetDialogOpen, setIsResetDialogOpen] = React.useState(false);
   const [resetEmail, setResetEmail] = React.useState("");
-  const [resetError, setResetError] = React.useState<string | null>(null);
-  const [resetSuccessMessage, setResetSuccessMessage] = React.useState<
-    string | null
-  >(null);
   const [isResetSubmitting, setIsResetSubmitting] = React.useState(false);
+  const { showSnackbar, SnackbarComponent } = useSnackbar();
+
+  const { getFieldKeyDownHandler } = useFieldKeyboardNavigation<NavigableField>(
+    {
+      fieldOrder: FIELD_ORDER,
+      fieldIds: FIELD_IDS,
+    },
+  );
+
   const normalizedEmail = email.trim();
-  const passwordResetSuccessMessage =
-    router.query.passwordReset === "success"
-      ? "Your password has been successfully reset."
-      : null;
   const isLoginFormValid =
     normalizedEmail.length > 0 && isValidEmail(normalizedEmail) && !!password;
 
@@ -59,6 +72,36 @@ export default function LoginForm(props: LoginFormProps) {
       void router.replace("/seller/dashboard");
     }
   }, [authUser, isLoading, router]);
+
+  React.useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
+    const passwordResetQuery = router.query.passwordReset;
+    const hasPasswordResetSuccess = Array.isArray(passwordResetQuery)
+      ? passwordResetQuery.includes("success")
+      : passwordResetQuery === "success";
+
+    if (!hasPasswordResetSuccess) {
+      return;
+    }
+
+    showSnackbar("Your password has been successfully reset.", "success");
+
+    const remainingQuery = Object.fromEntries(
+      Object.entries(router.query).filter(([key]) => key !== "passwordReset"),
+    );
+
+    void router.replace(
+      {
+        pathname: router.pathname,
+        query: remainingQuery,
+      },
+      undefined,
+      { shallow: true },
+    );
+  }, [router, showSnackbar]);
 
   const handleEmailChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -87,22 +130,6 @@ export default function LoginForm(props: LoginFormProps) {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setPassword(event.target.value);
-  };
-
-  const handleEmailKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter" || event.key === "ArrowDown") {
-      event.preventDefault();
-      passwordInputRef.current?.focus();
-    }
-  };
-
-  const handlePasswordKeyDown = (
-    event: React.KeyboardEvent<HTMLDivElement>,
-  ) => {
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      emailInputRef.current?.focus();
-    }
   };
 
   const handleSubmit: LoginFormSubmitHandler = (event) => {
@@ -163,8 +190,6 @@ export default function LoginForm(props: LoginFormProps) {
 
   const openResetDialog = () => {
     setResetEmail(email);
-    setResetError(null);
-    setResetSuccessMessage(null);
     setIsResetDialogOpen(true);
   };
 
@@ -186,22 +211,25 @@ export default function LoginForm(props: LoginFormProps) {
     void (async () => {
       const normalizedEmail = resetEmail.trim();
       if (!normalizedEmail) {
-        setResetError("Email is required");
+        showSnackbar("Email is required", "error");
         return;
       }
 
-      setResetError(null);
-      setResetSuccessMessage(null);
       setIsResetSubmitting(true);
 
       try {
         await resetPassword(normalizedEmail);
-        setResetSuccessMessage(
+        showSnackbar(
           "If an account exists for this email, a password reset link has been sent.",
+          "success",
         );
+        setIsResetDialogOpen(false);
         setIsResetSubmitting(false);
       } catch (submissionError) {
-        setResetError(getFriendlyResetPasswordErrorMessage(submissionError));
+        showSnackbar(
+          getFriendlyResetPasswordErrorMessage(submissionError),
+          "error",
+        );
         setIsResetSubmitting(false);
       }
     })();
@@ -220,16 +248,6 @@ export default function LoginForm(props: LoginFormProps) {
       >
         Welcome back
       </Typography>
-      {passwordResetSuccessMessage ? (
-        <Typography
-          component="p"
-          variant="body2"
-          color="text.secondary"
-          sx={{ textAlign: "center", m: 0 }}
-        >
-          {passwordResetSuccessMessage}
-        </Typography>
-      ) : null}
       <InputField
         required
         id="email"
@@ -237,11 +255,10 @@ export default function LoginForm(props: LoginFormProps) {
         label="Email"
         type="email"
         autoComplete="email"
-        inputRef={emailInputRef}
         value={email}
         onChange={handleEmailChange}
         onBlur={handleEmailBlur}
-        onKeyDown={handleEmailKeyDown}
+        onKeyDown={getFieldKeyDownHandler("email")}
         error={Boolean(emailError)}
         helperText={emailError ?? undefined}
       />
@@ -252,10 +269,9 @@ export default function LoginForm(props: LoginFormProps) {
         label="Password"
         type={showPassword ? "text" : "password"}
         autoComplete="current-password"
-        inputRef={passwordInputRef}
         value={password}
         onChange={handlePasswordChange}
-        onKeyDown={handlePasswordKeyDown}
+        onKeyDown={getFieldKeyDownHandler("password")}
         slotProps={{
           input: {
             endAdornment: (
@@ -335,13 +351,12 @@ export default function LoginForm(props: LoginFormProps) {
       <ForgotPasswordDialog
         open={isResetDialogOpen}
         email={resetEmail}
-        error={resetError}
-        successMessage={resetSuccessMessage}
         isSubmitting={isResetSubmitting}
         onClose={closeResetDialog}
         onEmailChange={handleResetEmailChange}
         onSubmit={submitResetPassword}
       />
+      <SnackbarComponent />
     </FormContainer>
   );
 }
