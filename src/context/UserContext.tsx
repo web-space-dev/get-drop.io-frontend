@@ -13,13 +13,13 @@ type UserProviderProps = {
 
 export function UserProvider({ children }: UserProviderProps) {
   const authStateQuery = useGetAuthState();
-  const authUser = authStateQuery.data ?? null;
+  const authUser = authStateQuery.authUser;
 
   const sellerQuery = useGetSellerById(authUser?.uid);
   const seller: SellerUserContext | null = sellerQuery.data ?? null;
 
   const isLoading =
-    authStateQuery.isLoading || (Boolean(authUser) && sellerQuery.isLoading);
+    !authStateQuery.isResolved || (Boolean(authUser) && sellerQuery.isLoading);
 
   const value = React.useMemo(
     () => ({ authUser, seller, isLoading }),
