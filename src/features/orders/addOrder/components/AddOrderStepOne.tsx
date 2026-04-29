@@ -3,14 +3,14 @@ import {
   INVALID_EMAIL_MESSAGE,
   isValidEmail,
 } from "@/features/auth/utils/helpers";
+import InputField from "@/shared/components/InputField";
+import InputTitle from "@/shared/components/InputTitle";
+import { useFieldKeyboardNavigation } from "@/shared/hooks/useFieldKeyboardNavigation";
 import {
   type FormState,
   type OnFieldChange,
   type StepOneFieldErrors,
-} from "@/features/orders/addOrder/types";
-import InputField from "@/shared/components/InputField";
-import InputTitle from "@/shared/components/InputTitle";
-import { useFieldKeyboardNavigation } from "@/shared/hooks/useFieldKeyboardNavigation";
+} from "@/types/Order";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";

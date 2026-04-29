@@ -1,12 +1,12 @@
 import {
-  type FormState,
-  type NotificationChannel,
-  type OrderCreateInput,
-} from "@/features/orders/addOrder/types";
-import {
   type OrderQueryModel,
   type UpdateOrderInput,
 } from "@/queries/orders/types";
+import {
+  type FormState,
+  type NotificationChannel,
+  type OrderCreateInput,
+} from "@/types/Order";
 
 const validChannels: NotificationChannel[] = ["email", "whatsapp", "sms"];
 const defaultChannels: NotificationChannel[] = ["email"];
@@ -15,11 +15,12 @@ const defaultAutomaticUpdates: FormState["automaticUpdates"] = {
   eta: true,
 };
 const dummyDeliveryAddress = {
-  formattedAddress: "221B Baker Street, London NW1 6XE, United Kingdom",
-  streetAddress: "221B Baker Street",
-  addressLocality: "London",
-  postalCode: "NW1 6XE",
-  addressCountry: "United Kingdom",
+  formattedAddress:
+    "37 Brennanstown Wood, Foxrock, Dublin 18, D18 N2KE, Ireland",
+  streetAddress: "37 Brennanstown Wood",
+  addressLocality: "Foxrock, Dublin 18",
+  postalCode: "D18 N2KE",
+  addressCountry: "Ireland",
 } as const;
 
 function buildNotesFromForm(form: FormState): string {

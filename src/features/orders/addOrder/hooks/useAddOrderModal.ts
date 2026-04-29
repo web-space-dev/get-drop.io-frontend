@@ -5,14 +5,10 @@ import {
   type StepOneFieldErrors,
   type StepOneRequiredFieldKey,
   type StepTwoSectionErrors,
-} from "@/features/orders/addOrder/types";
+} from "@/types/Order";
 import * as React from "react";
 
-const stepOneFieldKeys: StepOneRequiredFieldKey[] = [
-  "orderName",
-  "courier",
-  "trackingNumber",
-];
+const stepOneFieldKeys: StepOneRequiredFieldKey[] = ["orderName"];
 
 function isStepOneRequiredField(
   key: keyof FormState,
@@ -31,14 +27,6 @@ function validateStepOne(form: FormState): StepOneFieldErrors {
 
   if (!form.orderName.trim()) {
     errors.orderName = "Order Name is required.";
-  }
-
-  if (!form.courier.trim()) {
-    errors.courier = "Courier is required.";
-  }
-
-  if (!form.trackingNumber.trim()) {
-    errors.trackingNumber = "Tracking Number is required.";
   }
 
   return errors;

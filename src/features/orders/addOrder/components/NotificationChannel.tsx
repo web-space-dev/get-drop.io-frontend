@@ -1,5 +1,5 @@
 import { designSystemColors } from "@/config/theme";
-import { type NotificationChannel as NotificationChannelType } from "@/features/orders/addOrder/types";
+import { type NotificationChannel as NotificationChannelType } from "@/types/Order";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MessageOutlinedIcon from "@mui/icons-material/MessageOutlined";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";

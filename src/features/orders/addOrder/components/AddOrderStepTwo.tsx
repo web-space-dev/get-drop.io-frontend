@@ -1,12 +1,12 @@
 import { designSystemColors } from "@/config/theme";
 import AutomaticUpdates from "@/features/orders/addOrder/components/AutomaticUpdates";
 import NotificationChannelSection from "@/features/orders/addOrder/components/NotificationChannel";
+import InputTitle from "@/shared/components/InputTitle";
 import {
   type FormState,
   type NotificationChannel,
   type StepTwoSectionErrors,
-} from "@/features/orders/addOrder/types";
-import InputTitle from "@/shared/components/InputTitle";
+} from "@/types/Order";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 

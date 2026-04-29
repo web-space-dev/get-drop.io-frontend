@@ -1,7 +1,7 @@
 import { designSystemColors } from "@/config/theme";
-import { type FormState } from "@/features/orders/addOrder/types";
 import InputTitle from "@/shared/components/InputTitle";
 import IOSSwitch from "@/shared/components/IOSSwitch";
+import { type FormState } from "@/types/Order";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";

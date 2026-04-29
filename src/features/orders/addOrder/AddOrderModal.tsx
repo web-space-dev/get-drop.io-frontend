@@ -4,6 +4,7 @@ import AddOrderStepOne from "@/features/orders/addOrder/components/AddOrderStepO
 import AddOrderStepTwo from "@/features/orders/addOrder/components/AddOrderStepTwo";
 import { useUpdateOrder } from "@/queries/orders/updateOrder";
 import Button from "@/shared/components/Button";
+import { type AddOrderModalMode, type FormState } from "@/types/Order";
 import { db } from "@/utils/firebaseServer/firebaseClient";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Box from "@mui/material/Box";
@@ -22,7 +23,6 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { useAddOrderModal } from "./hooks/useAddOrderModal";
-import { type AddOrderModalMode, type FormState } from "./types";
 import { buildOrderPayload, buildOrderUpdatePayload } from "./utils/helpers";
 
 type AddOrderModalProps = {

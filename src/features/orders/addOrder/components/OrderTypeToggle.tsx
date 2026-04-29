@@ -1,5 +1,5 @@
 import { designSystemColors } from "@/config/theme";
-import { type Direction } from "@/features/orders/addOrder/types";
+import { type Direction } from "@/types/Order";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 import ToggleButton from "@mui/material/ToggleButton";
