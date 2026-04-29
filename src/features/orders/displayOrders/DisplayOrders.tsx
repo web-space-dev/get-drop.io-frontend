@@ -60,9 +60,10 @@ const filterFieldSx = {
 } as const;
 
 const STATUS_FILTER_LABELS: Record<StatusFilter, string> = {
-  all: "Active",
+  all: "All",
   inbound: "Inbound",
   outbound: "Outbound",
+  complete: "Complete",
   archived: "Archived",
 };
 

@@ -77,7 +77,7 @@ export const searchMatchesOrder = (
 };
 
 export const getStatusOptions = (): StatusFilter[] => {
-  return ["all", "inbound", "outbound", "archived"];
+  return ["all", "inbound", "outbound", "complete", "archived"];
 };
 
 export const filterOrders = (
