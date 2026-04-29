@@ -83,11 +83,15 @@ export function useGetSellerById(
       if (!sellerId) {
         return null;
       }
+      try {
+        const sellerRef = doc(db, "sellers", sellerId);
+        const snapshot = await getDoc(sellerRef);
 
-      const sellerRef = doc(db, "sellers", sellerId);
-      const snapshot = await getDoc(sellerRef);
-
-      return snapshot.exists() ? toSellerUserContext(snapshot) : null;
+        return snapshot.exists() ? toSellerUserContext(snapshot) : null;
+      } catch (error) {
+        console.error("Error fetching seller by ID:", error);
+        return null;
+      }
     },
     initialData: null,
     staleTime: Infinity,

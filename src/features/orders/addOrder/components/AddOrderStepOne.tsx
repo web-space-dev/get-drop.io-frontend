@@ -112,6 +112,7 @@ export default function AddOrderStepOne({
       </FieldWrapper>
 
       <FieldWrapper>
+        <InputTitle>Tracking Number</InputTitle>
         <InputField
           id={FIELD_IDS.trackingNumber}
           placeholder="AB123456789IE"

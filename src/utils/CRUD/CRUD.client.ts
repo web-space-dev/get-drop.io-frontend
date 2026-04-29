@@ -21,44 +21,64 @@ type DeleteDocumentOptions = {
   subcollections?: string[];
 };
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return String(error);
+}
+
 export const createDocument = async <T extends BaseFirestoreDocument<Date>>(
   collectionName: string,
   data: Omit<T, "id" | "createdAt" | "updatedAt">,
 ): Promise<T> => {
-  const now = new Date();
-  const docData = {
-    ...data,
-    createdAt: now,
-    updatedAt: now,
-  };
+  try {
+    const now = new Date();
+    const docData = {
+      ...data,
+      createdAt: now,
+      updatedAt: now,
+    };
 
-  const docRef = await addDoc(getCollection(collectionName), docData);
+    const docRef = await addDoc(getCollection(collectionName), docData);
 
-  return {
-    id: docRef.id,
-    ...data,
-    createdAt: now,
-    updatedAt: now,
-  } as T;
+    return {
+      id: docRef.id,
+      ...data,
+      createdAt: now,
+      updatedAt: now,
+    } as T;
+  } catch (error) {
+    throw new Error(
+      `Failed to create document in ${collectionName}: ${getErrorMessage(error)}`,
+    );
+  }
 };
 
 export const getDocuments = async <T extends BaseFirestoreDocument<Date>>(
   collectionName: string,
   options: QueryOptions = {},
 ): Promise<T[]> => {
-  const constraints = buildQueryConstraints(options);
-  const collectionRef = getCollection(collectionName);
-  const builtQuery =
-    constraints.length > 0
-      ? query(collectionRef, ...constraints)
-      : collectionRef;
+  try {
+    const constraints = buildQueryConstraints(options);
+    const collectionRef = getCollection(collectionName);
+    const builtQuery =
+      constraints.length > 0
+        ? query(collectionRef, ...constraints)
+        : collectionRef;
 
-  const querySnapshot = await getDocs(builtQuery);
+    const querySnapshot = await getDocs(builtQuery);
 
-  return querySnapshot.docs.map((doc) => {
-    const data = convertTimestamps<T>(doc.data());
-    return { ...data, id: doc.id } as T;
-  });
+    return querySnapshot.docs.map((doc) => {
+      const data = convertTimestamps<T>(doc.data());
+      return { ...data, id: doc.id } as T;
+    });
+  } catch (error) {
+    throw new Error(
+      `Failed to get documents from ${collectionName}: ${getErrorMessage(error)}`,
+    );
+  }
 };
 
 export const getDocumentsWhere = async <T extends BaseFirestoreDocument<Date>>(
@@ -86,15 +106,21 @@ export const getDocumentById = async <T extends BaseFirestoreDocument<Date>>(
   collectionName: string,
   id: string,
 ): Promise<T | null> => {
-  const docRef = getDocument(collectionName, id);
-  const docSnap = await getDoc(docRef);
+  try {
+    const docRef = getDocument(collectionName, id);
+    const docSnap = await getDoc(docRef);
 
-  if (!docSnap.exists()) {
-    return null;
+    if (!docSnap.exists()) {
+      return null;
+    }
+
+    const data = convertTimestamps<T>(docSnap.data());
+    return { ...data, id: docSnap.id } as T;
+  } catch (error) {
+    throw new Error(
+      `Failed to get document ${id} from ${collectionName}: ${getErrorMessage(error)}`,
+    );
   }
-
-  const data = convertTimestamps<T>(docSnap.data());
-  return { ...data, id: docSnap.id } as T;
 };
 
 export const updateDocument = async <T extends BaseFirestoreDocument<Date>>(
@@ -102,21 +128,27 @@ export const updateDocument = async <T extends BaseFirestoreDocument<Date>>(
   id: string,
   updates: Partial<Omit<T, "id" | "createdAt">>,
 ): Promise<T> => {
-  const docRef = getDocument(collectionName, id);
+  try {
+    const docRef = getDocument(collectionName, id);
 
-  const updateData = {
-    ...updates,
-    updatedAt: Timestamp.now(),
-  };
+    const updateData = {
+      ...updates,
+      updatedAt: Timestamp.now(),
+    };
 
-  await updateDoc(docRef, updateData);
+    await updateDoc(docRef, updateData);
 
-  const updated = await getDocumentById<T>(collectionName, id);
-  if (!updated) {
-    throw new Error(`Document with id ${id} not found after update`);
+    const updated = await getDocumentById<T>(collectionName, id);
+    if (!updated) {
+      throw new Error(`Document with id ${id} not found after update`);
+    }
+
+    return updated;
+  } catch (error) {
+    throw new Error(
+      `Failed to update document ${id} in ${collectionName}: ${getErrorMessage(error)}`,
+    );
   }
-
-  return updated;
 };
 
 async function deleteSubcollectionDocuments(
@@ -124,21 +156,27 @@ async function deleteSubcollectionDocuments(
   parentId: string,
   subcollectionName: string,
 ): Promise<void> {
-  const subcollectionRef = collection(
-    db,
-    parentCollection,
-    parentId,
-    subcollectionName,
-  );
-  const snapshot = await getDocs(subcollectionRef);
+  try {
+    const subcollectionRef = collection(
+      db,
+      parentCollection,
+      parentId,
+      subcollectionName,
+    );
+    const snapshot = await getDocs(subcollectionRef);
 
-  if (snapshot.empty) {
-    return;
+    if (snapshot.empty) {
+      return;
+    }
+
+    await Promise.all(
+      snapshot.docs.map((snapshotDoc) => firestoreDeleteDoc(snapshotDoc.ref)),
+    );
+  } catch (error) {
+    throw new Error(
+      `Failed to delete subcollection ${subcollectionName} for ${parentCollection}/${parentId}: ${getErrorMessage(error)}`,
+    );
   }
-
-  await Promise.all(
-    snapshot.docs.map((snapshotDoc) => firestoreDeleteDoc(snapshotDoc.ref)),
-  );
 }
 
 export const deleteDocument = async (
@@ -146,14 +184,24 @@ export const deleteDocument = async (
   id: string,
   options: DeleteDocumentOptions = {},
 ): Promise<void> => {
-  if (options.subcollections?.length) {
-    for (const subcollectionName of options.subcollections) {
-      await deleteSubcollectionDocuments(collectionName, id, subcollectionName);
+  try {
+    if (options.subcollections?.length) {
+      for (const subcollectionName of options.subcollections) {
+        await deleteSubcollectionDocuments(
+          collectionName,
+          id,
+          subcollectionName,
+        );
+      }
     }
-  }
 
-  const docRef = getDocument(collectionName, id);
-  await firestoreDeleteDoc(docRef);
+    const docRef = getDocument(collectionName, id);
+    await firestoreDeleteDoc(docRef);
+  } catch (error) {
+    throw new Error(
+      `Failed to delete document ${id} from ${collectionName}: ${getErrorMessage(error)}`,
+    );
+  }
 };
 
 export const createSubcollectionDocument = async <
@@ -164,26 +212,32 @@ export const createSubcollectionDocument = async <
   subcollectionName: string,
   data: Omit<T, "id" | "createdAt" | "updatedAt">,
 ): Promise<T> => {
-  const now = new Date();
-  const docData = {
-    ...data,
-    createdAt: now,
-    updatedAt: now,
-  };
+  try {
+    const now = new Date();
+    const docData = {
+      ...data,
+      createdAt: now,
+      updatedAt: now,
+    };
 
-  const subcollectionRef = getSubcollection(
-    parentCollection,
-    parentId,
-    subcollectionName,
-  );
-  const docRef = await addDoc(subcollectionRef, docData);
+    const subcollectionRef = getSubcollection(
+      parentCollection,
+      parentId,
+      subcollectionName,
+    );
+    const docRef = await addDoc(subcollectionRef, docData);
 
-  return {
-    id: docRef.id,
-    ...data,
-    createdAt: now,
-    updatedAt: now,
-  } as T;
+    return {
+      id: docRef.id,
+      ...data,
+      createdAt: now,
+      updatedAt: now,
+    } as T;
+  } catch (error) {
+    throw new Error(
+      `Failed to create document in subcollection ${parentCollection}/${parentId}/${subcollectionName}: ${getErrorMessage(error)}`,
+    );
+  }
 };
 
 const getSubcollection = (
