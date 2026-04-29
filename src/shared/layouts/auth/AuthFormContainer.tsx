@@ -1,7 +1,6 @@
 import { styled } from "@mui/material/styles";
 import Image from "next/image";
 import * as React from "react";
-import DropLogoFullBlue from "../../../../public/logos/Drop-Logo-Full-Blue.png";
 
 type FormShellProps = {
   fieldGap?: number;
@@ -41,7 +40,7 @@ export default function AuthFormContainer({
     <StyledFormContainer noValidate fieldGap={fieldGap} {...props}>
       <LogoContainer>
         <LogoImage
-          src={DropLogoFullBlue}
+          src={"/logos/Drop-Logo-Full-Blue.png"}
           alt="Drop logo"
           width={400}
           height={120}

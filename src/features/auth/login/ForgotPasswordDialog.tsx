@@ -1,3 +1,4 @@
+import { designSystemColors } from "@/config/theme";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -58,7 +59,7 @@ export default function ForgotPasswordDialog({
           <Typography
             component="p"
             variant="body2"
-            color="success"
+            color={designSystemColors.textSecondary}
             sx={{ textAlign: "center", m: 0 }}
           >
             {successMessage}

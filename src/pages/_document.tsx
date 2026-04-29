@@ -1,8 +1,7 @@
-import theme from "@/config/theme";
+import theme, { parkinsans } from "@/config/theme";
 import {
   DocumentHeadTags,
   DocumentHeadTagsProps,
-  createEmotionCache,
   documentGetInitialProps,
 } from "@mui/material-nextjs/v16-pagesRouter";
 import {
@@ -18,21 +17,12 @@ export default function MyDocument(
   props: DocumentProps & DocumentHeadTagsProps,
 ) {
   return (
-    <Html lang="en">
+    <Html lang="en" className={parkinsans.className}>
       <Head>
         {/* PWA primary color */}
         <meta name="theme-color" content={theme.palette.primary.main} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@400;600;700&display=swap"
-        />
         <link rel="icon" href="/favicon.ico" />
+        <meta name="emotion-insertion-point" content="" />
         <DocumentHeadTags {...props} />
       </Head>
       <body>
@@ -44,8 +34,6 @@ export default function MyDocument(
 }
 
 MyDocument.getInitialProps = async (ctx: DocumentContext) => {
-  const finalProps = await documentGetInitialProps(ctx, {
-    emotionCache: createEmotionCache({ key: "css" }),
-  });
+  const finalProps = await documentGetInitialProps(ctx);
   return finalProps;
 };
