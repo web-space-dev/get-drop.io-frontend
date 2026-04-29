@@ -1,5 +1,9 @@
 import { designSystemColors } from "@/config/theme";
 import {
+  INVALID_EMAIL_MESSAGE,
+  isValidEmail,
+} from "@/features/auth/utils/helpers";
+import {
   type FormState,
   type OnFieldChange,
   type StepOneFieldErrors,
@@ -68,6 +72,10 @@ export default function AddOrderStepOne({
   fieldErrors,
   onFieldChange,
 }: AddOrderStepOneProps) {
+  const normalizedBuyerEmail = form.buyerEmail.trim();
+  const hasInvalidBuyerEmail =
+    normalizedBuyerEmail.length > 0 && !isValidEmail(normalizedBuyerEmail);
+
   const { getFieldKeyDownHandler } = useFieldKeyboardNavigation<NavigableField>(
     {
       fieldOrder: FIELD_ORDER,
@@ -176,6 +184,8 @@ export default function AddOrderStepOne({
             type="email"
             placeholder="Optional"
             value={form.buyerEmail}
+            error={hasInvalidBuyerEmail}
+            helperText={hasInvalidBuyerEmail ? INVALID_EMAIL_MESSAGE : " "}
             onChange={(event) =>
               onFieldChange("buyerEmail", event.target.value)
             }

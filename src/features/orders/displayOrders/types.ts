@@ -1,3 +1,3 @@
 export type StatusTone = "default" | "error" | "neutral";
 
-export type StatusFilter = "all" | "archived" | string;
+export type StatusFilter = "all" | "inbound" | "outbound" | "archived";

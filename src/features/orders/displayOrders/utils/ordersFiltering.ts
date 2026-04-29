@@ -76,27 +76,8 @@ export const searchMatchesOrder = (
     .includes(normalized);
 };
 
-export const getStatusOptions = (orders: OrderQueryModel[]): string[] => {
-  const statuses = new Set<string>();
-  let hasArchivedOrders = false;
-
-  orders.forEach((order) => {
-    if (order.archivedAt) {
-      hasArchivedOrders = true;
-      return;
-    }
-
-    if (order.currentStatus) {
-      statuses.add(order.currentStatus);
-    }
-  });
-
-  const activeOptions = [
-    "all",
-    ...Array.from(statuses).sort((a, b) => a.localeCompare(b)),
-  ];
-
-  return hasArchivedOrders ? [...activeOptions, "archived"] : activeOptions;
+export const getStatusOptions = (): StatusFilter[] => {
+  return ["all", "inbound", "outbound", "archived"];
 };
 
 export const filterOrders = (

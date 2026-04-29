@@ -57,6 +57,13 @@ const filterFieldSx = {
   },
 } as const;
 
+const STATUS_FILTER_LABELS: Record<StatusFilter, string> = {
+  all: "Active",
+  inbound: "Inbound",
+  outbound: "Outbound",
+  archived: "Archived",
+};
+
 export default function DisplayOrders({
   sellerId,
   onAddOrder,
@@ -71,7 +78,7 @@ export default function DisplayOrders({
   const { data: orders = [], isLoading, isError } = useGetOrders(sellerId);
   const updateOrderMutation = useUpdateOrder();
 
-  const statusOptions = React.useMemo(() => getStatusOptions(orders), [orders]);
+  const statusOptions = React.useMemo(() => getStatusOptions(), []);
 
   const filteredOrders = React.useMemo(
     () => filterOrders(orders, statusFilter, searchTerm),
@@ -181,11 +188,7 @@ export default function DisplayOrders({
                 value={option}
                 sx={{ typography: "body2" }}
               >
-                {option === "all"
-                  ? "Active"
-                  : option === "archived"
-                    ? "Archived"
-                    : option}
+                {STATUS_FILTER_LABELS[option]}
               </MenuItem>
             ))}
           </InputField>
@@ -250,7 +253,9 @@ export default function DisplayOrders({
             gap: theme.spacing(0.5),
           })}
         >
-          <Typography variant="h6">No orders found</Typography>
+          <Typography variant="h6">
+            No orders found in {STATUS_FILTER_LABELS[statusFilter]}
+          </Typography>
           <Typography variant="body2" color="text.secondary">
             Try changing your filters or create a new order.
           </Typography>
