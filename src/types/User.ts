@@ -12,7 +12,7 @@ export type SellerUserContext = BaseFirestoreDocument<Timestamp> & {
   topupBalance: number;
 };
 
-export type UserContextValue = {
+export type SellerContextValue = {
   authUser: User | null;
   seller: SellerUserContext | null;
   isLoading: boolean;

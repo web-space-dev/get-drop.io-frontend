@@ -1,18 +1,63 @@
-rules_version='2'
+rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSellerSelf(sellerId) {
+      return isSignedIn() && request.auth.uid == sellerId;
+    }
+
+    function orderPath(orderId) {
+      return /databases/$(database)/documents/orders/$(orderId);
+    }
+
+    function isExistingOrderOwner(orderId) {
+      return isSignedIn() &&
+        exists(orderPath(orderId)) &&
+        get(orderPath(orderId)).data.sellerId == request.auth.uid;
+    }
+
+    function isOrderOwnerInBatchOrExisting(orderId) {
+      return isSignedIn() && (
+        (exists(orderPath(orderId)) &&
+          get(orderPath(orderId)).data.sellerId == request.auth.uid) ||
+        (existsAfter(orderPath(orderId)) &&
+          getAfter(orderPath(orderId)).data.sellerId == request.auth.uid)
+      );
+    }
+
+    // Sellers: user can read/write only their own seller document.
+    match /sellers/{sellerId} {
+      allow read, create, update, delete: if isSellerSelf(sellerId);
+    }
+
+    // Orders: user can read/write only orders where sellerId is their uid.
+    match /orders/{orderId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.sellerId == request.auth.uid;
+
+      allow read, delete: if isExistingOrderOwner(orderId);
+
+      allow update: if isExistingOrderOwner(orderId) &&
+        request.resource.data.sellerId == resource.data.sellerId;
+
+      // Tracking events under each order inherit order ownership.
+      match /orderTrackingEvent/{eventId} {
+        allow read, create, update, delete: if isOrderOwnerInBatchOrExisting(orderId);
+      }
+
+      // Legacy subcollection naming support.
+      match /order_tracking_event/{eventId} {
+        allow read, create, update, delete: if isOrderOwnerInBatchOrExisting(orderId);
+      }
+    }
+
+    // Deny everything else by default.
     match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2026, 5, 23);
+      allow read, write: if false;
     }
   }
 }
