@@ -1,4 +1,3 @@
-import { designSystemColors } from "@/config/theme";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -12,7 +11,6 @@ type ForgotPasswordDialogProps = {
   open: boolean;
   email: string;
   error: string | null;
-  successMessage: string | null;
   isSubmitting: boolean;
   onClose: () => void;
   onEmailChange: (
@@ -25,7 +23,6 @@ export default function ForgotPasswordDialog({
   open,
   email,
   error,
-  successMessage,
   isSubmitting,
   onClose,
   onEmailChange,
@@ -53,16 +50,6 @@ export default function ForgotPasswordDialog({
             sx={{ textAlign: "center", m: 0 }}
           >
             {error}
-          </Typography>
-        ) : null}
-        {successMessage ? (
-          <Typography
-            component="p"
-            variant="body2"
-            color={designSystemColors.textSecondary}
-            sx={{ textAlign: "center", m: 0 }}
-          >
-            {successMessage}
           </Typography>
         ) : null}
       </DialogContent>

@@ -7,6 +7,7 @@ import {
 import Button from "@/shared/components/Button";
 import InputField from "@/shared/components/InputField";
 import { useFieldKeyboardNavigation } from "@/shared/hooks/useFieldKeyboardNavigation";
+import { useSnackbar } from "@/shared/hooks/useSnackbar";
 import FormContainer from "@/shared/layouts/auth/AuthFormContainer";
 import {
   resetPassword,
@@ -53,10 +54,8 @@ export default function LoginForm(props: LoginFormProps) {
   const [isResetDialogOpen, setIsResetDialogOpen] = React.useState(false);
   const [resetEmail, setResetEmail] = React.useState("");
   const [resetError, setResetError] = React.useState<string | null>(null);
-  const [resetSuccessMessage, setResetSuccessMessage] = React.useState<
-    string | null
-  >(null);
   const [isResetSubmitting, setIsResetSubmitting] = React.useState(false);
+  const { showSnackbar, SnackbarComponent } = useSnackbar();
 
   const { getFieldKeyDownHandler } = useFieldKeyboardNavigation<NavigableField>(
     {
@@ -66,10 +65,6 @@ export default function LoginForm(props: LoginFormProps) {
   );
 
   const normalizedEmail = email.trim();
-  const passwordResetSuccessMessage =
-    router.query.passwordReset === "success"
-      ? "Your password has been successfully reset."
-      : null;
   const isLoginFormValid =
     normalizedEmail.length > 0 && isValidEmail(normalizedEmail) && !!password;
 
@@ -78,6 +73,36 @@ export default function LoginForm(props: LoginFormProps) {
       void router.replace("/seller/dashboard");
     }
   }, [authUser, isLoading, router]);
+
+  React.useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
+    const passwordResetQuery = router.query.passwordReset;
+    const hasPasswordResetSuccess = Array.isArray(passwordResetQuery)
+      ? passwordResetQuery.includes("success")
+      : passwordResetQuery === "success";
+
+    if (!hasPasswordResetSuccess) {
+      return;
+    }
+
+    showSnackbar("Your password has been successfully reset.", "success");
+
+    const remainingQuery = Object.fromEntries(
+      Object.entries(router.query).filter(([key]) => key !== "passwordReset"),
+    );
+
+    void router.replace(
+      {
+        pathname: router.pathname,
+        query: remainingQuery,
+      },
+      undefined,
+      { shallow: true },
+    );
+  }, [router, showSnackbar]);
 
   const handleEmailChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -167,7 +192,6 @@ export default function LoginForm(props: LoginFormProps) {
   const openResetDialog = () => {
     setResetEmail(email);
     setResetError(null);
-    setResetSuccessMessage(null);
     setIsResetDialogOpen(true);
   };
 
@@ -194,14 +218,15 @@ export default function LoginForm(props: LoginFormProps) {
       }
 
       setResetError(null);
-      setResetSuccessMessage(null);
       setIsResetSubmitting(true);
 
       try {
         await resetPassword(normalizedEmail);
-        setResetSuccessMessage(
+        showSnackbar(
           "If an account exists for this email, a password reset link has been sent.",
+          "success",
         );
+        setIsResetDialogOpen(false);
         setIsResetSubmitting(false);
       } catch (submissionError) {
         setResetError(getFriendlyResetPasswordErrorMessage(submissionError));
@@ -223,16 +248,6 @@ export default function LoginForm(props: LoginFormProps) {
       >
         Welcome back
       </Typography>
-      {passwordResetSuccessMessage ? (
-        <Typography
-          component="p"
-          variant="body2"
-          color="text.secondary"
-          sx={{ textAlign: "center", m: 0 }}
-        >
-          {passwordResetSuccessMessage}
-        </Typography>
-      ) : null}
       <InputField
         required
         id="email"
@@ -337,12 +352,12 @@ export default function LoginForm(props: LoginFormProps) {
         open={isResetDialogOpen}
         email={resetEmail}
         error={resetError}
-        successMessage={resetSuccessMessage}
         isSubmitting={isResetSubmitting}
         onClose={closeResetDialog}
         onEmailChange={handleResetEmailChange}
         onSubmit={submitResetPassword}
       />
+      <SnackbarComponent />
     </FormContainer>
   );
 }
