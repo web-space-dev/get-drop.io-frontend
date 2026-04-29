@@ -1,4 +1,4 @@
-import RegisterForm from "@/features/auth/register/Register2Form";
+import RegisterForm from "@/features/auth/register/RegisterForm";
 import AuthLayout from "@/shared/layouts/auth/AuthLayout";
 
 export default function RegisterPage() {
