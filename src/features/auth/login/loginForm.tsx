@@ -6,6 +6,7 @@ import {
 } from "@/features/auth/utils/helpers";
 import Button from "@/shared/components/Button";
 import InputField from "@/shared/components/InputField";
+import { useFieldKeyboardNavigation } from "@/shared/hooks/useFieldKeyboardNavigation";
 import FormContainer from "@/shared/layouts/auth/AuthFormContainer";
 import {
   resetPassword,
@@ -29,11 +30,18 @@ import * as React from "react";
 type LoginFormProps = React.ComponentPropsWithoutRef<"form">;
 type LoginFormSubmitHandler = NonNullable<LoginFormProps["onSubmit"]>;
 
+type NavigableField = "email" | "password";
+
+const FIELD_ORDER: NavigableField[] = ["email", "password"];
+
+const FIELD_IDS: Record<NavigableField, string> = {
+  email: "email",
+  password: "password",
+};
+
 export default function LoginForm(props: LoginFormProps) {
   const router = useRouter();
   const { authUser, isLoading } = useUser();
-  const emailInputRef = React.useRef<HTMLInputElement | null>(null);
-  const passwordInputRef = React.useRef<HTMLInputElement | null>(null);
   const { onSubmit, ...formProps } = props;
   const [email, setEmail] = React.useState("");
   const [emailError, setEmailError] = React.useState<string | null>(null);
@@ -49,6 +57,14 @@ export default function LoginForm(props: LoginFormProps) {
     string | null
   >(null);
   const [isResetSubmitting, setIsResetSubmitting] = React.useState(false);
+
+  const { getFieldKeyDownHandler } = useFieldKeyboardNavigation<NavigableField>(
+    {
+      fieldOrder: FIELD_ORDER,
+      fieldIds: FIELD_IDS,
+    },
+  );
+
   const normalizedEmail = email.trim();
   const isLoginFormValid =
     normalizedEmail.length > 0 && isValidEmail(normalizedEmail) && !!password;
@@ -86,22 +102,6 @@ export default function LoginForm(props: LoginFormProps) {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setPassword(event.target.value);
-  };
-
-  const handleEmailKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter" || event.key === "ArrowDown") {
-      event.preventDefault();
-      passwordInputRef.current?.focus();
-    }
-  };
-
-  const handlePasswordKeyDown = (
-    event: React.KeyboardEvent<HTMLDivElement>,
-  ) => {
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      emailInputRef.current?.focus();
-    }
   };
 
   const handleSubmit: LoginFormSubmitHandler = (event) => {
@@ -226,11 +226,10 @@ export default function LoginForm(props: LoginFormProps) {
         label="Email"
         type="email"
         autoComplete="email"
-        inputRef={emailInputRef}
         value={email}
         onChange={handleEmailChange}
         onBlur={handleEmailBlur}
-        onKeyDown={handleEmailKeyDown}
+        onKeyDown={getFieldKeyDownHandler("email")}
         error={Boolean(emailError)}
         helperText={emailError ?? undefined}
       />
@@ -241,10 +240,9 @@ export default function LoginForm(props: LoginFormProps) {
         label="Password"
         type={showPassword ? "text" : "password"}
         autoComplete="current-password"
-        inputRef={passwordInputRef}
         value={password}
         onChange={handlePasswordChange}
-        onKeyDown={handlePasswordKeyDown}
+        onKeyDown={getFieldKeyDownHandler("password")}
         slotProps={{
           input: {
             endAdornment: (

@@ -5,6 +5,7 @@ import {
 } from "@/features/auth/utils/helpers";
 import Button from "@/shared/components/Button";
 import InputField from "@/shared/components/InputField";
+import { useFieldKeyboardNavigation } from "@/shared/hooks/useFieldKeyboardNavigation";
 import FormContainer from "@/shared/layouts/auth/AuthFormContainer";
 import { signUp } from "@/utils/firebaseServer/firebaseAuth";
 import { getFriendlyRegisterErrorMessage } from "@/utils/firebaseServer/firebaseErrors";
@@ -22,12 +23,19 @@ import * as React from "react";
 type RegisterFormProps = React.ComponentPropsWithoutRef<"form">;
 type RegisterFormSubmitHandler = NonNullable<RegisterFormProps["onSubmit"]>;
 
+type NavigableField = "email" | "password" | "confirmPassword";
+
+const FIELD_ORDER: NavigableField[] = ["email", "password", "confirmPassword"];
+
+const FIELD_IDS: Record<NavigableField, string> = {
+  email: "email",
+  password: "password",
+  confirmPassword: "confirmPassword",
+};
+
 export default function RegisterForm(props: RegisterFormProps) {
   const router = useRouter();
   const { authUser, isLoading } = useUser();
-  const emailInputRef = React.useRef<HTMLInputElement | null>(null);
-  const passwordInputRef = React.useRef<HTMLInputElement | null>(null);
-  const confirmPasswordInputRef = React.useRef<HTMLInputElement | null>(null);
   const { onSubmit, ...formProps } = props;
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -40,6 +48,13 @@ export default function RegisterForm(props: RegisterFormProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+
+  const { getFieldKeyDownHandler } = useFieldKeyboardNavigation<NavigableField>(
+    {
+      fieldOrder: FIELD_ORDER,
+      fieldIds: FIELD_IDS,
+    },
+  );
 
   React.useEffect(() => {
     if (!isLoading && authUser) {
@@ -91,37 +106,6 @@ export default function RegisterForm(props: RegisterFormProps) {
   ) => {
     setConfirmPasswordError(null);
     setConfirmPassword(event.target.value);
-  };
-
-  const handleEmailKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter" || event.key === "ArrowDown") {
-      event.preventDefault();
-      passwordInputRef.current?.focus();
-    }
-  };
-
-  const handlePasswordKeyDown = (
-    event: React.KeyboardEvent<HTMLDivElement>,
-  ) => {
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      emailInputRef.current?.focus();
-      return;
-    }
-
-    if (event.key === "Enter" || event.key === "ArrowDown") {
-      event.preventDefault();
-      confirmPasswordInputRef.current?.focus();
-    }
-  };
-
-  const handleConfirmPasswordKeyDown = (
-    event: React.KeyboardEvent<HTMLDivElement>,
-  ) => {
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      passwordInputRef.current?.focus();
-    }
   };
 
   const handleMouseDownPassword = (
@@ -217,11 +201,10 @@ export default function RegisterForm(props: RegisterFormProps) {
         label="Email"
         type="email"
         autoComplete="email"
-        inputRef={emailInputRef}
         value={email}
         onChange={handleEmailChange}
         onBlur={handleEmailBlur}
-        onKeyDown={handleEmailKeyDown}
+        onKeyDown={getFieldKeyDownHandler("email")}
         error={Boolean(emailError)}
         helperText={emailError ?? undefined}
       />
@@ -232,10 +215,9 @@ export default function RegisterForm(props: RegisterFormProps) {
         label="Password"
         type={showPassword ? "text" : "password"}
         autoComplete="new-password"
-        inputRef={passwordInputRef}
         value={password}
         onChange={handlePasswordChange}
-        onKeyDown={handlePasswordKeyDown}
+        onKeyDown={getFieldKeyDownHandler("password")}
         error={Boolean(passwordError)}
         helperText={passwordError ?? undefined}
         slotProps={{
@@ -262,10 +244,9 @@ export default function RegisterForm(props: RegisterFormProps) {
         label="Confirm password"
         type={showConfirmPassword ? "text" : "password"}
         autoComplete="new-password"
-        inputRef={confirmPasswordInputRef}
         value={confirmPassword}
         onChange={handleConfirmPasswordChange}
-        onKeyDown={handleConfirmPasswordKeyDown}
+        onKeyDown={getFieldKeyDownHandler("confirmPassword")}
         error={Boolean(confirmPasswordError) || showPasswordMismatch}
         helperText={
           confirmPasswordError ??
