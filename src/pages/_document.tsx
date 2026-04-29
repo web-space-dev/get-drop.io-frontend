@@ -1,18 +1,17 @@
-import * as React from "react";
-import {
-  Html,
-  Head,
-  Main,
-  NextScript,
-  DocumentProps,
-  DocumentContext,
-} from "next/document";
+import theme, { parkinsans } from "@/config/theme";
 import {
   DocumentHeadTags,
   DocumentHeadTagsProps,
   documentGetInitialProps,
 } from "@mui/material-nextjs/v16-pagesRouter";
-import theme, { parkinsans } from "@/config/theme";
+import {
+  DocumentContext,
+  DocumentProps,
+  Head,
+  Html,
+  Main,
+  NextScript,
+} from "next/document";
 
 export default function MyDocument(
   props: DocumentProps & DocumentHeadTagsProps,

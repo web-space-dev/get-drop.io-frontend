@@ -7,6 +7,7 @@ import {
 } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 import { firebaseConfig } from "./firebaseconfig/firebaseConfig";
+import { connectClientToEmulators } from "./firebaseconfig/useEmulators";
 
 const firebaseApp: FirebaseApp =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
@@ -24,16 +25,15 @@ try {
 
 const storage = getStorage(firebaseApp);
 
-if (process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === "true") {
-  import("./firebaseconfig/useEmulators").then(
-    ({ connectClientToEmulators }) => {
-      try {
-        connectClientToEmulators({ auth, db, storage });
-      } catch (error) {
-        console.warn("Failed to connect to emulators:", error);
-      }
-    },
-  );
+if (
+  typeof window !== "undefined" &&
+  process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === "true"
+) {
+  try {
+    connectClientToEmulators({ auth, db, storage });
+  } catch (error) {
+    console.warn("Failed to connect to emulators:", error);
+  }
 }
 
 export function getFirebaseApp(): FirebaseApp {

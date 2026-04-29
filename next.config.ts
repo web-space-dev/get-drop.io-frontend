@@ -10,6 +10,10 @@ const basePath =
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  turbopack: {
+    root: process.cwd(),
+  },
+  // allowedDevOrigins: ["192.168.0.27"],
   output: "standalone",
   trailingSlash: true,
   env: {
