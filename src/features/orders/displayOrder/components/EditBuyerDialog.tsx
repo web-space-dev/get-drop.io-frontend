@@ -26,14 +26,33 @@ type EditBuyerDialogProps = {
   saveError: string | null;
 };
 
-type NavigableField = "buyerName" | "buyerEmail" | "buyerPhone";
+type NavigableField =
+  | "buyerName"
+  | "buyerEmail"
+  | "buyerPhone"
+  | "streetAddress"
+  | "addressLocality"
+  | "postalCode"
+  | "addressCountry";
 
-const FIELD_ORDER: NavigableField[] = ["buyerName", "buyerEmail", "buyerPhone"];
+const FIELD_ORDER: NavigableField[] = [
+  "buyerName",
+  "buyerEmail",
+  "buyerPhone",
+  "streetAddress",
+  "addressLocality",
+  "postalCode",
+  "addressCountry",
+];
 
 const FIELD_IDS: Record<NavigableField, string> = {
   buyerName: "edit-buyer-name",
   buyerEmail: "edit-buyer-email",
   buyerPhone: "edit-buyer-phone",
+  streetAddress: "edit-buyer-street-address",
+  addressLocality: "edit-buyer-address-locality",
+  postalCode: "edit-buyer-postal-code",
+  addressCountry: "edit-buyer-address-country",
 };
 
 function sanitizeBuyerPhoneInput(value: string): string {
@@ -164,6 +183,63 @@ export default function EditBuyerDialog({
             )
           }
           onKeyDown={getFieldKeyDownHandler("buyerPhone")}
+        />
+
+        <InputField
+          id={FIELD_IDS.streetAddress}
+          label="Street Address"
+          value={buyerForm.streetAddress}
+          disabled={isSaving}
+          onChange={(event) =>
+            handleFieldChange(
+              "streetAddress",
+              event.target.value,
+              onBuyerFieldChange,
+            )
+          }
+          onKeyDown={getFieldKeyDownHandler("streetAddress")}
+        />
+        <InputField
+          id={FIELD_IDS.addressLocality}
+          label="Locality"
+          value={buyerForm.addressLocality}
+          disabled={isSaving}
+          onChange={(event) =>
+            handleFieldChange(
+              "addressLocality",
+              event.target.value,
+              onBuyerFieldChange,
+            )
+          }
+          onKeyDown={getFieldKeyDownHandler("addressLocality")}
+        />
+        <InputField
+          id={FIELD_IDS.postalCode}
+          label="Postal Code"
+          value={buyerForm.postalCode}
+          disabled={isSaving}
+          onChange={(event) =>
+            handleFieldChange(
+              "postalCode",
+              event.target.value,
+              onBuyerFieldChange,
+            )
+          }
+          onKeyDown={getFieldKeyDownHandler("postalCode")}
+        />
+        <InputField
+          id={FIELD_IDS.addressCountry}
+          label="Country"
+          value={buyerForm.addressCountry}
+          disabled={isSaving}
+          onChange={(event) =>
+            handleFieldChange(
+              "addressCountry",
+              event.target.value,
+              onBuyerFieldChange,
+            )
+          }
+          onKeyDown={getFieldKeyDownHandler("addressCountry")}
         />
 
         <Typography variant="caption" color="text.secondary">

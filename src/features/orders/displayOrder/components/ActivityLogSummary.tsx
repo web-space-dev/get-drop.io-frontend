@@ -1,8 +1,14 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { alpha } from "@mui/material/styles";
-import { designSystemColors } from "@/config/theme";
 import { type TimelineEvent } from "@/features/orders/displayOrder/types";
+import {
+  Timeline,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineItem,
+  TimelineOppositeContent,
+  TimelineSeparator,
+} from "@mui/lab";
+import Typography from "@mui/material/Typography";
 import { SummaryCard } from "./SummaryCard";
 import { SummaryCardTitle } from "./SummaryCardTitle";
 
@@ -16,67 +22,37 @@ export default function ActivityLogSummary({
   return (
     <SummaryCard elevation={0}>
       <SummaryCardTitle>Activity Log</SummaryCardTitle>
-      <Box
-        sx={(theme) => ({
-          display: "grid",
-          gap: theme.spacing(1.1),
-        })}
+      <Timeline
+        position="right"
+        sx={{
+          m: 0,
+          p: 0,
+          width: "fit-content",
+          maxWidth: "100%",
+          mr: "auto",
+          [`& .MuiTimelineItem-root:before`]: {
+            display: "none",
+          },
+          [`& .MuiTimelineOppositeContent-root`]: {
+            flex: 0,
+          },
+        }}
       >
         {timelineEvents.map((event, index) => (
-          <Box
-            key={`${event.time}-${event.label}`}
-            sx={(theme) => ({
-              display: "grid",
-              gridTemplateColumns: "16px 50px minmax(0, 1fr)",
-              alignItems: "start",
-              gap: theme.spacing(1),
-            })}
-          >
-            <Box
-              sx={{
-                display: "grid",
-                justifyItems: "center",
-                alignItems: "start",
-              }}
-            >
-              <Box
-                sx={(theme) => ({
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  mt: 0.5,
-                  backgroundColor:
-                    index === 0
-                      ? designSystemColors.neutralBlack
-                      : theme.palette.action.disabled,
-                })}
-              />
-              {index < timelineEvents.length - 1 ? (
-                <Box
-                  sx={(theme) => ({
-                    width: 1,
-                    minHeight: theme.spacing(2.5),
-                    mt: theme.spacing(0.35),
-                    backgroundColor: alpha(theme.palette.text.secondary, 0.25),
-                  })}
-                />
-              ) : null}
-            </Box>
-            <Typography
-              variant="caption"
-              sx={{ color: designSystemColors.neutralBlack }}
-            >
+          <TimelineItem key={`${event.time}-${event.label}`}>
+            <TimelineOppositeContent variant="caption">
               {event.time}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ color: designSystemColors.neutralBlack }}
-            >
-              {event.label}
-            </Typography>
-          </Box>
+            </TimelineOppositeContent>
+            <TimelineSeparator>
+              <TimelineDot color={index === 0 ? "primary" : "grey"} />
+              {index < timelineEvents.length - 1 ? <TimelineConnector /> : null}
+            </TimelineSeparator>
+            <TimelineContent>
+              <Typography variant="body2">{event.label}</Typography>
+            </TimelineContent>
+          </TimelineItem>
         ))}
-      </Box>
+      </Timeline>
     </SummaryCard>
   );
 }

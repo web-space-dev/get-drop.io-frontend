@@ -29,7 +29,11 @@ type NavigableField =
   | "trackingNumber"
   | "buyerName"
   | "buyerEmail"
-  | "buyerPhone";
+  | "buyerPhone"
+  | "streetAddress"
+  | "addressLocality"
+  | "postalCode"
+  | "addressCountry";
 
 const FIELD_ORDER: NavigableField[] = [
   "orderName",
@@ -38,6 +42,10 @@ const FIELD_ORDER: NavigableField[] = [
   "buyerName",
   "buyerEmail",
   "buyerPhone",
+  "streetAddress",
+  "addressLocality",
+  "postalCode",
+  "addressCountry",
 ];
 
 const FIELD_IDS: Record<NavigableField, string> = {
@@ -47,6 +55,10 @@ const FIELD_IDS: Record<NavigableField, string> = {
   buyerName: "add-order-buyer-name",
   buyerEmail: "add-order-buyer-email",
   buyerPhone: "add-order-buyer-phone",
+  streetAddress: "add-order-street-address",
+  addressLocality: "add-order-address-locality",
+  postalCode: "add-order-postal-code",
+  addressCountry: "add-order-address-country",
 };
 
 const FieldWrapper = styled(Box)(({ theme }) => ({
@@ -209,6 +221,77 @@ export default function AddOrderStepOne({
             onKeyDown={getFieldKeyDownHandler("buyerPhone")}
           />
         </FieldWrapper>
+
+        <Box
+          sx={(theme) => ({
+            display: "grid",
+            gap: 2,
+            pt: 1,
+            borderTop: `1px solid ${theme.palette.divider}`,
+          })}
+        >
+          <Box>
+            <InputTitle>Delivery Address (Optional)</InputTitle>
+            <Typography
+              variant="body1"
+              sx={{ color: designSystemColors.neutralMeta }}
+            >
+              Add as much or as little address information as you have.
+            </Typography>
+          </Box>
+
+          <FieldWrapper>
+            <InputTitle>Street Address</InputTitle>
+            <InputField
+              id={FIELD_IDS.streetAddress}
+              placeholder="Optional"
+              value={form.streetAddress}
+              onChange={(event) =>
+                onFieldChange("streetAddress", event.target.value)
+              }
+              onKeyDown={getFieldKeyDownHandler("streetAddress")}
+            />
+          </FieldWrapper>
+
+          <FieldWrapper>
+            <InputTitle>Locality</InputTitle>
+            <InputField
+              id={FIELD_IDS.addressLocality}
+              placeholder="Optional"
+              value={form.addressLocality}
+              onChange={(event) =>
+                onFieldChange("addressLocality", event.target.value)
+              }
+              onKeyDown={getFieldKeyDownHandler("addressLocality")}
+            />
+          </FieldWrapper>
+
+          <FieldWrapper>
+            <InputTitle>Postal Code</InputTitle>
+            <InputField
+              id={FIELD_IDS.postalCode}
+              placeholder="Optional"
+              value={form.postalCode}
+              onChange={(event) =>
+                onFieldChange("postalCode", event.target.value)
+              }
+              onKeyDown={getFieldKeyDownHandler("postalCode")}
+            />
+          </FieldWrapper>
+
+          <FieldWrapper>
+            <InputTitle>Country</InputTitle>
+            <InputField
+              id={FIELD_IDS.addressCountry}
+              placeholder="Optional"
+              value={form.addressCountry}
+              onChange={(event) =>
+                onFieldChange("addressCountry", event.target.value)
+              }
+              onKeyDown={getFieldKeyDownHandler("addressCountry")}
+            />
+          </FieldWrapper>
+        </Box>
       </Box>
     </Box>
   );

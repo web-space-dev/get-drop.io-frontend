@@ -18,12 +18,10 @@ export const formatAddress = (order: OrderQueryModel): string => {
   }
 
   const parts = [
-    address.streetAddress ?? address.line1,
-    address.line2,
-    address.addressLocality ?? address.city,
-    address.state,
+    address.streetAddress,
+    address.addressLocality,
     address.postalCode,
-    address.addressCountry ?? address.country,
+    address.addressCountry,
   ].filter((part): part is string => Boolean(part && part.trim()));
 
   return parts.length > 0 ? parts.join(", ") : ORDERS_FALLBACK_TEXT;

@@ -53,7 +53,6 @@ export default function LoginForm(props: LoginFormProps) {
 
   const [isResetDialogOpen, setIsResetDialogOpen] = React.useState(false);
   const [resetEmail, setResetEmail] = React.useState("");
-  const [resetError, setResetError] = React.useState<string | null>(null);
   const [isResetSubmitting, setIsResetSubmitting] = React.useState(false);
   const { showSnackbar, SnackbarComponent } = useSnackbar();
 
@@ -191,7 +190,6 @@ export default function LoginForm(props: LoginFormProps) {
 
   const openResetDialog = () => {
     setResetEmail(email);
-    setResetError(null);
     setIsResetDialogOpen(true);
   };
 
@@ -213,11 +211,10 @@ export default function LoginForm(props: LoginFormProps) {
     void (async () => {
       const normalizedEmail = resetEmail.trim();
       if (!normalizedEmail) {
-        setResetError("Email is required");
+        showSnackbar("Email is required", "error");
         return;
       }
 
-      setResetError(null);
       setIsResetSubmitting(true);
 
       try {
@@ -229,7 +226,10 @@ export default function LoginForm(props: LoginFormProps) {
         setIsResetDialogOpen(false);
         setIsResetSubmitting(false);
       } catch (submissionError) {
-        setResetError(getFriendlyResetPasswordErrorMessage(submissionError));
+        showSnackbar(
+          getFriendlyResetPasswordErrorMessage(submissionError),
+          "error",
+        );
         setIsResetSubmitting(false);
       }
     })();
@@ -351,7 +351,6 @@ export default function LoginForm(props: LoginFormProps) {
       <ForgotPasswordDialog
         open={isResetDialogOpen}
         email={resetEmail}
-        error={resetError}
         isSubmitting={isResetSubmitting}
         onClose={closeResetDialog}
         onEmailChange={handleResetEmailChange}

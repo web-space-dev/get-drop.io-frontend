@@ -1,10 +1,10 @@
+import Button from "@/shared/components/Button";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import MailOutlineRoundedIcon from "@mui/icons-material/MailOutlineRounded";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import MailOutlineRoundedIcon from "@mui/icons-material/MailOutlineRounded";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Button from "@/shared/components/Button";
 import { SummaryCard } from "./SummaryCard";
 import { SummaryCardTitle } from "./SummaryCardTitle";
 
@@ -12,7 +12,7 @@ type BuyerSummaryProps = {
   buyerName: string | null | undefined;
   buyerEmail: string | null | undefined;
   buyerPhone: string | null | undefined;
-  city: string | null | undefined;
+  formattedAddress: string | null | undefined;
   onOpenEditBuyer: () => void;
 };
 
@@ -20,13 +20,13 @@ export default function BuyerSummary({
   buyerName,
   buyerEmail,
   buyerPhone,
-  city,
+  formattedAddress,
   onOpenEditBuyer,
 }: BuyerSummaryProps) {
   const safeBuyerName = buyerName?.trim() || "-";
   const safeBuyerEmail = buyerEmail?.trim() || "-";
   const safeBuyerPhone = buyerPhone?.trim() || "-";
-  const safeCity = city?.trim() || "-";
+  const safeFormattedAddress = formattedAddress?.trim() || "-";
 
   const buyerRows = [
     {
@@ -48,9 +48,9 @@ export default function BuyerSummary({
       icon: <LocalPhoneOutlinedIcon fontSize="inherit" />,
     },
     {
-      key: "delivery-city",
-      label: "Delivery City",
-      value: safeCity,
+      key: "delivery-address",
+      label: "Delivery Address",
+      value: safeFormattedAddress,
       icon: <LocationOnOutlinedIcon fontSize="inherit" />,
     },
   ];
@@ -83,7 +83,7 @@ export default function BuyerSummary({
             },
           })}
         >
-          Edit Buyer Info
+          Edit
         </Button>
       </Box>
 

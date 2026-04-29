@@ -8,7 +8,6 @@ import {
   type UpdateRules,
 } from "@/features/orders/displayOrder/types";
 import {
-  getDeliveryCity,
   getSmartEta,
   getTimelineEvents,
   getTrackingLink,
@@ -33,7 +32,35 @@ const initialBuyerForm: BuyerForm = {
   buyerName: "",
   buyerEmail: "",
   buyerPhone: "",
+  streetAddress: "",
+  addressLocality: "",
+  postalCode: "",
+  addressCountry: "",
 };
+
+function buildDeliveryAddressFromBuyerForm(buyerForm: BuyerForm) {
+  const streetAddress = buyerForm.streetAddress.trim();
+  const addressLocality = buyerForm.addressLocality.trim();
+  const postalCode = buyerForm.postalCode.trim();
+  const addressCountry = buyerForm.addressCountry.trim();
+
+  const formattedAddress = [
+    streetAddress,
+    addressLocality,
+    postalCode,
+    addressCountry,
+  ]
+    .filter((part) => part.length > 0)
+    .join(", ");
+
+  return {
+    ...(formattedAddress ? { formattedAddress } : {}),
+    ...(streetAddress ? { streetAddress } : {}),
+    ...(addressLocality ? { addressLocality } : {}),
+    ...(postalCode ? { postalCode } : {}),
+    ...(addressCountry ? { addressCountry } : {}),
+  };
+}
 
 export function useDisplayOrder(id: string) {
   const router = useRouter();
@@ -57,11 +84,6 @@ export function useDisplayOrder(id: string) {
 
   const trackingLink = React.useMemo(
     () => (order ? getTrackingLink(order) : "-"),
-    [order],
-  );
-
-  const city = React.useMemo(
-    () => (order ? getDeliveryCity(order) : "-"),
     [order],
   );
 
@@ -111,6 +133,10 @@ export function useDisplayOrder(id: string) {
       buyerName: order.buyerName ?? "",
       buyerEmail: order.buyerEmail ?? "",
       buyerPhone: order.buyerPhone ?? "",
+      streetAddress: order.deliveryAddress?.streetAddress ?? "",
+      addressLocality: order.deliveryAddress?.addressLocality ?? "",
+      postalCode: order.deliveryAddress?.postalCode ?? "",
+      addressCountry: order.deliveryAddress?.addressCountry ?? "",
     });
     setIsEditOpen(true);
   };
@@ -139,6 +165,7 @@ export function useDisplayOrder(id: string) {
           buyerName: buyerForm.buyerName.trim(),
           buyerEmail: buyerForm.buyerEmail.trim(),
           buyerPhone: buyerForm.buyerPhone.trim(),
+          deliveryAddress: buildDeliveryAddressFromBuyerForm(buyerForm),
         },
       });
       setIsEditOpen(false);
@@ -253,7 +280,6 @@ export function useDisplayOrder(id: string) {
     isUpdatingOrder: updateOrderMutation.isPending,
     isArchiving: archivingOrderId === order?.id,
     isSavingBuyer: updateOrderMutation.isPending,
-    city,
     smartEta,
     trackingLink,
     timelineEvents,

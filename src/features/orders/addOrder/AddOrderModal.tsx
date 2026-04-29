@@ -45,6 +45,10 @@ const initialState: FormState = {
   buyerName: "",
   buyerEmail: "",
   buyerPhone: "",
+  streetAddress: "",
+  addressLocality: "",
+  postalCode: "",
+  addressCountry: "",
   channels: ["email"],
   automaticUpdates: {
     orderSent: true,

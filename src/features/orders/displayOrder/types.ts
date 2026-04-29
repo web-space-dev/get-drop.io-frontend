@@ -11,6 +11,10 @@ export type BuyerForm = {
   buyerName: string;
   buyerEmail: string;
   buyerPhone: string;
+  streetAddress: string;
+  addressLocality: string;
+  postalCode: string;
+  addressCountry: string;
 };
 
 export type TimelineEvent = {

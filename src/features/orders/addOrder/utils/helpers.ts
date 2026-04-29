@@ -14,14 +14,29 @@ const defaultAutomaticUpdates: FormState["automaticUpdates"] = {
   orderSent: true,
   eta: true,
 };
-const dummyDeliveryAddress = {
-  formattedAddress:
-    "37 Brennanstown Wood, Foxrock, Dublin 18, D18 N2KE, Ireland",
-  streetAddress: "37 Brennanstown Wood",
-  addressLocality: "Foxrock, Dublin 18",
-  postalCode: "D18 N2KE",
-  addressCountry: "Ireland",
-} as const;
+
+function buildDeliveryAddressFromForm(form: FormState) {
+  const streetAddress = form.streetAddress.trim();
+  const addressLocality = form.addressLocality.trim();
+  const postalCode = form.postalCode.trim();
+  const addressCountry = form.addressCountry.trim();
+  const formattedAddress = [
+    streetAddress,
+    addressLocality,
+    postalCode,
+    addressCountry,
+  ]
+    .filter((part) => part.length > 0)
+    .join(", ");
+
+  return {
+    ...(formattedAddress ? { formattedAddress } : {}),
+    ...(streetAddress ? { streetAddress } : {}),
+    ...(addressLocality ? { addressLocality } : {}),
+    ...(postalCode ? { postalCode } : {}),
+    ...(addressCountry ? { addressCountry } : {}),
+  };
+}
 
 function buildNotesFromForm(form: FormState): string {
   const channelsSummary = form.channels.join(", ") || "none";
@@ -90,7 +105,7 @@ export function buildOrderPayload(
     buyerName: form.buyerName.trim(),
     buyerEmail: form.buyerEmail.trim(),
     buyerPhone: form.buyerPhone.trim(),
-    deliveryAddress: { ...dummyDeliveryAddress },
+    deliveryAddress: buildDeliveryAddressFromForm(form),
     trackingNumber: form.trackingNumber.trim(),
     trackingUrl: "",
     carrierName: form.courier.trim(),
@@ -110,6 +125,7 @@ export function buildOrderUpdatePayload(form: FormState): UpdateOrderInput {
     buyerName: form.buyerName.trim(),
     buyerEmail: form.buyerEmail.trim(),
     buyerPhone: form.buyerPhone.trim(),
+    deliveryAddress: buildDeliveryAddressFromForm(form),
     trackingNumber: form.trackingNumber.trim(),
     carrierName: form.courier.trim(),
     currentStatus: form.direction,
@@ -126,6 +142,10 @@ export function buildInitialFormFromOrder(order: OrderQueryModel): FormState {
     buyerName: order.buyerName ?? "",
     buyerEmail: order.buyerEmail ?? "",
     buyerPhone: order.buyerPhone ?? "",
+    streetAddress: order.deliveryAddress?.streetAddress ?? "",
+    addressLocality: order.deliveryAddress?.addressLocality ?? "",
+    postalCode: order.deliveryAddress?.postalCode ?? "",
+    addressCountry: order.deliveryAddress?.addressCountry ?? "",
     channels: parseChannelsFromNotes(order.notes ?? ""),
     automaticUpdates: parseAutomaticUpdatesFromNotes(order.notes ?? ""),
   };

@@ -12,15 +12,6 @@ export const getTrackingLink = (order: OrderQueryModel): string => {
   );
 };
 
-export const getDeliveryCity = (order: OrderQueryModel): string => {
-  return (
-    order.deliveryAddress.addressLocality ??
-    order.deliveryAddress.city ??
-    order.deliveryAddress.postalCode ??
-    "-"
-  );
-};
-
 export const getSmartEta = (order: OrderQueryModel): string => {
   if (!order.lastTrackingUpdateAt) {
     return "Pending ETA";
@@ -41,10 +32,7 @@ export const getTimelineEvents = (order: OrderQueryModel): TimelineEvent[] => {
       label: "Order added to Drop",
     },
     {
-      time:
-        formatDateTimeWithYear(order.lastTrackingUpdateAt)
-          .split(",")[1]
-          ?.trim() ?? "--:--",
+      time: "14:11",
       label: "Tracking link generated",
     },
     {

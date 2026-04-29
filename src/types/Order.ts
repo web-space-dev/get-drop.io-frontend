@@ -2,13 +2,11 @@ import { type Timestamp } from "firebase/firestore";
 import { type BaseFirestoreDocument } from "./baseFirestoreDocument";
 
 export type OrderDeliveryAddress = {
-  line1?: string;
-  line2?: string;
-  city?: string;
-  state?: string;
+  formattedAddress?: string;
+  streetAddress?: string;
+  addressLocality?: string;
   postalCode?: string;
-  country?: string;
-  [key: string]: string | undefined;
+  addressCountry?: string;
 };
 
 export type Order = BaseFirestoreDocument<Timestamp> & {
@@ -56,6 +54,10 @@ export type FormState = {
   buyerName: string;
   buyerEmail: string;
   buyerPhone: string;
+  streetAddress: string;
+  addressLocality: string;
+  postalCode: string;
+  addressCountry: string;
   channels: NotificationChannel[];
   automaticUpdates: {
     orderSent: boolean;

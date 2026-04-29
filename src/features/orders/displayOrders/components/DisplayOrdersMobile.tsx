@@ -14,6 +14,7 @@ import {
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Typography from "@mui/material/Typography";
+import { useRouter } from "next/router";
 
 export default function DisplayOrdersMobile({
   orders,
@@ -21,6 +22,8 @@ export default function DisplayOrdersMobile({
   onUnarchiveOrder,
   archivingOrderId,
 }: DisplayOrdersListProps) {
+  const router = useRouter();
+
   return (
     <Box
       sx={(theme) => ({
@@ -34,10 +37,31 @@ export default function DisplayOrdersMobile({
       {orders.map((order) => {
         const orderHref = order.id ? `/orders/${order.id}` : null;
 
+        const handleCardNavigation = () => {
+          if (!orderHref) {
+            return;
+          }
+
+          void router.push(orderHref);
+        };
+
         return (
           <Box
             key={order.id}
             component="article"
+            role={orderHref ? "link" : undefined}
+            tabIndex={orderHref ? 0 : -1}
+            onClick={handleCardNavigation}
+            onKeyDown={(event) => {
+              if (!orderHref) {
+                return;
+              }
+
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handleCardNavigation();
+              }
+            }}
             sx={(theme) => ({
               border: `1px solid ${theme.palette.divider}`,
               borderRadius: theme.spacing(1.5),
@@ -45,6 +69,13 @@ export default function DisplayOrdersMobile({
               display: "grid",
               gap: theme.spacing(1),
               backgroundColor: theme.palette.background.paper,
+              cursor: orderHref ? "pointer" : "default",
+              transition: "background-color 120ms ease",
+              "&:hover": {
+                backgroundColor: orderHref
+                  ? theme.palette.action.hover
+                  : theme.palette.background.paper,
+              },
             })}
           >
             <Box
@@ -135,6 +166,12 @@ export default function DisplayOrdersMobile({
                   Actions
                 </Typography>
                 <Box
+                  onClick={(event) => {
+                    event.stopPropagation();
+                  }}
+                  onKeyDown={(event) => {
+                    event.stopPropagation();
+                  }}
                   sx={{
                     display: "inline-flex",
                     alignItems: "center",

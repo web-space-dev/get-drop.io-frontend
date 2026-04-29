@@ -32,7 +32,6 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
   const {
     buyerForm,
     channel,
-    city,
     handleBuyerFieldChange,
     handleChannelChange,
     handleCopyTrackingLink,
@@ -223,7 +222,7 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
             buyerName={order.buyerName}
             buyerEmail={order.buyerEmail}
             buyerPhone={order.buyerPhone}
-            city={city}
+            formattedAddress={order.deliveryAddress?.formattedAddress}
             onOpenEditBuyer={handleOpenEditBuyer}
           />
 
