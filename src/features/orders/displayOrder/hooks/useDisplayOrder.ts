@@ -1,19 +1,24 @@
-import * as React from "react";
-import { useRouter } from "next/router";
-import { useGetOrderById } from "@/queries/orders/getOrderById";
-import { useDeleteOrder } from "@/queries/orders/deleteOrder";
-import { useUpdateOrder } from "@/queries/orders/updateOrder";
+import {
+  INVALID_EMAIL_MESSAGE,
+  isValidEmail,
+} from "@/features/auth/utils/helpers";
+import {
+  type BuyerForm,
+  type ChannelOption,
+  type UpdateRules,
+} from "@/features/orders/displayOrder/types";
 import {
   getDeliveryCity,
   getSmartEta,
   getTimelineEvents,
   getTrackingLink,
 } from "@/features/orders/displayOrder/utils/displayOrderUtils";
-import {
-  type BuyerForm,
-  type ChannelOption,
-  type UpdateRules,
-} from "@/features/orders/displayOrder/types";
+import { useDeleteOrder } from "@/queries/orders/deleteOrder";
+import { useGetOrderById } from "@/queries/orders/getOrderById";
+import { useUpdateOrder } from "@/queries/orders/updateOrder";
+import { useArchiveOrder } from "@/shared/hooks/useArchiveOrder";
+import { useRouter } from "next/router";
+import * as React from "react";
 
 const validChannels: ChannelOption[] = ["whatsapp", "sms", "email"];
 
@@ -34,6 +39,7 @@ export function useDisplayOrder(id: string) {
   const router = useRouter();
   const deleteOrderMutation = useDeleteOrder();
   const updateOrderMutation = useUpdateOrder();
+  const { toggleArchiveOrder, archivingOrderId } = useArchiveOrder();
   const { data: order, isLoading, isError } = useGetOrderById(id);
 
   const [isEditOpen, setIsEditOpen] = React.useState(false);
@@ -69,6 +75,16 @@ export function useDisplayOrder(id: string) {
     [order],
   );
 
+  const isOrderCompleted = React.useMemo(
+    () => (order?.currentStatus ?? "").toLowerCase() === "complete",
+    [order?.currentStatus],
+  );
+
+  const isOrderArchived = React.useMemo(
+    () => Boolean(order?.archivedAt),
+    [order?.archivedAt],
+  );
+
   const handleCopyTrackingLink = () => {
     if (trackingLink === "-") {
       return;
@@ -99,28 +115,38 @@ export function useDisplayOrder(id: string) {
     setIsEditOpen(true);
   };
 
-  const handleSaveBuyerChanges = () => {
+  const handleSaveBuyerChanges = async (): Promise<"success" | "error"> => {
     if (!order) {
-      return;
+      return "error";
     }
 
-    void (async () => {
-      setSaveBuyerError(null);
+    setSaveBuyerError(null);
 
-      try {
-        await updateOrderMutation.mutateAsync({
-          id: order.id,
-          updates: {
-            buyerName: buyerForm.buyerName.trim(),
-            buyerEmail: buyerForm.buyerEmail.trim(),
-            buyerPhone: buyerForm.buyerPhone.trim(),
-          },
-        });
-        setIsEditOpen(false);
-      } catch {
-        setSaveBuyerError("Unable to save buyer information right now.");
-      }
-    })();
+    const normalizedBuyerEmail = buyerForm.buyerEmail.trim();
+
+    if (
+      normalizedBuyerEmail.length > 0 &&
+      !isValidEmail(normalizedBuyerEmail)
+    ) {
+      setSaveBuyerError(INVALID_EMAIL_MESSAGE);
+      return "error";
+    }
+
+    try {
+      await updateOrderMutation.mutateAsync({
+        id: order.id,
+        updates: {
+          buyerName: buyerForm.buyerName.trim(),
+          buyerEmail: buyerForm.buyerEmail.trim(),
+          buyerPhone: buyerForm.buyerPhone.trim(),
+        },
+      });
+      setIsEditOpen(false);
+      return "success";
+    } catch {
+      setSaveBuyerError("Unable to save buyer information right now.");
+      return "error";
+    }
   };
 
   const handleOpenDelete = () => {
@@ -147,11 +173,45 @@ export function useDisplayOrder(id: string) {
       try {
         await deleteOrderMutation.mutateAsync(order.id);
         setIsDeleteOpen(false);
-        await router.push("/orders");
+        await router.push({
+          pathname: "/orders",
+          query: { toast: "deleted" },
+        });
       } catch {
-        setDeleteError("Unable to delete this order right now.");
+        const message = "Unable to delete this order right now.";
+        setDeleteError(message);
       }
     })();
+  };
+
+  const handleMarkAsCompleted = async (): Promise<"success" | "error"> => {
+    if (!order) {
+      return "error";
+    }
+
+    if (isOrderCompleted) {
+      return "success";
+    }
+
+    try {
+      await updateOrderMutation.mutateAsync({
+        id: order.id,
+        updates: { currentStatus: "complete" },
+      });
+      return "success";
+    } catch {
+      return "error";
+    }
+  };
+
+  const handleToggleArchive = async (): Promise<
+    "archived" | "unarchived" | "error"
+  > => {
+    if (!order) {
+      return "error";
+    }
+
+    return toggleArchiveOrder(order.id, isOrderArchived);
   };
 
   const handleBuyerFieldChange = (field: keyof BuyerForm, value: string) => {
@@ -186,8 +246,12 @@ export function useDisplayOrder(id: string) {
     isEditOrderOpen,
     isDeleteOpen,
     deleteError,
+    isOrderCompleted,
+    isOrderArchived,
     saveBuyerError,
     isDeleting: deleteOrderMutation.isPending,
+    isUpdatingOrder: updateOrderMutation.isPending,
+    isArchiving: archivingOrderId === order?.id,
     isSavingBuyer: updateOrderMutation.isPending,
     city,
     smartEta,
@@ -203,6 +267,8 @@ export function useDisplayOrder(id: string) {
     handleSaveBuyerChanges,
     handleOpenDelete,
     handleDeleteCurrentOrder,
+    handleMarkAsCompleted,
+    handleToggleArchive,
     handleBuyerFieldChange,
     handleRuleChange,
     handleChannelChange,

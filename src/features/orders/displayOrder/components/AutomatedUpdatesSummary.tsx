@@ -1,18 +1,16 @@
-import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
-import SendRoundedIcon from "@mui/icons-material/SendRounded";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
-import Button from "@/shared/components/Button";
-import IOSSwitch from "@/shared/components/IOSSwitch";
-import InputField from "@/shared/components/InputField";
-import { alpha } from "@mui/material/styles";
 import { designSystemColors } from "@/config/theme";
 import {
   type ChannelOption,
   type UpdateRules,
 } from "@/features/orders/displayOrder/types";
+import Button from "@/shared/components/Button";
+import IOSSwitch from "@/shared/components/IOSSwitch";
+import InputField from "@/shared/components/InputField";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
+import Box from "@mui/material/Box";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import { alpha } from "@mui/material/styles";
 import { SummaryCard } from "./SummaryCard";
 import { SummaryCardTitle } from "./SummaryCardTitle";
 
@@ -55,9 +53,6 @@ export default function AutomatedUpdatesSummary({
         }}
       >
         <SummaryCardTitle>Automated Updates</SummaryCardTitle>
-        <IconButton size="small" aria-label="Automated update options">
-          <MoreVertRoundedIcon fontSize="small" />
-        </IconButton>
       </Box>
       <Typography variant="caption" color="text.secondary">
         Channel

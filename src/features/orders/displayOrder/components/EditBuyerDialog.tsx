@@ -1,4 +1,8 @@
 import { designSystemColors } from "@/config/theme";
+import {
+  INVALID_EMAIL_MESSAGE,
+  isValidEmail,
+} from "@/features/auth/utils/helpers";
 import { type BuyerForm } from "@/features/orders/displayOrder/types";
 import Button from "@/shared/components/Button";
 import InputField from "@/shared/components/InputField";
@@ -32,6 +36,17 @@ const FIELD_IDS: Record<NavigableField, string> = {
   buyerPhone: "edit-buyer-phone",
 };
 
+function sanitizeBuyerPhoneInput(value: string): string {
+  const cleanedValue = value.replace(/[^\d+]/g, "");
+
+  if (!cleanedValue.includes("+")) {
+    return cleanedValue;
+  }
+
+  const digitsOnly = cleanedValue.replace(/\+/g, "");
+  return `+${digitsOnly}`;
+}
+
 const handleFieldChange = (
   field: keyof BuyerForm,
   value: string,
@@ -49,6 +64,10 @@ export default function EditBuyerDialog({
   saveError,
   onClose,
 }: EditBuyerDialogProps) {
+  const normalizedBuyerEmail = buyerForm.buyerEmail.trim();
+  const hasInvalidBuyerEmail =
+    normalizedBuyerEmail.length > 0 && !isValidEmail(normalizedBuyerEmail);
+
   const { getFieldKeyDownHandler } = useFieldKeyboardNavigation<NavigableField>(
     {
       fieldOrder: FIELD_ORDER,
@@ -117,7 +136,10 @@ export default function EditBuyerDialog({
         <InputField
           id={FIELD_IDS.buyerEmail}
           label="Buyer Email"
+          type="email"
           value={buyerForm.buyerEmail}
+          error={hasInvalidBuyerEmail}
+          helperText={hasInvalidBuyerEmail ? INVALID_EMAIL_MESSAGE : " "}
           disabled={isSaving}
           onChange={(event) =>
             handleFieldChange(
@@ -131,12 +153,13 @@ export default function EditBuyerDialog({
         <InputField
           id={FIELD_IDS.buyerPhone}
           label="Buyer Phone Number"
+          type="tel"
           value={buyerForm.buyerPhone}
           disabled={isSaving}
           onChange={(event) =>
             handleFieldChange(
               "buyerPhone",
-              event.target.value,
+              sanitizeBuyerPhoneInput(event.target.value),
               onBuyerFieldChange,
             )
           }
@@ -177,7 +200,7 @@ export default function EditBuyerDialog({
         </Button>
         <Button
           onClick={onSaveBuyerChanges}
-          disabled={isSaving}
+          disabled={isSaving || hasInvalidBuyerEmail}
           sx={{
             minHeight: 4.5,
             backgroundColor: designSystemColors.neutralBlack,

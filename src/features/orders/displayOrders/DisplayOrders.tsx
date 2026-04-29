@@ -1,8 +1,9 @@
 import { designSystemColors } from "@/config/theme";
 import { useGetOrders } from "@/queries/orders/getOrders";
 import { type OrderQueryModel } from "@/queries/orders/types";
-import { useUpdateOrder } from "@/queries/orders/updateOrder";
 import InputField from "@/shared/components/InputField";
+import { useArchiveOrder } from "@/shared/hooks/useArchiveOrder";
+import { useSnackbar } from "@/shared/hooks/useSnackbar";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import Alert from "@mui/material/Alert";
@@ -12,6 +13,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import InputAdornment from "@mui/material/InputAdornment";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import { useRouter } from "next/router";
 import * as React from "react";
 import DisplayOrdersDesktop from "./components/DisplayOrdersDesktop";
 import DisplayOrdersMobile from "./components/DisplayOrdersMobile";
@@ -68,15 +70,14 @@ export default function DisplayOrders({
   sellerId,
   onAddOrder,
 }: DisplayOrdersProps) {
+  const router = useRouter();
   const [statusFilter, setStatusFilter] = React.useState<StatusFilter>("all");
   const [searchTerm, setSearchTerm] = React.useState("");
   const [archiveError, setArchiveError] = React.useState<string | null>(null);
-  const [archivingOrderId, setArchivingOrderId] = React.useState<string | null>(
-    null,
-  );
 
   const { data: orders = [], isLoading, isError } = useGetOrders(sellerId);
-  const updateOrderMutation = useUpdateOrder();
+  const { archiveOrder, unarchiveOrder, archivingOrderId } = useArchiveOrder();
+  const { showSnackbar, SnackbarComponent } = useSnackbar();
 
   const statusOptions = React.useMemo(() => getStatusOptions(), []);
 
@@ -85,46 +86,77 @@ export default function DisplayOrders({
     [orders, searchTerm, statusFilter],
   );
 
+  React.useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
+    const toastQuery = router.query.toast;
+    const toastType = Array.isArray(toastQuery) ? toastQuery[0] : toastQuery;
+
+    if (!toastType) {
+      return;
+    }
+
+    if (toastType === "deleted") {
+      showSnackbar("Order deleted successfully.", "success");
+    }
+
+    if (toastType === "created") {
+      showSnackbar("Order created successfully.", "success");
+    }
+
+    if (toastType === "create_failed") {
+      showSnackbar("Order failed to create. Please try again.", "error");
+    }
+
+    const remainingQuery = Object.fromEntries(
+      Object.entries(router.query).filter(([key]) => key !== "toast"),
+    );
+    void router.replace(
+      {
+        pathname: router.pathname,
+        query: remainingQuery,
+      },
+      undefined,
+      { shallow: true },
+    );
+  }, [router, showSnackbar]);
+
   const handleArchiveOrder = React.useCallback(
     (orderId: string) => {
       void (async () => {
         setArchiveError(null);
-        setArchivingOrderId(orderId);
+        const result = await archiveOrder(orderId);
 
-        try {
-          await updateOrderMutation.mutateAsync({
-            id: orderId,
-            updates: { archivedAt: new Date() },
-          });
-        } catch {
-          setArchiveError("Unable to update archive status right now.");
-        } finally {
-          setArchivingOrderId(null);
+        if (result === "archived") {
+          showSnackbar("Order archived successfully.", "success");
+        } else {
+          const message = "Unable to archive this order right now.";
+          setArchiveError(message);
+          showSnackbar(message, "error");
         }
       })();
     },
-    [updateOrderMutation],
+    [archiveOrder, showSnackbar],
   );
 
   const handleUnarchiveOrder = React.useCallback(
     (orderId: string) => {
       void (async () => {
         setArchiveError(null);
-        setArchivingOrderId(orderId);
+        const result = await unarchiveOrder(orderId);
 
-        try {
-          await updateOrderMutation.mutateAsync({
-            id: orderId,
-            updates: { archivedAt: null },
-          });
-        } catch {
-          setArchiveError("Unable to update archive status right now.");
-        } finally {
-          setArchivingOrderId(null);
+        if (result === "unarchived") {
+          showSnackbar("Order unarchived successfully.", "success");
+        } else {
+          const message = "Unable to unarchive this order right now.";
+          setArchiveError(message);
+          showSnackbar(message, "error");
         }
       })();
     },
-    [updateOrderMutation],
+    [showSnackbar, unarchiveOrder],
   );
 
   if (isLoading) {
@@ -276,6 +308,8 @@ export default function DisplayOrders({
           />
         </>
       )}
+
+      <SnackbarComponent />
     </Box>
   );
 }

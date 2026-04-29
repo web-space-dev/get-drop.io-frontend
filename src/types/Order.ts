@@ -15,12 +15,12 @@ export type Order = BaseFirestoreDocument<Timestamp> & {
   referenceId: string;
   orderName: string;
   buyerName: string;
-  buyerEmail: string;
-  buyerPhone: string;
-  deliveryAddress: OrderDeliveryAddress;
-  trackingNumber: string;
-  trackingUrl: string;
-  carrierName: string;
+  buyerEmail?: string;
+  buyerPhone?: string;
+  deliveryAddress?: OrderDeliveryAddress;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  carrierName?: string;
   currentStatus: string;
   publicTrackingToken: string;
   sellerId: string;
@@ -68,9 +68,9 @@ export type StepOneRequiredFieldKey =
   | "courier"
   | "trackingNumber";
 
-export type StepOneFieldErrors = Partial<
-  Record<StepOneRequiredFieldKey, string>
->;
+export type StepOneFieldErrorKey = StepOneRequiredFieldKey | "buyerEmail";
+
+export type StepOneFieldErrors = Partial<Record<StepOneFieldErrorKey, string>>;
 
 export type StepTwoSectionErrorKey = "channels" | "automaticUpdates";
 

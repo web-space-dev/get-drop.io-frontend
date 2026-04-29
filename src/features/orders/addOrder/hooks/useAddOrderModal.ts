@@ -1,4 +1,8 @@
 import {
+  INVALID_EMAIL_MESSAGE,
+  isValidEmail,
+} from "@/features/auth/utils/helpers";
+import {
   type FormState,
   type NotificationChannel,
   type Step,
@@ -9,6 +13,9 @@ import {
 import * as React from "react";
 
 const stepOneFieldKeys: StepOneRequiredFieldKey[] = ["orderName"];
+const stepOneOptionalFieldErrorKeys: Array<keyof StepOneFieldErrors> = [
+  "buyerEmail",
+];
 
 function isStepOneRequiredField(
   key: keyof FormState,
@@ -24,9 +31,14 @@ type UseAddOrderModalParams = {
 
 function validateStepOne(form: FormState): StepOneFieldErrors {
   const errors: StepOneFieldErrors = {};
+  const normalizedBuyerEmail = form.buyerEmail.trim();
 
   if (!form.orderName.trim()) {
     errors.orderName = "Order Name is required.";
+  }
+
+  if (normalizedBuyerEmail.length > 0 && !isValidEmail(normalizedBuyerEmail)) {
+    errors.buyerEmail = INVALID_EMAIL_MESSAGE;
   }
 
   return errors;
@@ -92,6 +104,20 @@ export function useAddOrderModal({
 
         const updated = { ...current };
         delete updated[key];
+        return updated;
+      });
+    }
+
+    if (
+      stepOneOptionalFieldErrorKeys.includes(key as keyof StepOneFieldErrors)
+    ) {
+      setStepOneFieldErrors((current) => {
+        if (!current[key as keyof StepOneFieldErrors]) {
+          return current;
+        }
+
+        const updated = { ...current };
+        delete updated[key as keyof StepOneFieldErrors];
         return updated;
       });
     }

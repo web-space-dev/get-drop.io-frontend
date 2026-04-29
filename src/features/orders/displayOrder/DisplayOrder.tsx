@@ -1,9 +1,15 @@
+import { designSystemColors } from "@/config/theme";
 import { buildInitialFormFromOrder } from "@/features/orders/addOrder/utils/helpers";
 import { displayText } from "@/features/orders/utils/formatting";
+import Button from "@/shared/components/Button";
+import { useSnackbar } from "@/shared/hooks/useSnackbar";
 import DashboardLayout from "@/shared/layouts/DashboardLayout";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
+import NextLink from "next/link";
+import * as React from "react";
 import AddOrderModal from "../addOrder/AddOrderModal";
 import ActivityLogSummary from "./components/ActivityLogSummary";
 import AutomatedUpdatesSummary from "./components/AutomatedUpdatesSummary";
@@ -21,6 +27,8 @@ type DisplayOrderProps = {
 };
 
 export default function DisplayOrder({ id }: DisplayOrderProps) {
+  const { showSnackbar, SnackbarComponent } = useSnackbar();
+
   const {
     buyerForm,
     channel,
@@ -31,16 +39,22 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
     handleOpenEditBuyer,
     handleOpenEditOrder,
     handleCloseEditOrder,
-    handleSaveBuyerChanges,
+    handleSaveBuyerChanges: handleSaveBuyerChangesAction,
     handleOpenDelete,
     handleRuleChange,
     handleDeleteCurrentOrder,
+    handleMarkAsCompleted: handleMarkAsCompletedAction,
+    handleToggleArchive: handleToggleArchiveAction,
     isCopied,
     isDeleteOpen,
     isEditOrderOpen,
     isDeleting,
+    isUpdatingOrder,
+    isArchiving,
     deleteError,
     saveBuyerError,
+    isOrderCompleted,
+    isOrderArchived,
     isSavingBuyer,
     isEditOpen,
     isError,
@@ -53,6 +67,60 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
     trackingLink,
     updateRules,
   } = useDisplayOrder(id);
+
+  const handleMarkAsCompleted = React.useCallback(() => {
+    void (async () => {
+      const result = await handleMarkAsCompletedAction();
+
+      if (result === "success") {
+        showSnackbar("Order marked as complete successfully.", "success");
+      }
+
+      if (result === "error") {
+        showSnackbar("We couldn't mark this as complete.", "error");
+      }
+    })();
+  }, [handleMarkAsCompletedAction, showSnackbar]);
+
+  const handleToggleArchive = React.useCallback(() => {
+    void (async () => {
+      const result = await handleToggleArchiveAction();
+
+      if (result === "archived") {
+        showSnackbar("Order archived successfully.", "success");
+      }
+
+      if (result === "unarchived") {
+        showSnackbar("Order unarchived successfully.", "success");
+      }
+
+      if (result === "error") {
+        showSnackbar("Unable to update archive status right now.", "error");
+      }
+    })();
+  }, [handleToggleArchiveAction, showSnackbar]);
+
+  const handleOrderUpdated = React.useCallback(() => {
+    showSnackbar("Order edited successfully.", "success");
+  }, [showSnackbar]);
+
+  const handleOrderUpdateFailed = React.useCallback(() => {
+    showSnackbar("Failed to edit order. Please try again.", "error");
+  }, [showSnackbar]);
+
+  const handleSaveBuyerChanges = React.useCallback(() => {
+    void (async () => {
+      const result = await handleSaveBuyerChangesAction();
+
+      if (result === "success") {
+        showSnackbar("Buyer information updated successfully.", "success");
+      }
+
+      if (result === "error") {
+        showSnackbar("Failed to update buyer information.", "error");
+      }
+    })();
+  }, [handleSaveBuyerChangesAction, showSnackbar]);
 
   const summaryItems: OrderSummaryItem[] = [
     {
@@ -101,6 +169,37 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
   return (
     <DashboardLayout>
       <Box
+        component="nav"
+        aria-label="Order navigation"
+        sx={(theme) => ({
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          flexWrap: "wrap",
+          marginBottom: theme.spacing(2),
+        })}
+      >
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackRoundedIcon fontSize="small" />}
+          component={NextLink}
+          href="/orders"
+          sx={(theme) => ({
+            minHeight: theme.spacing(4.5),
+            backgroundColor: "transparent",
+            color: designSystemColors.neutralBlack,
+            borderColor: designSystemColors.neutralBlack,
+            "&:hover": {
+              backgroundColor: theme.palette.action.hover,
+              borderColor: designSystemColors.neutralBlack,
+            },
+            mt: 2,
+          })}
+        >
+          Back
+        </Button>
+      </Box>
+      <Box
         component="section"
         sx={{
           display: "grid",
@@ -145,6 +244,12 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
           <OrderActionsSummary
             onOpenEditOrder={handleOpenEditOrder}
             onOpenDelete={handleOpenDelete}
+            onMarkAsCompleted={handleMarkAsCompleted}
+            onToggleArchive={handleToggleArchive}
+            isMarkingAsCompleted={isUpdatingOrder}
+            isArchiving={isArchiving}
+            isCompleted={isOrderCompleted}
+            isArchived={isOrderArchived}
           />
         </Box>
       </Box>
@@ -155,6 +260,8 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
         initialForm={buildInitialFormFromOrder(order)}
         open={isEditOrderOpen}
         onClose={handleCloseEditOrder}
+        onUpdated={handleOrderUpdated}
+        onUpdateFailed={handleOrderUpdateFailed}
       />
 
       <EditBuyerDialog
@@ -175,6 +282,8 @@ export default function DisplayOrder({ id }: DisplayOrderProps) {
         onClose={() => setIsDeleteOpen(false)}
         onConfirmDelete={handleDeleteCurrentOrder}
       />
+
+      <SnackbarComponent />
     </DashboardLayout>
   );
 }

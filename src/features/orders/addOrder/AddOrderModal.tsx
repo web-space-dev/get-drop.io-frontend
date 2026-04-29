@@ -32,7 +32,9 @@ type AddOrderModalProps = {
   orderId?: string;
   initialForm?: FormState;
   onCreated?: () => void;
+  onCreateFailed?: () => void;
   onUpdated?: () => void;
+  onUpdateFailed?: () => void;
 };
 
 const initialState: FormState = {
@@ -57,7 +59,9 @@ export default function AddOrderModal({
   open,
   onClose,
   onCreated,
+  onCreateFailed,
   onUpdated,
+  onUpdateFailed,
 }: AddOrderModalProps) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -155,6 +159,14 @@ export default function AddOrderModal({
 
         handleClose();
       } catch {
+        if (mode === "create") {
+          onCreateFailed?.();
+        }
+
+        if (mode === "edit") {
+          onUpdateFailed?.();
+        }
+
         setSubmitError(
           mode === "edit"
             ? "Unable to update order right now. Please try again."
