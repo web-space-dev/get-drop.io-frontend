@@ -1,24 +1,9 @@
-import { type OrderQueryModel } from "@/queries/orders/types";
 import { type TimelineEvent } from "@/features/orders/displayOrder/types";
-
-export const displayText = (value?: string | null): string => {
-  const trimmed = value?.trim();
-  return trimmed ? trimmed : "-";
-};
-
-export const formatDateTime = (value?: Date | null): string => {
-  if (!value) {
-    return "-";
-  }
-
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(value);
-};
+import {
+  displayText,
+  formatDateTimeWithYear,
+} from "@/features/orders/utils/formatting";
+import { type OrderQueryModel } from "@/queries/orders/types";
 
 export const getTrackingLink = (order: OrderQueryModel): string => {
   return (
@@ -50,13 +35,16 @@ export const getSmartEta = (order: OrderQueryModel): string => {
 export const getTimelineEvents = (order: OrderQueryModel): TimelineEvent[] => {
   return [
     {
-      time: formatDateTime(order.updatedAt).split(",")[1]?.trim() ?? "--:--",
+      time:
+        formatDateTimeWithYear(order.updatedAt).split(",")[1]?.trim() ??
+        "--:--",
       label: "Order added to Drop",
     },
     {
       time:
-        formatDateTime(order.lastTrackingUpdateAt).split(",")[1]?.trim() ??
-        "--:--",
+        formatDateTimeWithYear(order.lastTrackingUpdateAt)
+          .split(",")[1]
+          ?.trim() ?? "--:--",
       label: "Tracking link generated",
     },
     {

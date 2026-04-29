@@ -1,5 +1,8 @@
 import { useUser } from "@/context/UserContext";
-import { INVALID_EMAIL_MESSAGE, isValidEmail } from "@/features/utils/helpers";
+import {
+  INVALID_EMAIL_MESSAGE,
+  isValidEmail,
+} from "@/features/auth/utils/helpers";
 import Button from "@/shared/components/Button";
 import InputField from "@/shared/components/InputField";
 import FormContainer from "@/shared/layouts/auth/AuthFormContainer";

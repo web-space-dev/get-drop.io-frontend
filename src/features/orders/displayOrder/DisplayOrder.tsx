@@ -1,4 +1,5 @@
 import { buildInitialFormFromOrder } from "@/features/orders/addOrder/utils/helpers";
+import { displayText } from "@/features/orders/utils/formatting";
 import DashboardLayout from "@/shared/layouts/DashboardLayout";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
@@ -14,7 +15,6 @@ import OrderSummaryCard, {
   type OrderSummaryItem,
 } from "./components/OrderSummaryCard";
 import { useDisplayOrder } from "./hooks/useDisplayOrder";
-import { displayText } from "./utils/displayOrderUtils";
 
 type DisplayOrderProps = {
   id: string;

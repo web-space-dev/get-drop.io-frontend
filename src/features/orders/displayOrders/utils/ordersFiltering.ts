@@ -2,20 +2,14 @@ import {
   type StatusFilter,
   type StatusTone,
 } from "@/features/orders/displayOrders/types";
+import { ORDERS_FALLBACK_TEXT } from "@/features/orders/utils/formatting";
 import { type OrderQueryModel } from "@/queries/orders/types";
-
-const fallbackText = "-";
-
-export const displayText = (value?: string | null): string => {
-  const trimmed = value?.trim();
-  return trimmed ? trimmed : fallbackText;
-};
 
 export const formatAddress = (order: OrderQueryModel): string => {
   const address = order.deliveryAddress;
 
   if (!address) {
-    return fallbackText;
+    return ORDERS_FALLBACK_TEXT;
   }
 
   const formattedAddress = address.formattedAddress;
@@ -32,20 +26,7 @@ export const formatAddress = (order: OrderQueryModel): string => {
     address.addressCountry ?? address.country,
   ].filter((part): part is string => Boolean(part && part.trim()));
 
-  return parts.length > 0 ? parts.join(", ") : fallbackText;
-};
-
-export const formatDateTime = (value?: Date | null): string => {
-  if (!value) {
-    return "-";
-  }
-
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(value);
+  return parts.length > 0 ? parts.join(", ") : ORDERS_FALLBACK_TEXT;
 };
 
 export const statusToneFromValue = (status: string): StatusTone => {

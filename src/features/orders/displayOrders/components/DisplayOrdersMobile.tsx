@@ -1,56 +1,19 @@
-import { designSystemColors } from "@/config/theme";
 import { type DisplayOrdersListProps } from "@/features/orders/displayOrders/DisplayOrders";
 import OrderArchiveToggleButton from "@/features/orders/displayOrders/components/OrderArchiveToggleButton";
 import OrderViewButton from "@/features/orders/displayOrders/components/OrderViewButton";
 import {
+  getOrderType,
+  getSmartEta,
+  getStatusChipSx,
+} from "@/features/orders/displayOrders/utils/displayOrdersPresentation";
+import { statusToneFromValue } from "@/features/orders/displayOrders/utils/ordersFiltering";
+import {
   displayText,
   formatDateTime,
-  statusToneFromValue,
-} from "@/features/orders/displayOrders/utils/ordersFiltering";
+} from "@/features/orders/utils/formatting";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Typography from "@mui/material/Typography";
-
-const getStatusChipSx = (statusTone: "default" | "error" | "neutral") =>
-  ({
-    typography: "body2",
-    height: 34,
-    borderRadius: 1,
-    border: "1px solid",
-    borderColor:
-      statusTone === "error"
-        ? "error.main"
-        : statusTone === "neutral"
-          ? "divider"
-          : designSystemColors.neutralBlack,
-    backgroundColor:
-      statusTone === "error"
-        ? "error.main"
-        : statusTone === "neutral"
-          ? "transparent"
-          : designSystemColors.neutralBlack,
-    color:
-      statusTone === "error" || statusTone === "default"
-        ? "common.white"
-        : designSystemColors.neutralBlack,
-    "& .MuiChip-label": {
-      px: 1.25,
-    },
-  }) as const;
-
-const getOrderType = (status: string): string => {
-  const normalizedStatus = status.toLowerCase();
-
-  if (normalizedStatus === "inbound" || normalizedStatus === "outbound") {
-    return normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
-  }
-
-  return "Outbound";
-};
-
-const getSmartEta = (hasTrackingUpdate: boolean): string => {
-  return hasTrackingUpdate ? "Tracking Updated" : "Pending ETA";
-};
 
 export default function DisplayOrdersMobile({
   orders,
