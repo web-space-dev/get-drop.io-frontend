@@ -52,6 +52,17 @@ const FieldWrapper = styled(Box)(({ theme }) => ({
 
 const courierOptions = ["Royal Mail", "Evri", "DPD", "Yodel"] as const;
 
+function sanitizeBuyerPhoneInput(value: string): string {
+  const cleanedValue = value.replace(/[^\d+]/g, "");
+
+  if (!cleanedValue.includes("+")) {
+    return cleanedValue;
+  }
+
+  const digitsOnly = cleanedValue.replace(/\+/g, "");
+  return `+${digitsOnly}`;
+}
+
 export default function AddOrderStepOne({
   form,
   fieldErrors,
@@ -176,10 +187,14 @@ export default function AddOrderStepOne({
           <InputTitle>Buyer Phone Number</InputTitle>
           <InputField
             id={FIELD_IDS.buyerPhone}
+            type="tel"
             placeholder="Optional"
             value={form.buyerPhone}
             onChange={(event) =>
-              onFieldChange("buyerPhone", event.target.value)
+              onFieldChange(
+                "buyerPhone",
+                sanitizeBuyerPhoneInput(event.target.value),
+              )
             }
             onKeyDown={getFieldKeyDownHandler("buyerPhone")}
           />
